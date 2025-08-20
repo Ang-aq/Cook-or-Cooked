@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://cgae5oe64mgyf"]
+
+[ext_resource type="Script" uid="uid://crcue3uswuy8x" path="res://world.gd" id="1_f3sb7"]
+[ext_resource type="Script" uid="uid://g3xg7or4wbwe" path="res://frying_pan.gd" id="2_fj7yv"]
+[ext_resource type="Texture2D" uid="uid://bg8nktf5r8vpx" path="res://Tools/PTYP_FryingPan.png" id="3_tlwt5"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_tlwt5"]
+radius = 66.0
+height = 132.0
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_f3sb7")
+
+[node name="Frying Pan" type="Area2D" parent="."]
+position = Vector2(214, 180)
+script = ExtResource("2_fj7yv")
+
+[node name="Frying Pan Sprite" type="Sprite2D" parent="Frying Pan"]
+position = Vector2(13, 2)
+scale = Vector2(0.18287, 0.18287)
+texture = ExtResource("3_tlwt5")
+
+[node name="Frying Pan Collision" type="CollisionShape2D" parent="Frying Pan"]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_tlwt5")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_right = 4.0
+offset_bottom = 27.0
+metadata/_edit_use_anchors_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]

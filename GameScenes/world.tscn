@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=3 uid="uid://cgae5oe64mgyf"]
+
+[ext_resource type="Script" uid="uid://crcue3uswuy8x" path="res://GameScenes/world.gd" id="1_cnhcp"]
+[ext_resource type="Script" uid="uid://g3xg7or4wbwe" path="res://GameScenes/frying_pan.gd" id="2_xvsrh"]
+[ext_resource type="Texture2D" uid="uid://bg8nktf5r8vpx" path="res://Tools/PTYP_FryingPan.png" id="3_gmp02"]
+[ext_resource type="Script" uid="uid://b8g8a47x1sn58" path="res://GameScenes/progress_bar.gd" id="4_xvsrh"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_tlwt5"]
+radius = 66.0
+height = 132.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cnhcp"]
+bg_color = Color(0.754012, 0.420361, 0.398371, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xvsrh"]
+bg_color = Color(0.365403, 3.66997e-07, 2.64719e-07, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_bottom = 10
+corner_radius_top_left = 10
+corner_radius_bottom_left = 10
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_cnhcp")
+
+[node name="Frying Pan" type="Area2D" parent="."]
+position = Vector2(429, 252)
+collision_mask = 2
+script = ExtResource("2_xvsrh")
+
+[node name="Frying Pan Sprite" type="Sprite2D" parent="Frying Pan"]
+position = Vector2(13, 2)
+scale = Vector2(0.18287, 0.18287)
+texture = ExtResource("3_gmp02")
+
+[node name="Frying Pan Collision" type="CollisionShape2D" parent="Frying Pan"]
+position = Vector2(2, 3)
+shape = SubResource("CapsuleShape2D_tlwt5")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ProgressBar" type="ProgressBar" parent="Control"]
+layout_mode = 0
+offset_left = 1054.0
+offset_top = 524.0
+offset_right = 1397.0
+offset_bottom = 567.0
+rotation = -1.5708
+theme_override_styles/background = SubResource("StyleBoxFlat_cnhcp")
+theme_override_styles/fill = SubResource("StyleBoxFlat_xvsrh")
+min_value = 50.0
+value = 50.0
+script = ExtResource("4_xvsrh")
+
+[connection signal="body_entered" from="Frying Pan" to="." method="_on_frying_pan_body_entered"]
+[connection signal="body_entered" from="Frying Pan" to="Frying Pan" method="_on_body_entered"]

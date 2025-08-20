@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://j5qdue0w5uv2"]
+
+[ext_resource type="Texture2D" uid="uid://def0slclx68r8" path="res://Pests/PTYP_Mouse.png" id="1_jjyac"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jjyac"]
+radius = 23.8557
+height = 73.6767
+
+[node name="Pests" type="CharacterBody2D" groups=["pests"]]
+position = Vector2(310, 276)
+collision_layer = 2
+
+[node name="PestSprite" type="Sprite2D" parent="."]
+position = Vector2(2.00001, -10)
+scale = Vector2(0.118982, 0.118982)
+texture = ExtResource("1_jjyac")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["pests"]]
+position = Vector2(-2, -4)
+rotation = 1.55509
+shape = SubResource("CapsuleShape2D_jjyac")
