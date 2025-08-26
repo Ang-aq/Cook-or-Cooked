@@ -1,0 +1,79 @@
+[gd_scene load_steps=15 format=3 uid="uid://d02wc3k6aphj"]
+
+[ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scenes/titlescreen.gd" id="1_goadl"]
+[ext_resource type="Texture2D" uid="uid://byyw572p3j5a0" path="res://Sprites/Arrow.png" id="2_2bjoa"]
+[ext_resource type="Texture2D" uid="uid://b4s2pvgilyh25" path="res://Sprites/PlayPressed.png" id="2_up5sg"]
+[ext_resource type="Texture2D" uid="uid://bcle1b3lqenom" path="res://Sprites/Title Screen-export.png" id="2_w7bgp"]
+[ext_resource type="Texture2D" uid="uid://dk3dkrbxelh4a" path="res://Sprites/PlayStatic.png" id="3_w7bgp"]
+[ext_resource type="Texture2D" uid="uid://dgye8dtbfuekq" path="res://Sprites/QuitPressed.png" id="4_j0nra"]
+[ext_resource type="Texture2D" uid="uid://houc545u62g8" path="res://Sprites/QuitStatic.png" id="5_sf6xc"]
+[ext_resource type="AudioStream" uid="uid://dg7c0b6kl6dnm" path="res://Audio/GameStart.mp3" id="8_j0nra"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_up5sg"]
+texture = ExtResource("3_w7bgp")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qr3m1"]
+texture = ExtResource("2_up5sg")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ghb0b"]
+texture = ExtResource("3_w7bgp")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_w7bgp"]
+texture = ExtResource("5_sf6xc")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lkqyf"]
+texture = ExtResource("4_j0nra")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wf248"]
+texture = ExtResource("5_sf6xc")
+
+[node name="TitleScreen" type="CanvasLayer"]
+script = ExtResource("1_goadl")
+
+[node name="TitleScreen-export" type="Sprite2D" parent="."]
+position = Vector2(582, 324)
+scale = Vector2(1.02031, 1.02031)
+texture = ExtResource("2_w7bgp")
+
+[node name="MenuVBox" type="VBoxContainer" parent="."]
+offset_left = 230.0
+offset_top = 301.0
+offset_right = 468.0
+offset_bottom = 564.0
+size_flags_vertical = 3
+
+[node name="ButtonPlay" type="Button" parent="MenuVBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_up5sg")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_qr3m1")
+theme_override_styles/normal = SubResource("StyleBoxTexture_ghb0b")
+toggle_mode = true
+text = "  
+ 
+ 
+  
+ "
+
+[node name="ButtonQuit" type="Button" parent="MenuVBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_w7bgp")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_lkqyf")
+theme_override_styles/normal = SubResource("StyleBoxTexture_wf248")
+toggle_mode = true
+text = " 
+ 
+ 
+ 
+ "
+
+[node name="SelectorArrow" type="TextureRect" parent="."]
+offset_left = 139.0
+offset_top = 309.0
+offset_right = 218.0
+offset_bottom = 388.0
+texture = ExtResource("2_2bjoa")
+
+[node name="SfxPlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_j0nra")

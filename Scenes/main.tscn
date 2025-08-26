@@ -1,0 +1,36 @@
+[gd_scene load_steps=6 format=3 uid="uid://61prbkmmxws1"]
+
+[ext_resource type="Script" uid="uid://c26wig0n86w7y" path="res://Scenes/main.gd" id="1_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scenes/PlayerInput.gd" id="4_jjvhh"]
+[ext_resource type="Texture2D" uid="uid://c4u3y73ht467s" path="res://Sprites/mockup-export.png" id="5_21xkr"]
+[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="5_kry3j"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_jjvhh")
+
+[node name="Mockup-export" type="Sprite2D" parent="."]
+position = Vector2(577, 324)
+texture = ExtResource("5_21xkr")
+
+[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
+visible = false
+position = Vector2(-389, -165)
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("4_jjvhh")
+
+[node name="InputDisplay" type="HBoxContainer" parent="PlayerInput"]
+offset_left = 285.0
+offset_top = 483.0
+offset_right = 848.0
+offset_bottom = 628.0
+alignment = 1
+
+[node name="IngredientContainer" type="Node2D" parent="."]
+
+[node name="Checklist" parent="." instance=ExtResource("5_kry3j")]
+offset_left = 959.0
+offset_top = 221.0
+offset_right = 1136.0
+offset_bottom = 533.0

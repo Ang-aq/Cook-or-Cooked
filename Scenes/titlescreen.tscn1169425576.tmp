@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://d02wc3k6aphj"]
+
+[ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scenes/titlescreen.gd" id="1_goadl"]
+[ext_resource type="Texture2D" uid="uid://dn0xeeom4em2t" path="res://Sprites/Arrow.png" id="2_2bjoa"]
+
+[node name="TitleScreen" type="CanvasLayer"]
+script = ExtResource("1_goadl")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 377.0
+offset_top = 246.0
+offset_right = 615.0
+offset_bottom = 509.0
+
+[node name="ButtonPlay" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Play"
+
+[node name="ButtonQuit" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Quit"
+
+[node name="SelectorArrow" type="TextureRect" parent="."]
+offset_left = 335.0
+offset_top = 244.0
+offset_right = 368.0
+offset_bottom = 277.0
+texture = ExtResource("2_2bjoa")

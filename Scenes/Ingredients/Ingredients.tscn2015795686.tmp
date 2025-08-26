@@ -1,0 +1,58 @@
+[gd_scene load_steps=11 format=3 uid="uid://dcfr8h2sdtptv"]
+
+[ext_resource type="Script" uid="uid://s0vqbbn504wt" path="res://Scenes/Ingredients/Ingredient.gd" id="1_b51vn"]
+[ext_resource type="Texture2D" uid="uid://y7h76pi0vw6s" path="res://Sprites/Ingredients/Onion (1).png" id="2_olx28"]
+[ext_resource type="Texture2D" uid="uid://53fwjktg647i" path="res://Sprites/Ingredients/Onion (2).png" id="3_hlkhf"]
+[ext_resource type="Texture2D" uid="uid://buy2ggujdxll" path="res://Sprites/Ingredients/Onion (3).png" id="4_j0y52"]
+[ext_resource type="Texture2D" uid="uid://dxyvxwa474ay" path="res://Sprites/Ingredients/Onion (4).png" id="5_yw6cg"]
+[ext_resource type="Texture2D" uid="uid://c32o32rkh0yik" path="res://Sprites/Ingredients/Onion (5).png" id="6_10jeh"]
+[ext_resource type="Texture2D" uid="uid://duflpjmswmmd2" path="res://Sprites/Ingredients/Onion (6).png" id="7_ttmok"]
+[ext_resource type="Texture2D" uid="uid://difmf2it7pose" path="res://Sprites/Ingredients/Onion (7).png" id="8_3eadd"]
+[ext_resource type="Texture2D" uid="uid://c3k1jiboe81vp" path="res://Sprites/Ingredients/Onion (8).png" id="9_k13wl"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vfc8r"]
+animations = [{
+"frames": [{
+"duration": 0.5,
+"texture": ExtResource("2_olx28")
+}, {
+"duration": 0.5,
+"texture": ExtResource("3_hlkhf")
+}, {
+"duration": 0.5,
+"texture": ExtResource("4_j0y52")
+}, {
+"duration": 0.5,
+"texture": ExtResource("5_yw6cg")
+}, {
+"duration": 0.5,
+"texture": ExtResource("6_10jeh")
+}, {
+"duration": 0.5,
+"texture": ExtResource("7_ttmok")
+}, {
+"duration": 0.5,
+"texture": ExtResource("8_3eadd")
+}, {
+"duration": 0.5,
+"texture": ExtResource("9_k13wl")
+}],
+"loop": true,
+"name": &"Onion",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Ingredient" type="Node2D"]
+script = ExtResource("1_b51vn")
+speed = null
+metadata/_custom_type_script = "uid://s0vqbbn504wt"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(571, 258)
+sprite_frames = SubResource("SpriteFrames_vfc8r")
+animation = &"Onion"

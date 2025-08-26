@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcfr8h2sdtptv"]
+
+[ext_resource type="Script" uid="uid://s0vqbbn504wt" path="res://Scenes/Ingredients/Ingredient.gd" id="1_b51vn"]
+[ext_resource type="Texture2D" uid="uid://df606sy48axpd" path="res://Sprites/Apple.png" id="2_qqfxh"]
+
+[node name="Ingredient" type="Node2D"]
+script = ExtResource("1_b51vn")
+metadata/_custom_type_script = "uid://s0vqbbn504wt"
+
+[node name="ComboLabel" type="Label" parent="."]
+offset_left = 478.0
+offset_top = 202.0
+offset_right = 688.0
+offset_bottom = 257.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Combo"
+horizontal_alignment = 1
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(559.25, 291.532)
+scale = Vector2(0.667, 0.725471)
+texture = ExtResource("2_qqfxh")

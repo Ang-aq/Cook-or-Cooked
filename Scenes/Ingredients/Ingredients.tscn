@@ -1,0 +1,152 @@
+[gd_scene load_steps=27 format=3 uid="uid://dcfr8h2sdtptv"]
+
+[ext_resource type="Script" uid="uid://s0vqbbn504wt" path="res://Scenes/Ingredients/Ingredient.gd" id="1_b51vn"]
+[ext_resource type="Texture2D" uid="uid://bljgdf2pbyyrd" path="res://Sprites/Ingredients/carrot.png" id="2_5uxxy"]
+[ext_resource type="Texture2D" uid="uid://y7h76pi0vw6s" path="res://Sprites/Ingredients/Onion (1).png" id="2_olx28"]
+[ext_resource type="Texture2D" uid="uid://kureadi0dffd" path="res://Sprites/Ingredients/steak1.png" id="3_52jmm"]
+[ext_resource type="Texture2D" uid="uid://53fwjktg647i" path="res://Sprites/Ingredients/Onion (2).png" id="3_hlkhf"]
+[ext_resource type="Texture2D" uid="uid://buy2ggujdxll" path="res://Sprites/Ingredients/Onion (3).png" id="4_j0y52"]
+[ext_resource type="Texture2D" uid="uid://bndvir1w4t7ev" path="res://Sprites/Ingredients/steak2.png" id="4_t3gph"]
+[ext_resource type="Texture2D" uid="uid://dkfigreib4h1j" path="res://Sprites/Ingredients/steak3.png" id="5_oxttp"]
+[ext_resource type="Texture2D" uid="uid://dxyvxwa474ay" path="res://Sprites/Ingredients/Onion (4).png" id="5_yw6cg"]
+[ext_resource type="Texture2D" uid="uid://c32o32rkh0yik" path="res://Sprites/Ingredients/Onion (5).png" id="6_10jeh"]
+[ext_resource type="Texture2D" uid="uid://bal6llyxxcqyg" path="res://Sprites/Ingredients/steak4.png" id="6_c0vcq"]
+[ext_resource type="Texture2D" uid="uid://duflpjmswmmd2" path="res://Sprites/Ingredients/Onion (6).png" id="7_ttmok"]
+[ext_resource type="Texture2D" uid="uid://bvceg1ciyploj" path="res://Sprites/Ingredients/steak5.png" id="7_u11u5"]
+[ext_resource type="Texture2D" uid="uid://difmf2it7pose" path="res://Sprites/Ingredients/Onion (7).png" id="8_3eadd"]
+[ext_resource type="Texture2D" uid="uid://drehp4chshbn8" path="res://Sprites/Ingredients/steak6.png" id="8_21o0n"]
+[ext_resource type="Texture2D" uid="uid://b7tmmicw8d22d" path="res://Sprites/Ingredients/steak7.png" id="9_5uxxy"]
+[ext_resource type="Texture2D" uid="uid://c3k1jiboe81vp" path="res://Sprites/Ingredients/Onion (8).png" id="9_k13wl"]
+[ext_resource type="Texture2D" uid="uid://2umbcixofj4s" path="res://Sprites/Ingredients/steak8.png" id="10_xbqgw"]
+[ext_resource type="Texture2D" uid="uid://cdqdm6k0vfldn" path="res://Sprites/Ingredients/Potato1.png" id="18_21o0n"]
+[ext_resource type="Texture2D" uid="uid://c2k1en3aw6dh2" path="res://Sprites/Ingredients/Potato2.png" id="19_5uxxy"]
+[ext_resource type="Texture2D" uid="uid://eaywvsllf2k1" path="res://Sprites/Ingredients/Potato3.png" id="20_xbqgw"]
+[ext_resource type="Texture2D" uid="uid://cu36mdcksev61" path="res://Sprites/Ingredients/Potato4.png" id="21_tef41"]
+[ext_resource type="Texture2D" uid="uid://pfjyadoxbslf" path="res://Sprites/Ingredients/Potato5.png" id="22_50qfx"]
+[ext_resource type="Texture2D" uid="uid://5k8bnlxtv8yk" path="res://Sprites/Ingredients/Potato6.png" id="23_eio5f"]
+[ext_resource type="Texture2D" uid="uid://divdh0kc34qw" path="res://Sprites/Ingredients/Potato7.png" id="24_v83kk"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vfc8r"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_5uxxy")
+}],
+"loop": true,
+"name": &"Carrot",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("3_52jmm")
+}, {
+"duration": 0.75,
+"texture": ExtResource("4_t3gph")
+}, {
+"duration": 0.75,
+"texture": ExtResource("5_oxttp")
+}, {
+"duration": 0.75,
+"texture": ExtResource("6_c0vcq")
+}, {
+"duration": 0.75,
+"texture": ExtResource("7_u11u5")
+}, {
+"duration": 0.75,
+"texture": ExtResource("8_21o0n")
+}, {
+"duration": 0.75,
+"texture": ExtResource("9_5uxxy")
+}, {
+"duration": 0.75,
+"texture": ExtResource("10_xbqgw")
+}],
+"loop": true,
+"name": &"Meat",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("2_olx28")
+}, {
+"duration": 0.75,
+"texture": ExtResource("3_hlkhf")
+}, {
+"duration": 0.75,
+"texture": ExtResource("4_j0y52")
+}, {
+"duration": 0.75,
+"texture": ExtResource("5_yw6cg")
+}, {
+"duration": 0.75,
+"texture": ExtResource("6_10jeh")
+}, {
+"duration": 0.75,
+"texture": ExtResource("7_ttmok")
+}, {
+"duration": 0.75,
+"texture": ExtResource("8_3eadd")
+}, {
+"duration": 0.75,
+"texture": ExtResource("9_k13wl")
+}],
+"loop": true,
+"name": &"Onion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("18_21o0n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_5uxxy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_xbqgw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_tef41")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_50qfx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_eio5f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_v83kk")
+}],
+"loop": true,
+"name": &"Potato",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"Spring Onion",
+"speed": 5.0
+}]
+
+[node name="Ingredient" type="Node2D"]
+script = ExtResource("1_b51vn")
+metadata/_custom_type_script = "uid://s0vqbbn504wt"
+
+[node name="InputDisplay" type="HBoxContainer" parent="."]
+offset_left = 515.0
+offset_top = 197.0
+offset_right = 621.0
+offset_bottom = 237.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(574, 278)
+scale = Vector2(2.82534, 2.82534)
+sprite_frames = SubResource("SpriteFrames_vfc8r")
+animation = &"Carrot"
+
+[node name="ComboLabel" type="Label" parent="."]
+visible = false
+offset_left = 546.0
+offset_top = 276.0
+offset_right = 607.0
+offset_bottom = 299.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "COMBO"

@@ -1,0 +1,57 @@
+[gd_scene load_steps=11 format=3 uid="uid://d02wc3k6aphj"]
+
+[ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scenes/titlescreen.gd" id="1_goadl"]
+[ext_resource type="Texture2D" uid="uid://dn0xeeom4em2t" path="res://Sprites/Arrow.png" id="2_2bjoa"]
+[ext_resource type="Texture2D" uid="uid://b4s2pvgilyh25" path="res://Sprites/PlayPressed.png" id="2_up5sg"]
+[ext_resource type="Texture2D" uid="uid://dk3dkrbxelh4a" path="res://Sprites/PlayStatic.png" id="3_w7bgp"]
+[ext_resource type="Texture2D" uid="uid://dgye8dtbfuekq" path="res://Sprites/QuitPressed.png" id="4_j0nra"]
+[ext_resource type="Texture2D" uid="uid://houc545u62g8" path="res://Sprites/QuitStatic.png" id="5_sf6xc"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qr3m1"]
+texture = ExtResource("2_up5sg")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ghb0b"]
+texture = ExtResource("3_w7bgp")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lkqyf"]
+texture = ExtResource("4_j0nra")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_wf248"]
+texture = ExtResource("5_sf6xc")
+
+[node name="TitleScreen" type="CanvasLayer"]
+script = ExtResource("1_goadl")
+
+[node name="MenuVBox" type="VBoxContainer" parent="."]
+offset_left = 456.0
+offset_top = 313.0
+offset_right = 694.0
+offset_bottom = 576.0
+size_flags_vertical = 3
+
+[node name="ButtonPlay" type="Button" parent="MenuVBox"]
+layout_mode = 2
+theme_override_styles/pressed = SubResource("StyleBoxTexture_qr3m1")
+theme_override_styles/normal = SubResource("StyleBoxTexture_ghb0b")
+text = "  
+ 
+ 
+  
+ "
+
+[node name="ButtonQuit" type="Button" parent="MenuVBox"]
+layout_mode = 2
+theme_override_styles/pressed = SubResource("StyleBoxTexture_lkqyf")
+theme_override_styles/normal = SubResource("StyleBoxTexture_wf248")
+text = " 
+ 
+ 
+ 
+ "
+
+[node name="SelectorArrow" type="TextureRect" parent="."]
+offset_left = 353.0
+offset_top = 327.0
+offset_right = 432.0
+offset_bottom = 406.0
+texture = ExtResource("2_2bjoa")
