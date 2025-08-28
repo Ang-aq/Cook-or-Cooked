@@ -1,17 +1,69 @@
-[gd_scene load_steps=6 format=3 uid="uid://61prbkmmxws1"]
+[gd_scene load_steps=17 format=3 uid="uid://61prbkmmxws1"]
 
 [ext_resource type="Script" uid="uid://c26wig0n86w7y" path="res://Scenes/main.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="2_bo1nx"]
+[ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="2_hptm8"]
 [ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scenes/PlayerInput.gd" id="4_jjvhh"]
-[ext_resource type="Texture2D" uid="uid://c4u3y73ht467s" path="res://Sprites/mockup-export.png" id="5_21xkr"]
 [ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="5_kry3j"]
+[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="6_21xkr"]
+[ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scenes/DishCompleteUi.gd" id="7_6bp64"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="7_d1ilt"]
+[ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scenes/combo_label.gd" id="7_hptm8"]
+[ext_resource type="Texture2D" uid="uid://w3lxacgxj7nf" path="res://Sprites/Starr(1).png" id="8_ynf5e"]
+[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/shrimpCurry.png" id="9_hptm8"]
+
+[sub_resource type="Animation" id="Animation_6iyac"]
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_d1ilt"]
+resource_name = "spin"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fdnlq"]
+_data = {
+&"RESET": SubResource("Animation_6iyac"),
+&"spin": SubResource("Animation_d1ilt")
+}
+
+[sub_resource type="Animation" id="Animation_hptm8"]
+resource_name = "ThreeStars"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d1ilt"]
+_data = {
+&"ThreeStars": SubResource("Animation_hptm8")
+}
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jjvhh")
 
-[node name="Mockup-export" type="Sprite2D" parent="."]
-position = Vector2(577, 324)
-texture = ExtResource("5_21xkr")
+[node name="Ui" type="Sprite2D" parent="."]
+position = Vector2(577.998, 325.499)
+scale = Vector2(0.604631, 0.604631)
+texture = ExtResource("2_hptm8")
 
 [node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
 visible = false
@@ -21,16 +73,127 @@ position = Vector2(-389, -165)
 script = ExtResource("4_jjvhh")
 
 [node name="InputDisplay" type="HBoxContainer" parent="PlayerInput"]
-offset_left = 285.0
-offset_top = 483.0
-offset_right = 848.0
-offset_bottom = 628.0
+offset_left = 155.0
+offset_top = 490.0
+offset_right = 718.0
+offset_bottom = 635.0
+theme = ExtResource("7_d1ilt")
 alignment = 1
 
 [node name="IngredientContainer" type="Node2D" parent="."]
 
 [node name="Checklist" parent="." instance=ExtResource("5_kry3j")]
-offset_left = 959.0
-offset_top = 221.0
-offset_right = 1136.0
+offset_left = 919.0
+offset_top = 273.0
+offset_right = 1096.0
+offset_bottom = 457.0
+theme = ExtResource("7_d1ilt")
+
+[node name="HeartsContainer" type="HBoxContainer" parent="."]
+offset_left = 913.0
+offset_top = 14.0
+offset_right = 1113.0
+offset_bottom = 78.0
+
+[node name="Heart" type="TextureRect" parent="HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="Heart2" type="TextureRect" parent="HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="Heart3" type="TextureRect" parent="HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="ComboLabel" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 27.0
+offset_right = 217.0
+offset_bottom = 82.0
+theme = ExtResource("7_d1ilt")
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+script = ExtResource("7_hptm8")
+
+[node name="WinOverlay" type="CanvasLayer" parent="."]
+
+[node name="DishCompleteUI" type="Control" parent="WinOverlay"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("7_6bp64")
+
+[node name="Star" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 222.0
+offset_top = 100.0
+offset_right = 734.0
+offset_bottom = 612.0
+pivot_offset = Vector2(255, 265)
+texture = ExtResource("8_ynf5e")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Star"]
+libraries = {
+&"": SubResource("AnimationLibrary_fdnlq")
+}
+
+[node name="Dish" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 346.0
+offset_top = 226.0
+offset_right = 600.0
+offset_bottom = 480.0
+texture = ExtResource("9_hptm8")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Dish"]
+libraries = {
+&"": SubResource("AnimationLibrary_d1ilt")
+}
+
+[node name="Label" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 304.0
+offset_top = 197.0
+offset_right = 653.0
+offset_bottom = 275.0
+theme = ExtResource("7_d1ilt")
+theme_override_font_sizes/font_size = 50
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 441.0
+offset_right = 672.0
 offset_bottom = 533.0
+theme = ExtResource("7_d1ilt")
+theme_override_font_sizes/font_size = 35
+text = "Press any button to continue
+"
+horizontal_alignment = 1
+
+[node name="DishTitle" type="Label" parent="."]
+offset_left = 910.0
+offset_top = 220.0
+offset_right = 1103.0
+offset_bottom = 272.0
+theme = ExtResource("7_d1ilt")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
+
+[node name="TimerLabel" type="Label" parent="."]
+offset_left = 425.0
+offset_top = 3.0
+offset_right = 575.0
+offset_bottom = 103.0
+theme = ExtResource("7_d1ilt")
+theme_override_font_sizes/font_size = 100
+horizontal_alignment = 1
+
+[node name="LevelTimer" type="Timer" parent="TimerLabel"]
+
+[connection signal="timeout" from="TimerLabel/LevelTimer" to="." method="_on_level_timer_timeout"]

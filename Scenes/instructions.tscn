@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdbv3q21ltlti"]
+
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="1_7ls63"]
+[ext_resource type="Script" uid="uid://bxn7s8hix68c4" path="res://Scenes/instructions.gd" id="1_h8hbf"]
+
+[node name="Instructions" type="Node2D"]
+script = ExtResource("1_h8hbf")
+
+[node name="How to play" type="Label" parent="."]
+offset_left = 153.0
+offset_top = 43.0
+offset_right = 1017.0
+offset_bottom = 243.0
+theme = ExtResource("1_7ls63")
+theme_override_font_sizes/font_size = 180
+text = "How to play"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="."]
+offset_left = 97.0
+offset_top = 236.0
+offset_right = 1075.0
+offset_bottom = 395.0
+theme = ExtResource("1_7ls63")
+theme_override_font_sizes/font_size = 50
+text = "Match the ingredient combos with ARROW KEYS
+Press Z to confirm your inputs
+Press X to reset the combo if you made a mistake"
+
+[node name="Start" type="Button" parent="."]
+offset_left = 292.0
+offset_top = 416.0
+offset_right = 843.0
+offset_bottom = 616.0
+theme = ExtResource("1_7ls63")
+theme_override_font_sizes/font_size = 50
+text = "Start the game!"
+
+[node name="Temp" type="Label" parent="."]
+offset_left = 58.0
+offset_top = 8.0
+offset_right = 536.0
+offset_bottom = 43.0
+theme_override_font_sizes/font_size = 25
+text = "Temp controls page for demo testers :D"
+
+[connection signal="pressed" from="Start" to="." method="_on_start_pressed"]

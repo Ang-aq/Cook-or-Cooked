@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://c635akg4yparb"]
+
+[ext_resource type="FontFile" uid="uid://csnvrpcqvapkd" path="res://Fonts/CutePixel.ttf" id="1_j8tcx"]
+
+[resource]
+default_font = ExtResource("1_j8tcx")

@@ -6,7 +6,7 @@ var ingredient_required: Dictionary = {}
 # Call this to initialize the checklist
 func setup_checklist(ingredients: Dictionary) -> void:
 	print("Checklist setup called with:", ingredients)
-
+	
 	# Clear old labels
 	for child in $VBoxContainer.get_children():
 		child.queue_free()
@@ -22,6 +22,7 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		label.text = "%s: 0 / %d" % [name, count]
 		label.modulate = Color.BLACK
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 		$VBoxContainer.add_child(label)
 
 		ingredient_labels[name] = label

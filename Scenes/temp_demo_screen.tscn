@@ -3,11 +3,10 @@
 [node name="TempDemoScreen" type="Node2D"]
 
 [node name="Label" type="Label" parent="."]
-offset_left = 347.0
-offset_top = 249.0
-offset_right = 846.0
-offset_bottom = 423.0
+offset_left = 353.0
+offset_top = 203.0
+offset_right = 843.0
+offset_bottom = 424.0
 theme_override_font_sizes/font_size = 50
-text = "Demo over!!!
-Thanks for testing :D"
-horizontal_alignment = 1
+text = "Thats it for now, 
+thanks for testing :D"
