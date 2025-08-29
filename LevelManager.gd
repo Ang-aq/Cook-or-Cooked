@@ -26,8 +26,20 @@ var levels := [
 
 var current_level: int = 0
 
+
+# --- Helpers for accessing current level data ---
+
 func get_current_requirements() -> Dictionary:
 	return levels[current_level]["requirements"]
+
+func has_requirement_for(ingredient: String) -> bool:
+	return get_current_requirements().has(ingredient)
+
+func get_requirement_for(ingredient: String) -> Dictionary:
+	# Returns {} if ingredient doesn't exist to avoid crashes
+	if has_requirement_for(ingredient):
+		return get_current_requirements()[ingredient]
+	return {}
 
 func get_current_dish() -> Dictionary:
 	return {
@@ -36,7 +48,10 @@ func get_current_dish() -> Dictionary:
 		"time_limit": levels[current_level]["time_limit"]
 	}
 
+
+# --- Level progression ---
+
 func next_level() -> void:
 	current_level += 1
 	if current_level >= levels.size():
-		current_level = 0 # or trigger "game complete" screen
+		current_level = 0  # or emit_signal("game_complete")

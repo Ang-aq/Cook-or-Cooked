@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://d02wc3k6aphj"]
 
 [ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scenes/titlescreen.gd" id="1_goadl"]
-[ext_resource type="Texture2D" uid="uid://b2hj0fc4geajm" path="res://Sprites/titlescreen.png" id="2_j0nra"]
+[ext_resource type="Texture2D" uid="uid://bc65pbugdwam7" path="res://Sprites/main.png" id="2_u4xby"]
 
 [node name="TitleScreen" type="CanvasLayer"]
 script = ExtResource("1_goadl")
 
-[node name="Titlescreen" type="Sprite2D" parent="."]
-position = Vector2(579, 321)
-texture = ExtResource("2_j0nra")
+[node name="Main" type="Sprite2D" parent="."]
+position = Vector2(577, 322)
+texture = ExtResource("2_u4xby")

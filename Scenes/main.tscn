@@ -118,6 +118,7 @@ horizontal_alignment = 1
 script = ExtResource("7_hptm8")
 
 [node name="WinOverlay" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="DishCompleteUI" type="Control" parent="WinOverlay"]
 layout_mode = 3

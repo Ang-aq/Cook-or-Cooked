@@ -36,9 +36,7 @@ var waiting_for_continue: bool = false   # <-- NEW FLAG
 var time_left: int
 
 
-# --------------------------------
 # READY
-# --------------------------------
 func _ready() -> void:	
 	# Stretch HTML5 canvas if needed (HTML5 export hack)
 	if Engine.has_singleton("JavaScript"):
@@ -70,9 +68,7 @@ func _ready() -> void:
 	spawn_timer = randf_range(0.25, spawn_interval)
 
 
-# --------------------------------
-# HEARTS
-# --------------------------------
+# hearts/lives idk
 func _update_hearts_ui() -> void:
 	for i in range(max_hearts):
 		var heart: TextureRect = hearts_ui.get_child(i)
@@ -88,9 +84,7 @@ func _lose_heart(reason: String) -> void:
 		print("GAME OVER – Out of hearts!") # placeholder
 
 
-# --------------------------------
-# COMBO
-# --------------------------------
+# combo!!
 func _increase_combo() -> void:
 	combo += 1
 	_update_combo_ui()
@@ -104,10 +98,7 @@ func _update_combo_ui() -> void:
 		combo_label.text = "%dx Combo!" % combo 
 	else: combo_label.text = ""
 
-# --------------------------------
-# LOAD LEVEL
-# --------------------------------
-
+# load level
 func _load_level() -> void:
 	var dish = LevelManager.get_current_dish()
 	
@@ -130,7 +121,7 @@ func _load_level() -> void:
 		}
 		collected_counts[name] = 0
 
-	# Build checklist
+	# build checklist
 	var req_counts := {}
 	for name in required_ingredients.keys():
 		req_counts[name] = required_ingredients[name]["count"]
@@ -139,9 +130,7 @@ func _load_level() -> void:
 	checklist_ui.show()
 
 
-# --------------------------------
-# PROCESS
-# --------------------------------
+# process idk
 func _process(delta: float) -> void:
 	if game_paused and waiting_for_continue:
 		# only allow input when dish overlay is actually active
@@ -162,9 +151,7 @@ func _process(delta: float) -> void:
 		_on_dish_completed()
 
 
-# --------------------------------
-# SPAWNING
-# --------------------------------
+# spawning ingredients
 func _try_spawn_needed() -> void:
 	if ingredient_container.get_child_count() >= max_active_ingredients:
 		return
@@ -198,10 +185,7 @@ func spawn_ingredient(ingredient_name: String) -> void:
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
 
-
-# --------------------------------
-# PLAYER INPUT MATCHING
-# --------------------------------
+# matching player input w/ combos 
 func _on_sequence_submitted(sequence: Array) -> void:
 	var matched := false
 	for ing_node in ingredient_container.get_children():
@@ -211,25 +195,32 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		if sequence == ing.combo:
 			matched = true
 			var name: String = ing.ingredient_name
-			var required := int(required_ingredients[name]["count"])
-			if collected_counts[name] < required:
-				collected_counts[name] += 1
-				checklist_ui.update_progress(name, collected_counts[name])
-				_increase_combo()
+			
+			# check if the ingredient exists in the current level to prevent errors
+			if required_ingredients.has(name):
+				var required := int(required_ingredients[name]["count"])
+				if collected_counts[name] < required:
+					collected_counts[name] += 1
+					checklist_ui.update_progress(name, collected_counts[name])
+					_increase_combo()
+				else:
+					_lose_heart("Already collected all of %s!" % name)
 			else:
-				_lose_heart("Already collected all of %s!" % name)
+				# Ingredient is not in the current level, treat as wrong combo
+				_lose_heart("Ingredient %s does not exist in this level!" % name)
+			
 			ing.queue_free()
 			break
+	
 	if not matched:
 		_lose_heart("Wrong combo!")
 
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
 
-func _on_sequence_reset() -> void:
-	print("Input reset!")
+func _on_sequence_reset() -> void: 
+	print("Input reset!") 
 	_reset_combo()
-
 
 # --------------------------------
 # WIN CONDITION → Dish Celebration

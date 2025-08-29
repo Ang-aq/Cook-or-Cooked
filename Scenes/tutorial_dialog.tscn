@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://c53q46lxpkuv6"]
+
+[ext_resource type="Script" uid="uid://d1rpn7yi17kpt" path="res://Scenes/tutorial_dialog.gd" id="1_y03wo"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_1gxax"]
+[ext_resource type="Texture2D" uid="uid://bb48xciw6wsj1" path="res://Sprites/TutorialUI/tutorialUIl1.png" id="3_1gxax"]
+
+[node name="TutorialDialog" type="CanvasLayer"]
+script = ExtResource("1_y03wo")
+
+[node name="UI" type="TextureRect" parent="."]
+offset_left = 116.0
+offset_top = 365.0
+offset_right = 756.0
+offset_bottom = 621.0
+texture = ExtResource("3_1gxax")
+
+[node name="TextLabel" type="Label" parent="UI"]
+offset_left = 35.0
+offset_top = 97.0
+offset_right = 498.0
+offset_bottom = 202.0
+theme = ExtResource("2_1gxax")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Testing Testing 123"
+autowrap_mode = 3
+
+[node name="ContinueLabel" type="Label" parent="UI"]
+offset_left = 45.0
+offset_top = 217.0
+offset_right = 483.0
+offset_bottom = 233.0
+theme = ExtResource("2_1gxax")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Press any button to continue"
+
+[node name="TutorialUI" type="AnimatedSprite2D" parent="."]
