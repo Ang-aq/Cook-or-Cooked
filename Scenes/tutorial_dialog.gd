@@ -1,73 +1,101 @@
 extends CanvasLayer
+class_name TutorialDialog
 
-@onready var tutorial_ui = $UI/TutorialUI
+# --- Nodes ---
+@onready var ui_bg = $UI                  # TextureRect / Panel for static UI
+@onready var fade_fx = $Transition        # AnimatedSprite2D for fade animations
 @onready var text_label = $UI/TextLabel
 @onready var continue_label = $UI/ContinueLabel
-@onready var anim_sprite = $TutorialUI as AnimatedSprite2D
+@onready var portrait = $UI/Portrait      # TextureRect for character expression
 
 signal dialogue_finished
 
-var lines: Array = []
+# --- State ---
+var lines: Array[String] = []
+var portraits: Array[Texture] = []
 var current_line: int = 0
 var is_scrolling: bool = false
+var dialogue_active: bool = false
 
-func start_dialogue(new_lines: Array) -> void:
+# --- Start Dialogue ---
+func start_dialogue(new_lines: Array[String], new_portraits: Array[Texture] = []) -> void:
 	lines = new_lines
+	portraits = new_portraits
 	current_line = 0
+	dialogue_active = true
 	visible = true
+
+	# Reset UI
+	ui_bg.visible = false
 	text_label.text = ""
 	continue_label.visible = false
-	anim_sprite.visible = false
+
+	# Fade in transition
+	fade_fx.visible = true
+	fade_fx.play("fade_in")
+	await fade_fx.animation_finished
+	fade_fx.visible = false
+
+	# Show static background
+	ui_bg.visible = true
 	_show_line()
 
+# --- Show one line ---
 func _show_line() -> void:
 	is_scrolling = true
 	text_label.text = ""
 	continue_label.visible = false
-	await scroll_text(lines[current_line])
+
+	# Set portrait if provided
+	if current_line < portraits.size() and portraits[current_line] != null:
+		portrait.texture = portraits[current_line]
+
+	await _scroll_text(lines[current_line])
+	is_scrolling = false
 	continue_label.visible = true
 
-func scroll_text(input_text: String) -> void:
-	var char_index := 0
-	while char_index < input_text.length():
-		text_label.text += input_text[char_index]
-		char_index += 1
-		await get_tree().create_timer(0.05).timeout
+# --- Typewriter effect ---
+func _scroll_text(text: String) -> void:
+	var i := 0
+	while i < text.length():
+		text_label.text += text[i]
+		i += 1
+		await get_tree().create_timer(0.04).timeout
+		if not is_scrolling:
+			text_label.text = text
+			return
 	is_scrolling = false
 
+# --- Input ---
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not dialogue_active:
 		return
 	if event.is_pressed() and not event.is_echo() and not event is InputEventMouseButton:
 		if is_scrolling:
-			# Skip to full line immediately
-			text_label.text = lines[current_line]
 			is_scrolling = false
+			text_label.text = lines[current_line]
 			continue_label.visible = true
 		else:
 			_next_line()
 
+# --- Next line ---
 func _next_line() -> void:
 	current_line += 1
 	if current_line < lines.size():
 		_show_line()
 	else:
-		_play_fade_animation()
+		_end_dialogue()
 
-func _play_fade_animation() -> void:
-	# Hide text and continue label
-	text_label.text = ""
+# --- End dialogue ---
+func _end_dialogue() -> void:
+	dialogue_active = false
 	continue_label.visible = false
+	ui_bg.visible = false
 
-	# Show animation sprite on top
-	anim_sprite.visible = true
-	anim_sprite.play("fade_out")
+	fade_fx.visible = true
+	fade_fx.play("fade_out")
+	await fade_fx.animation_finished
 
-	# Wait for animation to finish
-	await anim_sprite.animation_finished
-
-	# Hide everything after animation
-	anim_sprite.visible = false
-	tutorial_ui.visible = false
+	fade_fx.visible = false
 	visible = false
 	emit_signal("dialogue_finished")

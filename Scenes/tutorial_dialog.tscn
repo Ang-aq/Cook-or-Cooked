@@ -1,20 +1,102 @@
-[gd_scene load_steps=4 format=3 uid="uid://c53q46lxpkuv6"]
+[gd_scene load_steps=14 format=3 uid="uid://c53q46lxpkuv6"]
 
 [ext_resource type="Script" uid="uid://d1rpn7yi17kpt" path="res://Scenes/tutorial_dialog.gd" id="1_y03wo"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_1gxax"]
-[ext_resource type="Texture2D" uid="uid://bb48xciw6wsj1" path="res://Sprites/TutorialUI/tutorialUIl1.png" id="3_1gxax"]
+[ext_resource type="Texture2D" uid="uid://b0ujgfyur5656" path="res://Sprites/TutorialUI/tutorialUIl2.png" id="4_s0f4e"]
+[ext_resource type="Texture2D" uid="uid://bw15p2x5rckyt" path="res://Sprites/TutorialUI/tutorialUIl3.png" id="5_26hlg"]
+[ext_resource type="Texture2D" uid="uid://dg2c4o48pewvq" path="res://Sprites/TutorialUI/tutorialUIl4.png" id="6_7fmnl"]
+[ext_resource type="Texture2D" uid="uid://cx3tchp6xchej" path="res://Sprites/TutorialUI/tutorialUIl5.png" id="7_0oeeo"]
+[ext_resource type="Texture2D" uid="uid://du4q5wlk74tr" path="res://Sprites/TutorialUI/tutorialUIl6.png" id="8_3nnar"]
+[ext_resource type="Texture2D" uid="uid://dkruryj4byp6w" path="res://Sprites/TutorialUI/tutorialUIl7.png" id="9_oi6du"]
+[ext_resource type="Texture2D" uid="uid://bnhsgi7wn7qkb" path="res://Sprites/tutorialUIl1.png" id="10_26hlg"]
+[ext_resource type="Texture2D" uid="uid://bsrsawxsy87k" path="res://Sprites/TutorialUI/tutorialUIl8.png" id="10_cbp68"]
+[ext_resource type="Texture2D" uid="uid://6kn4a34bo5m0" path="res://Sprites/TutorialUI/tutorialUIl9.png" id="11_a8sqd"]
+[ext_resource type="Texture2D" uid="uid://c3qpcbvgvinul" path="res://Sprites/Portrait1.png" id="12_26hlg"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1gxax"]
+animations = [{
+"frames": [{
+"duration": 0.2,
+"texture": ExtResource("11_a8sqd")
+}, {
+"duration": 0.2,
+"texture": ExtResource("10_cbp68")
+}, {
+"duration": 0.2,
+"texture": ExtResource("9_oi6du")
+}, {
+"duration": 0.2,
+"texture": ExtResource("8_3nnar")
+}, {
+"duration": 0.2,
+"texture": ExtResource("7_0oeeo")
+}, {
+"duration": 0.2,
+"texture": ExtResource("6_7fmnl")
+}, {
+"duration": 0.2,
+"texture": ExtResource("5_26hlg")
+}, {
+"duration": 0.2,
+"texture": ExtResource("4_s0f4e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_26hlg")
+}],
+"loop": false,
+"name": &"fade_in",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_26hlg")
+}, {
+"duration": 0.2,
+"texture": ExtResource("4_s0f4e")
+}, {
+"duration": 0.2,
+"texture": ExtResource("5_26hlg")
+}, {
+"duration": 0.2,
+"texture": ExtResource("6_7fmnl")
+}, {
+"duration": 0.2,
+"texture": ExtResource("7_0oeeo")
+}, {
+"duration": 0.2,
+"texture": ExtResource("8_3nnar")
+}, {
+"duration": 0.2,
+"texture": ExtResource("9_oi6du")
+}, {
+"duration": 0.2,
+"texture": ExtResource("10_cbp68")
+}, {
+"duration": 0.2,
+"texture": ExtResource("11_a8sqd")
+}],
+"loop": false,
+"name": &"fade_out",
+"speed": 5.0
+}]
 
 [node name="TutorialDialog" type="CanvasLayer"]
 script = ExtResource("1_y03wo")
+
+[node name="Transition" type="AnimatedSprite2D" parent="."]
+position = Vector2(436, 493)
+sprite_frames = SubResource("SpriteFrames_1gxax")
+animation = &"fade_out"
 
 [node name="UI" type="TextureRect" parent="."]
 offset_left = 116.0
 offset_top = 365.0
 offset_right = 756.0
 offset_bottom = 621.0
-texture = ExtResource("3_1gxax")
+texture = ExtResource("10_26hlg")
 
 [node name="TextLabel" type="Label" parent="UI"]
+layout_mode = 0
 offset_left = 35.0
 offset_top = 97.0
 offset_right = 498.0
@@ -26,12 +108,19 @@ text = "Testing Testing 123"
 autowrap_mode = 3
 
 [node name="ContinueLabel" type="Label" parent="UI"]
-offset_left = 45.0
-offset_top = 217.0
-offset_right = 483.0
-offset_bottom = 233.0
+layout_mode = 0
+offset_left = 39.0
+offset_top = 211.0
+offset_right = 477.0
+offset_bottom = 227.0
 theme = ExtResource("2_1gxax")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Press any button to continue"
 
-[node name="TutorialUI" type="AnimatedSprite2D" parent="."]
+[node name="Portrait" type="TextureRect" parent="UI"]
+layout_mode = 0
+offset_left = 467.0
+offset_top = 106.0
+offset_right = 650.0
+offset_bottom = 251.0
+texture = ExtResource("12_26hlg")

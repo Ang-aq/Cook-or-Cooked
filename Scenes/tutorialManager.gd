@@ -1,52 +1,115 @@
-extends Node2D
+extends Node
 
-@onready var tutorial_dialog = $TutorialDialog
-@onready var spawner = $IngredientSpawner
-@onready var hud = $HUD
+@onready var tutorial_dialog: TutorialDialog = $TutorialDialog
+@onready var meat: AnimatedSprite2D = $Meat
+@onready var indicator: Node2D = $Indicator
+
+# Arrow input combo
+var arrow_combo: Array[String] = ["ui_up", "ui_right", "ui_down", "ui_left"]
+var player_progress: int = 0
+var waiting_for_input: bool = false
+var meat_falling: bool = false
+
+# Meat fall settings
+@export var fall_speed: float = 160.0
+@export var stop_y: float = 400.0
+@export var start_x: float = 300.0
+@export var start_y: float = -50.0
+
+@export var main_scene_path: String = "res://Scenes/main.tscn"
 
 func _ready() -> void:
-	# Start the tutorial
-	start_tutorial()
+	tutorial_dialog.dialogue_finished.connect(_on_dialogue_finished)
 
-func start_tutorial() -> void:
-	var intro_lines = [
-		"Welcome to Cook or Cooked!",
-		"In this tutorial, you will learn how to collect ingredients and make a dish."
+	var lines: Array[String] = [
+		"Oh hello, you must be the chef's new apprentice!",
+		"I work here too. I'll teach you the basics of this place.",
+		"First is to collect ingredients. Look, there's one now!"
 	]
-	tutorial_dialog.start_dialogue(intro_lines)
-	tutorial_dialog.connect("dialogue_finished", Callable(self, "_on_intro_finished"))
-
-func _on_intro_finished() -> void:
-	# Spawn Meat ingredient and stop it in middle
-	spawner.spawn_ingredient("Meat", true)
-
-	# Show next dialogue line about input
-	var input_lines = [
-		"Press the correct key on top of the ingredient to collect it!"
+	var portraits: Array[Texture] = [
+		load("res://Sprites/Portrait1.png"),
+		load("res://Sprites/Portrait2.png"),
+		load("res://Sprites/Portrait3.png")
 	]
-	tutorial_dialog.start_dialogue(input_lines)
-	tutorial_dialog.connect("dialogue_finished", Callable(self, "_on_first_input_ready"))
 
-func _on_first_input_ready() -> void:
-	# Enable player input for Meat
-	var meat = $Meat
-	meat.set_process(true)
-	# The player will input the key to collect
-	# Once collected, call `_on_meat_collected` (you need to detect this in Meat.gd)
+	tutorial_dialog.start_dialogue(lines, portraits)
 
-func _on_meat_collected() -> void:
-	# Move UI to bottom and show HUD (lives, timer)
-	hud.visible = true
-	# Continue tutorial with SpringOnion spawn and dialogue
-	spawner.spawn_ingredient("SpringOnion", true)
-	var lines = [
-		"Now try collecting the Spring Onion ingredient!"
-	]
-	tutorial_dialog.start_dialogue(lines)
-	tutorial_dialog.connect("dialogue_finished", Callable(self, "_on_second_input_ready"))
+	meat.visible = false
+	indicator.visible = false
 
-func _on_second_input_ready() -> void:
-	# Enable player input for Spring Onion
-	var spring_onion = $SpringOnion
-	spring_onion.set_process(true)
-	# After this, when dish is complete, show normal dish ending
+func _on_dialogue_finished() -> void:
+	_start_meat_tutorial()
+
+func _start_meat_tutorial() -> void:
+	meat.position = Vector2(start_x, start_y)
+	meat.visible = true
+	meat.play("Meat")
+	meat_falling = true
+	waiting_for_input = false
+	player_progress = 0
+
+func _process(delta: float) -> void:
+	if meat_falling:
+		meat.position.y += fall_speed * delta
+		if meat.position.y >= stop_y:
+			meat.position.y = stop_y
+			meat_falling = false
+			_show_arrow_prompt()
+
+func _show_arrow_prompt() -> void:
+	# Show indicator above meat
+	indicator.position = meat.position + Vector2(0, -40)
+	indicator.visible = true
+	player_progress = 0
+	waiting_for_input = true
+
+	# Move dialogue UI to top
+	tutorial_dialog.get_node("UI").position = Vector2(100, -60)
+	tutorial_dialog.get_node("Transition").position = Vector2(420, 68)
+
+	# Show instruction
+	var prompt: Array[String] = ["Use arrow keys to chop ingredients"]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
+	tutorial_dialog.start_dialogue(prompt, portraits)
+
+func _input(event: InputEvent) -> void:
+	if not waiting_for_input:
+		return
+	if not event.is_pressed() or event.is_echo() or event is InputEventMouseButton:
+		return
+
+	var matched_action := ""
+	for action in arrow_combo:
+		if event.is_action_pressed(action):
+			matched_action = action
+			break
+
+	if matched_action == "":
+		player_progress = 0
+		var bad_prompt: Array[String] = ["Please use only arrow keys!"]
+		var portraits: Array[Texture] = [load("res://Sprites/Portrait2.png")]
+		tutorial_dialog.start_dialogue(bad_prompt, portraits)
+		return
+
+	var expected = arrow_combo[player_progress]
+	if matched_action == expected:
+		player_progress += 1
+		if player_progress >= arrow_combo.size():
+			_on_combo_success()
+	else:
+		player_progress = 0
+		var wrong_prompt: Array[String] = ["Wrong order, try: ↑ → ↓ ←"]
+		var portraits: Array[Texture] = [load("res://Sprites/Portrait2.png")]
+		tutorial_dialog.start_dialogue(wrong_prompt, portraits)
+
+func _on_combo_success() -> void:
+	waiting_for_input = false
+	indicator.visible = false
+
+	var success_lines: Array[String] = ["Perfect! You did it. Time to move on to the real kitchen."]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
+	tutorial_dialog.dialogue_finished.connect(_go_to_main_game)
+	tutorial_dialog.start_dialogue(success_lines, portraits)
+
+func _go_to_main_game() -> void:
+	get_tree().change_scene_to_file(main_scene_path)

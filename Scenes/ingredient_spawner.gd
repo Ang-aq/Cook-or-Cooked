@@ -7,10 +7,10 @@ func spawn_ingredient(type: String, stop_in_middle: bool = false):
 	var ingredient: Node2D
 
 	match type:
-		"Meat":
-			ingredient = MeatScene.instantiate()
-		"SpringOnion":
-			ingredient = SpringOnionScene.instantiate()
+		#"Meat":
+			#ingredient = MeatScene.instantiate()
+		#"SpringOnion":
+			#ingredient = SpringOnionScene.instantiate()
 		_:
 			return
 

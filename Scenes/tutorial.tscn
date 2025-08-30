@@ -1,13 +1,53 @@
-[gd_scene load_steps=9 format=3 uid="uid://c4vdc86lr12je"]
+[gd_scene load_steps=18 format=3 uid="uid://c4vdc86lr12je"]
 
 [ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="1_feyax"]
 [ext_resource type="Script" uid="uid://c6i2s37g2mqqy" path="res://Scenes/tutorialManager.gd" id="1_ys4pu"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_omtrn"]
 [ext_resource type="Texture2D" uid="uid://b682w1xj8juvd" path="res://Sprites/Ingredients/SpringOnion1.png" id="5_h2ono"]
+[ext_resource type="Texture2D" uid="uid://di6e6klg5myxg" path="res://Sprites/arrow_right.png" id="5_on4kn"]
+[ext_resource type="Texture2D" uid="uid://bndvir1w4t7ev" path="res://Sprites/Ingredients/steak2.png" id="5_t6ver"]
+[ext_resource type="Texture2D" uid="uid://dkfigreib4h1j" path="res://Sprites/Ingredients/steak3.png" id="6_2nb4t"]
 [ext_resource type="Script" uid="uid://bg7dn3omtdhs" path="res://Scenes/ingredient_spawner.gd" id="6_h2ono"]
 [ext_resource type="Texture2D" uid="uid://kureadi0dffd" path="res://Sprites/Ingredients/steak1.png" id="6_p1f1o"]
 [ext_resource type="PackedScene" uid="uid://c53q46lxpkuv6" path="res://Scenes/tutorial_dialog.tscn" id="6_ys4pu"]
+[ext_resource type="Texture2D" uid="uid://bal6llyxxcqyg" path="res://Sprites/Ingredients/steak4.png" id="7_jb51l"]
 [ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="7_ys4pu"]
+[ext_resource type="Texture2D" uid="uid://bvceg1ciyploj" path="res://Sprites/Ingredients/steak5.png" id="8_dxsep"]
+[ext_resource type="Texture2D" uid="uid://drehp4chshbn8" path="res://Sprites/Ingredients/steak6.png" id="9_lexqi"]
+[ext_resource type="Texture2D" uid="uid://b7tmmicw8d22d" path="res://Sprites/Ingredients/steak7.png" id="10_pkgwa"]
+[ext_resource type="Texture2D" uid="uid://2umbcixofj4s" path="res://Sprites/Ingredients/steak8.png" id="11_radxo"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_h2ono"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_p1f1o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_t6ver")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_2nb4t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_jb51l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_dxsep")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_lexqi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_pkgwa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_radxo")
+}],
+"loop": true,
+"name": &"Meat",
+"speed": 5.0
+}]
 
 [node name="Tutorial" type="Node2D"]
 script = ExtResource("1_ys4pu")
@@ -16,6 +56,19 @@ script = ExtResource("1_ys4pu")
 position = Vector2(577.333, 324.25)
 scale = Vector2(0.601389, 0.601389)
 texture = ExtResource("1_feyax")
+
+[node name="TutorialDialog" parent="." instance=ExtResource("6_ys4pu")]
+
+[node name="Meat" type="AnimatedSprite2D" parent="."]
+position = Vector2(376.5, 128.5)
+scale = Vector2(1.57813, 1.57813)
+sprite_frames = SubResource("SpriteFrames_h2ono")
+animation = &"Meat"
+
+[node name="Indicator" type="Sprite2D" parent="."]
+position = Vector2(254, 262)
+scale = Vector2(3.35937, 3.57611)
+texture = ExtResource("5_on4kn")
 
 [node name="Yakitori" type="Label" parent="."]
 offset_left = 922.0
@@ -27,13 +80,9 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 35
 text = "Beef Yakitori"
 
-[node name="Meat" type="Sprite2D" parent="."]
-position = Vector2(279, 340)
-scale = Vector2(1.57031, 1.65612)
-texture = ExtResource("6_p1f1o")
-
 [node name="SpringOnion" type="Sprite2D" parent="."]
-position = Vector2(502, 266)
+visible = false
+position = Vector2(511, 141)
 texture = ExtResource("5_h2ono")
 
 [node name="HUD" type="Control" parent="."]
@@ -73,8 +122,6 @@ texture = ExtResource("7_ys4pu")
 [node name="Heart3" type="Sprite2D" parent="HUD/LivesContainer"]
 position = Vector2(27.667, 19.75)
 texture = ExtResource("7_ys4pu")
-
-[node name="TutorialDialog" parent="." instance=ExtResource("6_ys4pu")]
 
 [node name="IngredientSpawner" type="Node2D" parent="."]
 script = ExtResource("6_h2ono")
