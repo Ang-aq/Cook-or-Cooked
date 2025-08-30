@@ -150,14 +150,15 @@ alignment = 1
 script = ExtResource("19_dxsep")
 
 [node name="ArrowIndicator" type="Sprite2D" parent="Directions"]
+visible = false
 position = Vector2(298, 35)
 texture = ExtResource("20_lexqi")
 
 [node name="HeartT" type="Node2D" parent="."]
-position = Vector2(538, 20)
+position = Vector2(892, 56)
 
 [node name="ChecklistT" type="Node2D" parent="."]
-position = Vector2(487, 247)
+position = Vector2(842, 230)
 
 [node name="TimerT" type="Node2D" parent="."]
-position = Vector2(105, 17)
+position = Vector2(441, 54)

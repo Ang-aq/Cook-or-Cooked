@@ -19,17 +19,23 @@ var arrow_textures := {
 
 func _unhandled_input(event: InputEvent) -> void:
 	var added := false
+	var step_pressed := "" 
+	
 	if event.is_action_pressed("joystickUp"):
 		input_buffer.append("↑")
+		step_pressed = "↑" 
 		added = true
 	elif event.is_action_pressed("joystickDown"):
 		input_buffer.append("↓")
+		step_pressed = "↓" 
 		added = true
 	elif event.is_action_pressed("joystickLeft"):
 		input_buffer.append("←")
+		step_pressed = "←" 
 		added = true
 	elif event.is_action_pressed("joystickRight"):
 		input_buffer.append("→")
+		step_pressed = "→" 
 		added = true
 	elif event.is_action_pressed("joystickStart"): # Z
 		input_buffer.append("Z")
@@ -43,6 +49,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if added:
 		_update_display()
+		
+		if step_pressed != "":
+			print("chopped!")
+			MusicManager.play_sfx("chop")
 
 # Display current input sequence as arrow images
 func _update_display() -> void:

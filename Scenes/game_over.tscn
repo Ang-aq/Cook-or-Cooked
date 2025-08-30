@@ -1,28 +1,63 @@
-[gd_scene load_steps=3 format=3 uid="uid://nl4efxdkvvkn"]
+[gd_scene load_steps=4 format=3 uid="uid://nl4efxdkvvkn"]
 
 [ext_resource type="Script" uid="uid://brkucx10aff32" path="res://Scenes/game_over.gd" id="1_ojehl"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_8fo1c"]
+[ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="2_ek8ke"]
 
-[node name="GameOver" type="Node2D"]
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_ojehl")
 
-[node name="Label" type="Label" parent="."]
-offset_left = 28.0
-offset_top = 179.0
-offset_right = 1124.0
-offset_bottom = 337.0
+[node name="Ui" type="Sprite2D" parent="."]
+position = Vector2(576, 323.75)
+scale = Vector2(0.6, 0.606019)
+texture = ExtResource("2_ek8ke")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 311.0
+offset_top = 132.0
+offset_right = 806.0
+offset_bottom = 574.0
+
+[node name="GAME OVER" type="Label" parent="."]
+layout_mode = 2
+offset_left = 363.0
+offset_top = 149.0
+offset_right = 763.0
+offset_bottom = 249.0
 theme = ExtResource("2_8fo1c")
 theme_override_font_sizes/font_size = 100
 text = "GAME OVER!"
 horizontal_alignment = 1
 
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 448.0
+offset_top = 241.0
+offset_right = 671.0
+offset_bottom = 388.0
+theme = ExtResource("2_8fo1c")
+
+[node name="HighscoreLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme = ExtResource("2_8fo1c")
+theme_override_font_sizes/font_size = 40
+text = "Highscore"
+
+[node name="ScoreLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme = ExtResource("2_8fo1c")
+theme_override_font_sizes/font_size = 40
+text = "Score "
+
 [node name="Button" type="Button" parent="."]
-offset_left = 419.0
-offset_top = 309.0
-offset_right = 727.0
-offset_bottom = 468.0
+layout_mode = 0
+offset_left = 414.0
+offset_top = 389.0
+offset_right = 722.0
+offset_bottom = 548.0
 theme = ExtResource("2_8fo1c")
 theme_override_font_sizes/font_size = 50
 text = "Try Again?"
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

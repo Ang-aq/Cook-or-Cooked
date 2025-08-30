@@ -3,7 +3,7 @@ extends Control
 var ingredient_labels: Dictionary = {}
 var ingredient_required: Dictionary = {}
 
-# Call this to initialize the checklist
+# Initialize the checklist
 func setup_checklist(ingredients: Dictionary) -> void:
 	print("Checklist setup called with:", ingredients)
 	
@@ -22,32 +22,30 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		label.text = "%s: 0 / %d" % [name, count]
 		label.modulate = Color.BLACK
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.custom_minimum_size = Vector2(0, 24)  # height for strike-through
 
 		$VBoxContainer.add_child(label)
-
 		ingredient_labels[name] = label
 
-# Call this to update the progress
+# Update progress
 func update_progress(name: String, current: int) -> void:
 	if not ingredient_labels.has(name):
 		return
 
 	var label: Label = ingredient_labels[name]
-	var required: int = ingredient_required[name]
-	label.text = "%s: %d / %d" % [name, current, required]
+	var required_count: int = ingredient_required[name]
+	label.text = "%s: %d / %d" % [name, current, required_count]
 
 	# Draw strike-through once completed
-	if current >= required and label.get_child_count() == 0:
-		var line = Line2D.new()
-		line.width = 2
-		line.default_color = Color.RED
-
-		# Use a fixed height for the line (half the label height)
-		var label_height = 20  # adjust if needed
-		var width = label.get_minimum_size().x
-		line.points = [
-			Vector2(0, label_height / 2),
-			Vector2(width, label_height / 2)
-		]
-
+	if current >= required_count and label.get_meta("striked") != true:
+		var line = ColorRect.new()
+		line.color = Color(1,0,0)
+		line.size_flags_horizontal = Control.SIZE_FILL
+		line.size_flags_vertical = Control.SIZE_FILL
+		line.anchor_left = 0
+		line.anchor_right = 1
+		line.anchor_top = 0.5
+		line.anchor_bottom = 0.5
+		line.custom_minimum_size = Vector2(0, 2)  # thickness of strike
 		label.add_child(line)
+		label.set_meta("striked", true)

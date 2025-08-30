@@ -1,7 +1,7 @@
 extends CanvasLayer
 
 # Path to your main game scene
-@export var main_scene_path: String = "res://Scenes/tutorial.tscn"
+@export var main_scene_path: String = "res://Scenes/tutorial_options.tscn"
 
 func _unhandled_input(event: InputEvent) -> void:	
 	# Only respond to keyboard or joystick input, ignore mouse

@@ -1,12 +1,12 @@
 extends Node2D
 class_name Ingredient
 
-@export var speed := 150.0
-var combo := []
-var ingredient_name := ""
+@export var speed: float = 150.0
+var combo: Array = []
+var ingredient_name: String = ""
 
-@onready var sprite := $AnimatedSprite2D
-@onready var input_display := $InputDisplay   # HBoxContainer holding arrow images
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var input_display: HBoxContainer = $InputDisplay   # Container holding arrow images
 
 # Mapping string symbols to images
 var arrow_textures := {
@@ -26,7 +26,10 @@ var ingredient_scales := {
 }
 
 func set_combo_and_name(new_combo: Array, new_name: String) -> void:
-	combo = new_combo.duplicate()
+	# store a duplicate so parent data changes won't affect this node
+	combo = []
+	if new_combo is Array:
+		combo = new_combo.duplicate(true)
 	ingredient_name = new_name
 
 	# Clear previous arrows
@@ -43,19 +46,21 @@ func set_combo_and_name(new_combo: Array, new_name: String) -> void:
 			tex.size_flags_vertical = Control.SIZE_FILL
 			input_display.add_child(tex)
 
-	# Play sprite animation
-	if sprite.sprite_frames.has_animation(ingredient_name):
+	# Play sprite animation if exists
+	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(ingredient_name):
 		sprite.play(ingredient_name)
 	else:
 		push_warning("No animation for ingredient: %s" % ingredient_name)
 
-	# Scale sprite individually
+	# Scale sprite per-ingredient (fallback default)
 	if ingredient_scales.has(ingredient_name):
 		sprite.scale = ingredient_scales[ingredient_name]
 	else:
-		sprite.scale = Vector2(3, 3)  # default scale
+		sprite.scale = Vector2(3, 3)
+
 
 func _process(delta: float) -> void:
 	position.y += speed * delta
+	# cleanup if fell off screen
 	if position.y > get_viewport_rect().size.y:
 		queue_free()

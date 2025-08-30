@@ -146,18 +146,8 @@ offset_bottom = 635.0
 theme = ExtResource("2_omtrn")
 alignment = 1
 
-[node name="Directions" type="Node2D" parent="."]
+[node name="Node2D" type="Node2D" parent="."]
 script = ExtResource("19_dxsep")
 
-[node name="ArrowIndicator" type="Sprite2D" parent="Directions"]
-position = Vector2(298, 35)
+[node name="ArrowIndicator" type="Sprite2D" parent="Node2D"]
 texture = ExtResource("20_lexqi")
-
-[node name="HeartT" type="Node2D" parent="."]
-position = Vector2(538, 20)
-
-[node name="ChecklistT" type="Node2D" parent="."]
-position = Vector2(487, 247)
-
-[node name="TimerT" type="Node2D" parent="."]
-position = Vector2(105, 17)

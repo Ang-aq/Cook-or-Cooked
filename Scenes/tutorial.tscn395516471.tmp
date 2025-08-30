@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c4vdc86lr12je"]
+[gd_scene load_steps=19 format=3 uid="uid://c4vdc86lr12je"]
 
 [ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="1_feyax"]
 [ext_resource type="Script" uid="uid://c6i2s37g2mqqy" path="res://Scenes/tutorialManager.gd" id="1_ys4pu"]
@@ -16,10 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://b7tmmicw8d22d" path="res://Sprites/Ingredients/steak7.png" id="10_pkgwa"]
 [ext_resource type="Texture2D" uid="uid://2umbcixofj4s" path="res://Sprites/Ingredients/steak8.png" id="11_radxo"]
 [ext_resource type="Texture2D" uid="uid://cy6sy8g0crlcy" path="res://Sprites/arrow_up.png" id="13_2nb4t"]
-[ext_resource type="Texture2D" uid="uid://dib18gbsxac1o" path="res://Sprites/Z.png" id="14_jb51l"]
 [ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scenes/PlayerInput.gd" id="17_2nb4t"]
-[ext_resource type="Script" uid="uid://dud3picjfdmov" path="res://Scenes/arrow_indicator.gd" id="19_dxsep"]
-[ext_resource type="Texture2D" uid="uid://brykjc36faa85" path="res://Sprites/longarrow.png" id="20_lexqi"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_h2ono"]
 animations = [{
@@ -69,19 +66,15 @@ scale = Vector2(1.57813, 1.57813)
 sprite_frames = SubResource("SpriteFrames_h2ono")
 animation = &"Meat"
 
-[node name="Right" type="Sprite2D" parent="."]
+[node name="Indicator" type="Sprite2D" parent="."]
 position = Vector2(235.625, 242.44)
 scale = Vector2(2.21094, 2.35358)
 texture = ExtResource("5_on4kn")
 
-[node name="Up" type="Sprite2D" parent="Right"]
-position = Vector2(32.7349, 0.237932)
+[node name="Up" type="Sprite2D" parent="Indicator"]
+position = Vector2(35.3803, -0.186752)
 scale = Vector2(0.965414, 0.972074)
 texture = ExtResource("13_2nb4t")
-
-[node name="Z" type="Sprite2D" parent="Right"]
-position = Vector2(63.9434, -0.18695)
-texture = ExtResource("14_jb51l")
 
 [node name="ComboDisplay" type="Node2D" parent="."]
 
@@ -96,6 +89,7 @@ theme_override_font_sizes/font_size = 35
 text = "Beef Yakitori"
 
 [node name="HUD" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = 577.333
@@ -111,7 +105,7 @@ offset_right = -4.33301
 offset_bottom = -220.25
 theme = ExtResource("2_omtrn")
 theme_override_font_sizes/font_size = 100
-text = "60"
+text = "80"
 
 [node name="LivesContainer" type="HBoxContainer" parent="HUD"]
 layout_mode = 0
@@ -145,19 +139,3 @@ offset_right = 718.0
 offset_bottom = 635.0
 theme = ExtResource("2_omtrn")
 alignment = 1
-
-[node name="Directions" type="Node2D" parent="."]
-script = ExtResource("19_dxsep")
-
-[node name="ArrowIndicator" type="Sprite2D" parent="Directions"]
-position = Vector2(298, 35)
-texture = ExtResource("20_lexqi")
-
-[node name="HeartT" type="Node2D" parent="."]
-position = Vector2(538, 20)
-
-[node name="ChecklistT" type="Node2D" parent="."]
-position = Vector2(487, 247)
-
-[node name="TimerT" type="Node2D" parent="."]
-position = Vector2(105, 17)

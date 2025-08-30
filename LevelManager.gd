@@ -5,7 +5,7 @@ var levels := [
 		"requirements": {
 			"Potato": {"combo": ["↑","↓","Z"], "amount": 2},
 			"Onion":  {"combo": ["←","→","Z"], "amount": 2},
-			"Meat":   {"combo": ["→","↑","Z"], "amount": 3},
+			"Meat":   {"combo": ["→","↑","Z"], "amount": 1},
 			"Carrot": {"combo": ["↑","↑","Z"], "amount": 2}
 		},
 		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
@@ -13,6 +13,16 @@ var levels := [
 		"time_limit": 60   # seconds
 	},
 	{   # Level 2
+		"requirements": {
+			"Potato": {"combo": ["↑","↓","Z"], "amount": 5},
+			"Carrot": {"combo": ["↑","↑","Z"], "amount": 3},
+			"Onion":  {"combo": ["←","→","Z"], "amount": 2}
+		},
+		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
+		"dish_name": "Shrimp Curry",
+		"time_limit": 50   # seconds
+	},
+	{	# Level 3
 		"requirements": {
 			"Potato": {"combo": ["↑","↓","Z"], "amount": 5},
 			"Carrot": {"combo": ["↑","↑","Z"], "amount": 3},
@@ -54,4 +64,4 @@ func get_current_dish() -> Dictionary:
 func next_level() -> void:
 	current_level += 1
 	if current_level >= levels.size():
-		current_level = 0  # or emit_signal("game_complete")
+		current_level = levels.size() - 1 

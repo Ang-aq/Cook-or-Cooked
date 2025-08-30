@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://buoqswvyn2gbw"
-path="res://.godot/imported/Title Screen.png-13220c2e3cd1e2851853a5829e872f79.ctex"
+uid="uid://brykjc36faa85"
+path="res://.godot/imported/longarrow.png-ae94c3317029e08675c633f01138361e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Title Screen.png"
-dest_files=["res://.godot/imported/Title Screen.png-13220c2e3cd1e2851853a5829e872f79.ctex"]
+source_file="res://Sprites/longarrow.png"
+dest_files=["res://.godot/imported/longarrow.png-ae94c3317029e08675c633f01138361e.ctex"]
 
 [params]
 

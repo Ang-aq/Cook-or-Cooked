@@ -59,6 +59,17 @@ _data = {
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jjvhh")
+pest_spawn_min = null
+pest_spawn_max = null
+pest_spawn_repeat_min = null
+pest_spawn_repeat_max = null
+max_active_pests = null
+max_hearts = null
+spawn_interval = null
+max_active_ingredients = null
+spawn_min_x = null
+spawn_max_x = null
+spawn_start_y = null
 
 [node name="Ui" type="Sprite2D" parent="."]
 position = Vector2(577.998, 325.499)
