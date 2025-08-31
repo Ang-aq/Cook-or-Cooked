@@ -22,7 +22,10 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		label.text = "%s: 0 / %d" % [name, count]
 		label.modulate = Color.BLACK
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		label.custom_minimum_size = Vector2(0, 24)  # height for strike-through
+		label.custom_minimum_size = Vector2(0, 32)  # a bit taller for spacing
+
+		# Make text larger
+		label.add_theme_font_size_override("font_size", 22)
 
 		$VBoxContainer.add_child(label)
 		ingredient_labels[name] = label
@@ -41,11 +44,13 @@ func update_progress(name: String, current: int) -> void:
 		var line = ColorRect.new()
 		line.color = Color(1,0,0)
 		line.size_flags_horizontal = Control.SIZE_FILL
-		line.size_flags_vertical = Control.SIZE_FILL
+		line.custom_minimum_size = Vector2(0, 2)  # thickness of strike
+
+		# Move strike-through a bit higher than the exact middle
 		line.anchor_left = 0
 		line.anchor_right = 1
-		line.anchor_top = 0.5
-		line.anchor_bottom = 0.5
-		line.custom_minimum_size = Vector2(0, 2)  # thickness of strike
+		line.anchor_top = 0.30   # was 0.5, slightly higher
+		line.anchor_bottom = 0.45
+
 		label.add_child(line)
 		label.set_meta("striked", true)

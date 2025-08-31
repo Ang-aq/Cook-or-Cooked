@@ -51,7 +51,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_update_display()
 		
 		if step_pressed != "":
-			print("chopped!")
 			MusicManager.play_sfx("chop")
 
 # Display current input sequence as arrow images

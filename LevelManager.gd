@@ -29,7 +29,7 @@ var levels := [
 			"Onion":  {"combo": ["←","→","Z"], "amount": 2}
 		},
 		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
-		"dish_name": "Shrimp Curry",
+		"dish_name": "Yakitori",
 		"time_limit": 50   # seconds
 	}
 ]
@@ -40,7 +40,9 @@ var current_level: int = 0
 # --- Helpers for accessing current level data ---
 
 func get_current_requirements() -> Dictionary:
-	return levels[current_level]["requirements"]
+	var req = levels[current_level]["requirements"]
+	print("Current Level:", current_level, "Requirements:", req)
+	return req
 
 func has_requirement_for(ingredient: String) -> bool:
 	return get_current_requirements().has(ingredient)

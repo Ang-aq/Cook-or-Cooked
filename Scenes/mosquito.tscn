@@ -1,8 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://de8m1i1mrno7o"]
+[gd_scene load_steps=10 format=3 uid="uid://de8m1i1mrno7o"]
 
 [ext_resource type="Texture2D" uid="uid://dn6k0mvpq3m1e" path="res://Sprites/Pests/mosquito1.png" id="1_g0w4w"]
+[ext_resource type="Script" uid="uid://ol671welnpcl" path="res://Scenes/mosquito.gd" id="1_s0tjq"]
+[ext_resource type="Texture2D" uid="uid://6lek7afv6n2t" path="res://Sprites/Pests/mosquitodyed1.png" id="2_bokql"]
 [ext_resource type="Texture2D" uid="uid://dq4c4bv2jiho3" path="res://Sprites/Pests/mosquito2.png" id="2_s0tjq"]
+[ext_resource type="Texture2D" uid="uid://dq1y8oyu3m15l" path="res://Sprites/Pests/mosquitodyed2.png" id="3_ca4a3"]
 [ext_resource type="Texture2D" uid="uid://b2tni8tg8kfqa" path="res://Sprites/Pests/mosquito3.png" id="3_cnri3"]
+[ext_resource type="Texture2D" uid="uid://cu6asd8psjg8t" path="res://Sprites/Pests/mosquitodyed3.png" id="4_tii1p"]
+[ext_resource type="Texture2D" uid="uid://cllbr62jdb1aw" path="res://Sprites/Pests/mosquitodyed4.png" id="5_cwjl0"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_g3dco"]
 animations = [{
@@ -11,7 +16,19 @@ animations = [{
 "name": &"attack",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 0.5,
+"texture": ExtResource("2_bokql")
+}, {
+"duration": 0.5,
+"texture": ExtResource("3_ca4a3")
+}, {
+"duration": 0.5,
+"texture": ExtResource("4_tii1p")
+}, {
+"duration": 0.5,
+"texture": ExtResource("5_cwjl0")
+}],
 "loop": true,
 "name": &"die",
 "speed": 5.0
@@ -32,12 +49,27 @@ animations = [{
 }]
 
 [node name="Mosquito" type="Node2D"]
+script = ExtResource("1_s0tjq")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
-position = Vector2(813.25, 246.25)
-scale = Vector2(0.867187, 0.867187)
+position = Vector2(819.25, 240.25)
+scale = Vector2(1.05469, 1.05469)
 sprite_frames = SubResource("SpriteFrames_g3dco")
-animation = &"fly"
-frame_progress = 0.684847
+animation = &"die"
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="ComboDisplay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 795.0
+offset_top = 220.0
+offset_right = 835.0
+offset_bottom = 260.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ComboDisplay"]
+layout_mode = 0
+offset_left = 796.0
+offset_top = 182.0
+offset_right = 836.0
+offset_bottom = 222.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://61prbkmmxws1"]
+[gd_scene load_steps=18 format=3 uid="uid://61prbkmmxws1"]
 
 [ext_resource type="Script" uid="uid://c26wig0n86w7y" path="res://Scenes/main.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="2_bo1nx"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scenes/combo_label.gd" id="7_hptm8"]
 [ext_resource type="Texture2D" uid="uid://w3lxacgxj7nf" path="res://Sprites/Starr(1).png" id="8_ynf5e"]
 [ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/shrimpCurry.png" id="9_hptm8"]
+[ext_resource type="Script" uid="uid://1lc2ilyi3xg2" path="res://PowerUpManager.gd" id="12_6iyac"]
 
 [sub_resource type="Animation" id="Animation_6iyac"]
 length = 5.0
@@ -199,5 +200,9 @@ horizontal_alignment = 1
 [node name="PestContainer" type="Node2D" parent="."]
 
 [node name="pest_timer" type="Timer" parent="."]
+
+[node name="Powerups" type="Node2D" parent="."]
+position = Vector2(19, 263)
+script = ExtResource("12_6iyac")
 
 [connection signal="timeout" from="TimerLabel/LevelTimer" to="." method="_on_level_timer_timeout"]
