@@ -89,9 +89,7 @@ func _defeat() -> void:
 	if _defeated:
 		return
 	_defeated = true
-	# play die animation if present
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("die"):
-		sprite.play("death")
+	sprite.play("death")
 	# small delay to allow animation
 	await get_tree().create_timer(0.35).timeout
 	emit_signal("defeated", self)

@@ -15,7 +15,7 @@ class_name PestManager
 # --- Optional spawn bounds (local to this manager node) ---
 @export var spawn_x_min: float = 50.0
 @export var spawn_x_max: float = 800.0
-@export var spawn_y_min: float = 125.0
+@export var spawn_y_min: float = 150.0
 @export var spawn_y_max: float = 500.0
 
 # --- Internal state ---

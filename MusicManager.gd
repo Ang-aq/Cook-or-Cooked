@@ -8,7 +8,9 @@ var default_volume_db: float = -10.0
 # SFX library: add new sounds here
 var sfx_library: Dictionary = {
 	"level_up": preload("res://Audio/LevelUp.ogg"),
-	"chop": preload("res://Audio/Cut.ogg")
+	"chop": preload("res://Audio/Cut.ogg"),
+	"mosquito": preload("res://Audio/mosquito.ogg"),
+	"slash": preload("res://Audio/slash.ogg"),
 }
 
 # Optional music player (BGM)

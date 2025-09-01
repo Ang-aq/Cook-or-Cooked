@@ -98,6 +98,24 @@ func _show_instruction_dialogue() -> void:
 
 	tutorial_dialog.start_dialogue(prompt, portraits)
 
+func _flash_and_wobble_arrow() -> void:
+	if arrow_indicator == null:
+		return
+
+	# Flash red/white infinitely
+	var flash = arrow_indicator.create_tween()
+	flash.set_loops()  # infinite
+	flash.tween_property(arrow_indicator, "modulate", Color.RED, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	flash.tween_property(arrow_indicator, "modulate", Color.WHITE, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	# Wobble left/right infinitely
+	var original_x = arrow_indicator.position.x
+	var wobble = arrow_indicator.create_tween()
+	wobble.set_loops()  # infinite
+	wobble.tween_property(arrow_indicator, "position:x", original_x + 10, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	wobble.tween_property(arrow_indicator, "position:x", original_x - 10, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	wobble.tween_property(arrow_indicator, "position:x", original_x, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
 func _on_instruction_dialogue_finished() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_on_instruction_dialogue_finished)
 	
@@ -193,8 +211,9 @@ func _after_chopping() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_after_chopping)
 	tutorial_dialog.get_node("UI").position = Vector2(100, 365) 
 	tutorial_dialog.get_node("Transition").position = Vector2(420, 493) 
-
+	
 	arrow_indicator.point_to(HeartTarget)
+	_flash_and_wobble_arrow()
 	var lines: Array[String] = ["These are your lives. Make mistakes, lose hearts!"]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 	tutorial_dialog.start_dialogue(lines, portraits)
@@ -203,6 +222,7 @@ func _after_chopping() -> void:
 func _show_timer_tutorial() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_show_timer_tutorial)
 	arrow_indicator.point_to(TimerTarget)
+	_flash_and_wobble_arrow()
 	var lines: Array[String] = ["This is the timer. Finish your dish before the time runs out!"]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 
@@ -212,6 +232,7 @@ func _show_timer_tutorial() -> void:
 func _show_checklist_tutorial() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_show_checklist_tutorial)
 	arrow_indicator.point_to(ChecklistTarget)
+	_flash_and_wobble_arrow()
 	var lines: Array[String] = ["This is your ingredient checklist. Complete everything to win!"]
 	tutorial_dialog.start_dialogue(lines)
 	tutorial_dialog.dialogue_finished.connect(finalLines)

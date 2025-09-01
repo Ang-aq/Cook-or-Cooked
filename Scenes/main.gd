@@ -20,10 +20,10 @@ extends Node2D
 @export var max_hearts: int = 3
 
 # spawning
-@export var spawn_interval: float = 1.25
-@export var max_active_ingredients: int = 6
-@export var spawn_min_x: float = -500.0
-@export var spawn_max_x: float = 50.0
+@export var spawn_interval: float = 1.2
+@export var max_active_ingredients: int = 100
+@export var spawn_min_x: float = -445.0
+@export var spawn_max_x: float = 80.0
 @export var spawn_start_y: float = -100.0
 
 # pest timing
@@ -227,24 +227,45 @@ func _process(delta: float) -> void:
 # Spawning helpers
 # -----------------------
 func _try_spawn_needed() -> void:
+	if dish_completed:
+		return  # stop once dish is done
+
 	if ingredient_container.get_child_count() >= max_active_ingredients:
 		return
-	var name: String = _pick_needed_ingredient_name()
+
+	var name: String = _pick_weighted_ingredient_name()
 	if name == "":
 		return
+
 	spawn_ingredient(name)
 
-func _pick_needed_ingredient_name() -> String:
-	var needed: Array = []
+
+func _pick_weighted_ingredient_name() -> String:
+	if required_ingredients.size() == 0:
+		return ""
+
+	var pool: Array = []
 	for name in required_ingredients.keys():
 		var required_count = int(required_ingredients[name]["count"])
 		var collected_count = collected_counts.get(name, 0)
-		if collected_count < required_count:
-			needed.append(name)
-	if needed.size() == 0:
-		return ""
-	return needed[randi() % needed.size()]
 
+		if collected_count < required_count:
+			# uncollected: weight heavier
+			pool.append_array([name, name, name])
+		else:
+			# already complete: still allow, but less often
+			pool.append(name)
+
+	# safety
+	if pool.is_empty():
+		# if everything is completed, spawning should stop via _try_spawn_needed()
+		return ""
+
+	return pool[randi() % pool.size()]
+
+# ---------------------
+# spawn_ingredient (replace existing)
+# ---------------------
 func spawn_ingredient(ingredient_name: String) -> void:
 	var ing_node := ingredient_scene.instantiate()
 	ingredient_container.add_child(ing_node)
@@ -255,14 +276,21 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		ing_node.queue_free()
 		return
 
+	# duplicate combo data from level data (defensive)
 	var combo_arr: Array = []
 	if required_ingredients.has(ingredient_name) and required_ingredients[ingredient_name].has("combo"):
 		combo_arr = required_ingredients[ingredient_name]["combo"].duplicate(true)
 	ing.set_combo_and_name(combo_arr, ingredient_name)
 
+	# connect chop_completed (ingredient emits the ingredient name string)
+	# Use a guard so we don't double-connect
+	if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
+		ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
+
+	# place and return
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
-
+	
 # Called by PestManager via call_group when a pest times out / succeeds at attacking.
 func _on_pest_failed(reason: String) -> void:
 	last_fail_reason = reason
@@ -273,23 +301,45 @@ func _on_pest_attacked(pest_node: Node) -> void:
 	last_fail_reason = "A pest attacked you!"
 	_lose_heart(last_fail_reason)
 
-# -----------------------
-# Input matching (keeps old reliable behavior)
-# -----------------------
+# Called when an ingredient finishes its chop animation
+func _on_ingredient_chopped(ingredient_name: String) -> void:
+	# Check if this ingredient is part of the requirements
+	if not required_ingredients.has(ingredient_name):
+		return
+
+	# Get required and current counts
+	var req_count: int = int(required_ingredients[ingredient_name]["count"])
+	var cur_count: int = collected_counts.get(ingredient_name, 0)
+
+	# Don’t allow duplicates after requirement is met
+	if cur_count >= req_count:
+		return
+
+	# Update collected count
+	collected_counts[ingredient_name] = cur_count + 1
+
+	# Update checklist UI
+	if checklist_ui and checklist_ui.has_method("update_progress"):
+		checklist_ui.update_progress(ingredient_name, collected_counts[ingredient_name])
+
+	# If all ingredients complete, mark dish as done
+	if _all_ingredients_collected():
+		_on_dish_completed()
+
 func _on_sequence_submitted(sequence: Array) -> void:
 	# IGNORE input while the dish-complete overlay is active
 	if dish_completed:
 		print("DEBUG: Ignored sequence because dish UI is active:", sequence)
 		return
 
-	# normalize inputs if needed
-	var clean_sequence := sequence
+	# copy so we don't accidentally mutate original buffer
+	var clean_sequence := sequence.duplicate()
 
 	# --- 1) Let PestManager handle it first ---
 	if has_node("PestManager"):
 		var pm = $PestManager
 		if pm and pm.check_sequence(clean_sequence):
-			# Pest was handled → clear buffer and return
+			# Pest handled → clear buffer and return
 			if "input_buffer" in player_input:
 				player_input.input_buffer.clear()
 				if player_input.has_method("_update_display"):
@@ -302,7 +352,6 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			player_input.input_buffer.clear()
 		return
 
-	# Debug print
 	print("DEBUG: submitted sequence:", sequence)
 
 	# --- 3) Ingredient matching ---
@@ -313,6 +362,10 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			continue
 		var ing = ing_node as Ingredient
 		if ing == null:
+			continue
+
+		# skip already chopped ingredients
+		if ing.is_chopped:
 			continue
 
 		var name: String = ing.ingredient_name
@@ -328,27 +381,31 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			continue
 
 		# quick length check
-		if sequence.size() != ing.combo.size():
+		if clean_sequence.size() != ing.combo.size():
 			continue
 
 		# element-by-element compare
 		var equal := true
-		for i in range(sequence.size()):
-			if str(sequence[i]) != str(ing.combo[i]):
+		for i in range(clean_sequence.size()):
+			if str(clean_sequence[i]) != str(ing.combo[i]):
 				equal = false
 				break
 
 		if equal:
 			matched = true
-			# update counters & UI
-			collected_counts[name] = cur_count + 1
-			_increase_combo()
-			if checklist_ui and checklist_ui.has_method("update_progress"):
-				checklist_ui.update_progress(name, collected_counts[name])
 
-			# remove ingredient instance immediately
-			ing.queue_free()
-			break  # stop after one match
+			# Play slash sequence on the ingredient (Ingredient handles order & completion)
+			ing.play_slash_sequence(clean_sequence)
+
+			# ensure connection so main gets notified when the chop finishes
+			if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
+				ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
+
+			# Immediately increase combo (keep original behavior)
+			_increase_combo()
+
+			# stop after the first matched ingredient
+			break
 
 	# --- 4) Wrong combo handling ---
 	if not matched:
@@ -368,10 +425,8 @@ func _on_sequence_reset() -> void:
 # Win / Dish celebration
 # -----------------------
 func _all_ingredients_collected() -> bool:
-	if not level_has_requirements:
-		return false
 	for name in required_ingredients.keys():
-		if collected_counts[name] < int(required_ingredients[name]["count"]):
+		if collected_counts.get(name, 0) < int(required_ingredients[name]["count"]):
 			return false
 	return true
 

@@ -29,7 +29,18 @@ var levels := [
 		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
 		"dish_name": "Shrimp Curry",
 		"time_limit": 40
-	}
+	},
+	{	# Level 4
+		"requirements": {
+			"Meat": {"combo": ["→","↑","↑","Z"], "amount": 4},
+			"Tomato": {"combo": ["←","→","←","→","Z"], "amount": 2},
+			"Onion":  {"combo": ["←","→","→","Z"], "amount": 2},
+			"GreenBean":  {"combo": ["←","→","→","Z"], "amount": 2}
+		},
+		"dish_texture": preload("res://Sprites/Sinigang.png"),
+		"dish_name": "Sinigang!?",
+		"time_limit": 40
+	},
 ]
 
 var current_level: int = 0

@@ -1,13 +1,29 @@
-[gd_scene load_steps=6 format=3 uid="uid://bifwtvfesxy3a"]
+[gd_scene load_steps=10 format=3 uid="uid://bifwtvfesxy3a"]
 
 [ext_resource type="Script" uid="uid://buhw2uh0m3w58" path="res://Scenes/mosquito.gd" id="1_dnsox"]
 [ext_resource type="Texture2D" uid="uid://dn6k0mvpq3m1e" path="res://Sprites/Pests/mosquito1.png" id="1_g0w4w"]
+[ext_resource type="Texture2D" uid="uid://6lek7afv6n2t" path="res://Sprites/Pests/mosquitodyed1.png" id="2_bokql"]
 [ext_resource type="Texture2D" uid="uid://dq4c4bv2jiho3" path="res://Sprites/Pests/mosquito2.png" id="2_s0tjq"]
+[ext_resource type="Texture2D" uid="uid://dq1y8oyu3m15l" path="res://Sprites/Pests/mosquitodyed2.png" id="3_ca4a3"]
 [ext_resource type="Texture2D" uid="uid://b2tni8tg8kfqa" path="res://Sprites/Pests/mosquito3.png" id="3_cnri3"]
+[ext_resource type="Texture2D" uid="uid://cu6asd8psjg8t" path="res://Sprites/Pests/mosquitodyed3.png" id="4_tii1p"]
+[ext_resource type="Texture2D" uid="uid://cllbr62jdb1aw" path="res://Sprites/Pests/mosquitodyed4.png" id="5_cwjl0"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_6uas7"]
 animations = [{
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_bokql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_ca4a3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_tii1p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_cwjl0")
+}],
 "loop": true,
 "name": &"death",
 "speed": 5.0
@@ -34,7 +50,7 @@ script = ExtResource("1_dnsox")
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(1, -9)
 sprite_frames = SubResource("SpriteFrames_6uas7")
-animation = &"floating"
+animation = &"death"
 
 [node name="ComboDisplay" type="Control" parent="."]
 layout_mode = 3

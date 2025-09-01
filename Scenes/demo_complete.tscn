@@ -12,8 +12,8 @@ offset_bottom = 40.0
 script = ExtResource("1_trcjo")
 
 [node name="Ui" type="Sprite2D" parent="."]
-position = Vector2(579.556, 327)
-scale = Vector2(0.603704, 0.603704)
+position = Vector2(575.333, 323.5)
+scale = Vector2(0.600926, 0.600926)
 texture = ExtResource("1_mg1t0")
 
 [node name="Decor" type="Panel" parent="."]

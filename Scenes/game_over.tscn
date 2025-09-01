@@ -2,17 +2,17 @@
 
 [ext_resource type="Script" uid="uid://brkucx10aff32" path="res://Scenes/game_over.gd" id="1_ojehl"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_8fo1c"]
-[ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="2_ek8ke"]
+[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="3_ek8ke"]
 
 [node name="GameOver" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_ojehl")
 
-[node name="Ui" type="Sprite2D" parent="."]
-position = Vector2(576, 323.75)
-scale = Vector2(0.6, 0.606019)
-texture = ExtResource("2_ek8ke")
+[node name="FinalUi" type="Sprite2D" parent="."]
+position = Vector2(575.778, 323)
+scale = Vector2(0.601852, 0.601852)
+texture = ExtResource("3_ek8ke")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
