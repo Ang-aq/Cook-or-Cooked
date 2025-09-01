@@ -34,10 +34,10 @@ horizontal_alignment = 1
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 448.0
-offset_top = 241.0
-offset_right = 671.0
-offset_bottom = 388.0
+offset_left = 452.0
+offset_top = 289.0
+offset_right = 675.0
+offset_bottom = 436.0
 theme = ExtResource("2_8fo1c")
 
 [node name="HighscoreLabel" type="Label" parent="VBox"]
@@ -61,3 +61,13 @@ offset_bottom = 548.0
 theme = ExtResource("2_8fo1c")
 theme_override_font_sizes/font_size = 50
 text = "Try Again?"
+
+[node name="ReasonLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 413.0
+offset_top = 239.0
+offset_right = 712.0
+offset_bottom = 288.0
+theme = ExtResource("2_8fo1c")
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1

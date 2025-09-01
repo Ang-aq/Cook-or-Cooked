@@ -1,0 +1,57 @@
+[gd_scene load_steps=4 format=3 uid="uid://ctvmlj8uvck63"]
+
+[ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="1_mg1t0"]
+[ext_resource type="Script" uid="uid://das0uj4wrtfmf" path="res://Scenes/demo_complete.gd" id="1_trcjo"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_trcjo"]
+
+[node name="DemoComplete" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_trcjo")
+
+[node name="Ui" type="Sprite2D" parent="."]
+position = Vector2(579.556, 327)
+scale = Vector2(0.603704, 0.603704)
+texture = ExtResource("1_mg1t0")
+
+[node name="Decor" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 148.0
+offset_top = 133.0
+offset_right = 1016.0
+offset_bottom = 527.0
+
+[node name="Thanks" type="Label" parent="."]
+layout_mode = 2
+offset_left = 163.0
+offset_top = 195.0
+offset_right = 1007.0
+offset_bottom = 295.0
+theme = ExtResource("2_trcjo")
+theme_override_font_sizes/font_size = 100
+text = "You finished the demo!"
+horizontal_alignment = 1
+
+[node name="ToTitle" type="Button" parent="."]
+layout_mode = 2
+offset_left = 359.0
+offset_top = 339.0
+offset_right = 810.0
+offset_bottom = 485.0
+theme = ExtResource("2_trcjo")
+theme_override_font_sizes/font_size = 50
+text = "Return to title"
+
+[node name="ScoreLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 470.0
+offset_top = 300.0
+offset_right = 684.0
+offset_bottom = 323.0
+theme = ExtResource("2_trcjo")
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1
+
+[connection signal="pressed" from="ToTitle" to="." method="_on_to_title_pressed"]
