@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cy4fypjh0iha"
-path="res://.godot/imported/tomatoChopped.png-d033bd1dd23d44acd07ed7c103d508f0.ctex"
+uid="uid://dolk8g2r57uyc"
+path="res://.godot/imported/GameOverAngel.png-cf37b55306fda95a3ff0db48d868e874.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Ingredients/chopped/tomatoChopped.png"
-dest_files=["res://.godot/imported/tomatoChopped.png-d033bd1dd23d44acd07ed7c103d508f0.ctex"]
+source_file="res://Sprites/GameOverAngel.png"
+dest_files=["res://.godot/imported/GameOverAngel.png-cf37b55306fda95a3ff0db48d868e874.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dr6m56w1jpdno"
-path="res://.godot/imported/slicedPotato.png-17e2f586b56f8bd2fb6efbe4e46c0019.ctex"
+uid="uid://d2gd5qxkbxfix"
+path="res://.godot/imported/Onion_chopped.png-7e7b9553c12bae9b40a0b95c2c4c05e3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Ingredients/chopped/slicedPotato.png"
-dest_files=["res://.godot/imported/slicedPotato.png-17e2f586b56f8bd2fb6efbe4e46c0019.ctex"]
+source_file="res://Sprites/Ingredients/chopped/Onion_chopped.png"
+dest_files=["res://.godot/imported/Onion_chopped.png-7e7b9553c12bae9b40a0b95c2c4c05e3.ctex"]
 
 [params]
 

@@ -26,3 +26,12 @@ func _on_no_pressed() -> void:
 func _disable_buttons() -> void:
 	yes_button.disabled = true
 	no_button.disabled = true
+
+# Handle keyboard input
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		match event.scancode:
+			KEY_Y:
+				_on_yes_pressed()
+			KEY_N:
+				_on_no_pressed()

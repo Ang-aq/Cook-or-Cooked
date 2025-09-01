@@ -63,15 +63,19 @@ _data = {
 script = ExtResource("1_jjvhh")
 
 [node name="FinalUi" type="Sprite2D" parent="."]
-position = Vector2(575.889, 323.5)
-scale = Vector2(0.600926, 0.600926)
+position = Vector2(576.556, 323.75)
+scale = Vector2(0.600463, 0.600463)
 texture = ExtResource("2_fdnlq")
 
 [node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
 visible = false
 position = Vector2(-405, -213)
+sfx_up = null
+sfx_down = null
+sfx_left = null
+sfx_right = null
 
-[node name="OutsidePot" type="Sprite2D" parent="."]
+[node name="Pot" type="Sprite2D" parent="."]
 position = Vector2(448.644, 571.438)
 scale = Vector2(0.608868, 0.611264)
 texture = ExtResource("13_fdnlq")

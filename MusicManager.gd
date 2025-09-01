@@ -11,6 +11,7 @@ var sfx_library: Dictionary = {
 	"chop": preload("res://Audio/Cut.ogg"),
 	"mosquito": preload("res://Audio/mosquito.ogg"),
 	"slash": preload("res://Audio/slash.ogg"),
+	"wrong": preload("res://Audio/wrong.mp3")
 }
 
 # Optional music player (BGM)

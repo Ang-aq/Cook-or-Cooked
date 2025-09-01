@@ -63,19 +63,6 @@ var saved_hearts: int = max_hearts
 var saved_combo: int = 0
 
 # -----------------------
-# Utility comparison function (robust element-by-element)
-# -----------------------
-func arrays_equal(a: Array, b: Array) -> bool:
-	if a == null or b == null:
-		return false
-	if a.size() != b.size():
-		return false
-	for i in range(a.size()):
-		if str(a[i]) != str(b[i]):
-			return false
-	return true
-
-# -----------------------
 # READY
 # -----------------------
 func _ready() -> void:
@@ -85,13 +72,6 @@ func _ready() -> void:
 	var title_music = preload("res://Audio/bgm.ogg")
 	MusicManager.play_bgm(title_music, true)
 
-	# connect player input signals
-	if player_input == null:
-		push_error("PlayerInput node not found!")
-		return
-	if not player_input.has_signal("sequence_submitted"):
-		push_error("PlayerInput missing 'sequence_submitted' signal.")
-		return
 	player_input.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
 	if player_input.has_signal("sequence_reset"):
 		player_input.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
@@ -122,21 +102,12 @@ func _update_hearts_ui() -> void:
 func _lose_heart(reason: String) -> void:
 	current_hearts -= 1
 	last_fail_reason = reason  
-	_reset_combo()
-	_update_hearts_ui()
-	print("💔 %s Hearts remaining: %d" % [reason, current_hearts])
-	if current_hearts <= 0:
-		_game_over()
-
-func _increase_combo() -> void:
-	combo += 1
-	if combo > highest_combo:
-		highest_combo = combo
-	_update_combo_ui()
-
-func _reset_combo() -> void:
 	combo = 0
 	_update_combo_ui()
+	_update_hearts_ui()
+	print("%s Hearts remaining: %d" % [reason, current_hearts])
+	if current_hearts <= 0:
+		_game_over()
 
 func _update_combo_ui() -> void:
 	if combo > 0:
@@ -267,10 +238,12 @@ func _pick_weighted_ingredient_name() -> String:
 # spawn_ingredient (replace existing)
 # ---------------------
 func spawn_ingredient(ingredient_name: String) -> void:
+	# instantiate and parent
 	var ing_node := ingredient_scene.instantiate()
 	ingredient_container.add_child(ing_node)
 
-	var ing = ing_node as Ingredient
+	# cast to Ingredient
+	var ing := ing_node as Ingredient
 	if ing == null:
 		push_error("Ingredients.tscn root missing Ingredient.gd!")
 		ing_node.queue_free()
@@ -279,31 +252,38 @@ func spawn_ingredient(ingredient_name: String) -> void:
 	# duplicate combo data from level data (defensive)
 	var combo_arr: Array = []
 	if required_ingredients.has(ingredient_name) and required_ingredients[ingredient_name].has("combo"):
-		combo_arr = required_ingredients[ingredient_name]["combo"].duplicate(true)
-	ing.set_combo_and_name(combo_arr, ingredient_name)
+		var raw = required_ingredients[ingredient_name]["combo"]
+		if raw is Array:
+			combo_arr = raw.duplicate(true)
 
-	# connect chop_completed (ingredient emits the ingredient name string)
-	# Use a guard so we don't double-connect
-	if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
-		ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
+	# give the ingredient its combo & name
+	if ing.has_method("set_combo_and_name"):
+		ing.set_combo_and_name(combo_arr, ingredient_name)
+	else:
+		push_warning("Ingredient instance missing set_combo_and_name method.")
 
-	# place and return
+	# connect chop_completed so Main gets notified when the chop finishes (guard to avoid double-connect)
+	if ing.has_signal("chop_completed") and not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
+		ing.chop_completed.connect(Callable(self, "_on_ingredient_chopped"))
+
+	# --- pass pot reference so ingredient can set its z_index behind the pot ---
+	# Try common direct child first, then search the whole tree for a node named "Pot".
+	var pot_node := get_node_or_null("Pot")
+	if pot_node == null:
+		pot_node = get_tree().get_root().find_node("Pot", true, false)
+	# set spawn position
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
-	
-# Called by PestManager via call_group when a pest times out / succeeds at attacking.
+
 func _on_pest_failed(reason: String) -> void:
 	last_fail_reason = reason
 	_lose_heart(reason)
 
-# Optional: if you want an immediate reason when a pest "attacks" (distinct from failed)
 func _on_pest_attacked(pest_node: Node) -> void:
 	last_fail_reason = "A pest attacked you!"
 	_lose_heart(last_fail_reason)
 
-# Called when an ingredient finishes its chop animation
 func _on_ingredient_chopped(ingredient_name: String) -> void:
-	# Check if this ingredient is part of the requirements
 	if not required_ingredients.has(ingredient_name):
 		return
 
@@ -401,9 +381,12 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 				ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
 
-			# Immediately increase combo (keep original behavior)
-			_increase_combo()
-
+			# Increase combo
+			combo += 1
+			if combo > highest_combo:
+				highest_combo = combo
+			_update_combo_ui()
+			
 			# stop after the first matched ingredient
 			break
 
@@ -419,7 +402,8 @@ func _on_sequence_submitted(sequence: Array) -> void:
 
 func _on_sequence_reset() -> void:
 	print("Input reset!")
-	_reset_combo()
+	combo = 0
+	_update_combo_ui()
 
 # -----------------------
 # Win / Dish celebration
@@ -503,7 +487,7 @@ func _calculate_score() -> int:
 	var level_time_limit: int = int(dish_info.get("time_limit", 0))
 	var time_taken: int = clamp(level_time_limit - int(time_left), 0, level_time_limit)
 	var score: int = int(level_number * highest_combo * 10) - int(time_taken)
-	print("DEBUG: _game_over() - saving score. current_hearts:", current_hearts, "combo:", combo, "highest_combo:", highest_combo, "Level:", LevelManager.current_level)
+	print("debugging: _game_over() - saving score. current_hearts:", current_hearts, "combo:", combo, "highest_combo:", highest_combo, "Level:", LevelManager.current_level)
 	return max(0, score)
 
 func _game_over() -> void:
@@ -515,15 +499,15 @@ func _game_over() -> void:
 	var level_time_limit: int = int(dish_info.get("time_limit", 0))
 	var time_taken: int = clamp(level_time_limit - int(time_left), 0, level_time_limit)
 
-	# Print debug info
-	print("DEBUG: Level:", level_number)
-	print("DEBUG: Time taken:", time_taken)
-	print("DEBUG: Highest combo:", highest_combo)
+	# print debug info
+	print("debugging: Level:", level_number)
+	print("debugging: Time taken:", time_taken)
+	print("debugging: Highest combo:", highest_combo)
 
 	# Calculate score
 	var score: int = int(level_number * highest_combo * 10) - int(time_taken)
 	score = max(0, score)
-	print("DEBUG: Score calculated:", score)
+	print("debugging: Score calculated:", score)
 	_save_score(score, last_fail_reason)
 	get_tree().change_scene_to_file("res://Scenes/game_over.tscn")
 
