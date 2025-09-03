@@ -10,6 +10,9 @@ extends Node2D
 @onready var dish_ui: Control = $WinOverlay/DishCompleteUI   # expects `show_dish(texture, name)`
 @onready var win_overlay: CanvasLayer = $WinOverlay
 @onready var pest_manager: Node = $PestManager
+@onready var pot_node: Sprite2D = $IngredientContainer/Pot
+@onready var boss_spawn: Node2D = $BossSpawn
+
 # Pests
 @onready var pest_scene: PackedScene = preload("res://Scenes/mosquito.tscn")
 
@@ -61,6 +64,7 @@ var last_fail_reason: String = ""
 # Save state when a level ends (persist across level load)
 var saved_hearts: int = max_hearts
 var saved_combo: int = 0
+var shiba_boss: ShibaBoss = null   # <- add this
 
 # -----------------------
 # READY
@@ -68,6 +72,11 @@ var saved_combo: int = 0
 func _ready() -> void:
 	add_to_group("Game")
 	
+	# pot 
+	pot_node.z_index = 10
+	pot_node.z_as_relative = false
+	pot_node = $IngredientContainer/Pot
+
 	# BGM 
 	var title_music = preload("res://Audio/bgm.ogg")
 	MusicManager.play_bgm(title_music, true)
@@ -119,17 +128,22 @@ func _update_combo_ui() -> void:
 # Load / start level (make behavior similar to old working script)
 # -----------------------
 func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
-	# Restore saved state (carry over hearts & combo from previous level)
+	# Restore saved state
 	current_hearts = clamp(saved_hearts, 0, max_hearts)
 	combo = saved_combo
 	if combo > highest_combo:
 		highest_combo = combo
 
-	# Clear any old ingredient nodes
+	# Clear old ingredient nodes
 	for child in ingredient_container.get_children():
 		child.queue_free()
 
-	# Reset per-level dictionaries & UI state (do not reset highest_combo)
+	# Clear old boss if present
+	if shiba_boss and is_instance_valid(shiba_boss):
+		shiba_boss.queue_free()
+		shiba_boss = null
+
+	# Reset per-level state
 	required_ingredients.clear()
 	collected_counts.clear()
 	dish_completed = false
@@ -137,7 +151,7 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 	_update_combo_ui()
 	_update_hearts_ui()
 
-	# Reset spawn timers
+	# Reset timers
 	spawn_timer = randf_range(0.25, spawn_interval)
 	pest_next_spawn = randf_range(pest_spawn_min, pest_spawn_max)
 
@@ -147,7 +161,7 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
 
-	# Load level metadata
+	# Load dish metadata
 	var dish: Dictionary = LevelManager.get_current_dish()
 	$DishTitle.text = " " + str(dish.get("name","Unknown Dish"))
 	time_left = int(dish.get("time_limit", 60))
@@ -156,7 +170,38 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 	if time_left > 0:
 		$TimerLabel/LevelTimer.start()
 
-	# Build required_ingredients and initialize collected_counts
+	# ----- Boss level? -----
+	if dish.get("is_boss", false):
+		level_has_requirements = false
+		if checklist_ui:
+			checklist_ui.hide()
+
+		# Stop ingredient spawns
+		spawn_timer = INF
+
+		# Disable & clear PestManager so only the boss is active
+		if pest_manager:
+			pest_manager.set_process(false)
+			for c in pest_manager.get_children():
+				if is_instance_valid(c):
+					c.queue_free()
+
+		# Spawn the Shiba boss under BossSpawn
+		var shiba_scene: PackedScene = preload("res://Scenes/Shiba_Boss.tscn")
+		shiba_boss = shiba_scene.instantiate() as ShibaBoss
+		boss_spawn.add_child(shiba_boss)
+
+		# Connect its defeat signal
+		if shiba_boss.has_signal("boss_defeated"):
+			shiba_boss.boss_defeated.connect(Callable(self, "_on_boss_defeated"))
+		return
+
+	# ----- Normal level setup -----
+	# Make sure PestManager is active again
+	if pest_manager:
+		pest_manager.set_process(true)
+
+	# Build requirements and checklist
 	var level_data: Dictionary = LevelManager.get_current_requirements()
 	for name in level_data.keys():
 		var data: Dictionary = level_data[name]
@@ -168,7 +213,6 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 
 	level_has_requirements = required_ingredients.size() > 0
 
-	# Setup checklist UI if available
 	var req_counts: Dictionary = {}
 	for name in required_ingredients.keys():
 		req_counts[name] = int(required_ingredients[name]["count"])
@@ -237,41 +281,46 @@ func _pick_weighted_ingredient_name() -> String:
 # ---------------------
 # spawn_ingredient (replace existing)
 # ---------------------
+func _on_boss_defeated() -> void:
+	print("Boss defeated!")
+	_on_dish_completed()  # reuse your dish celebration flow
+
 func spawn_ingredient(ingredient_name: String) -> void:
-	# instantiate and parent
+	# Instantiate ingredient
 	var ing_node := ingredient_scene.instantiate()
 	ingredient_container.add_child(ing_node)
 
-	# cast to Ingredient
+	# Cast to Ingredient
 	var ing := ing_node as Ingredient
 	if ing == null:
-		push_error("Ingredients.tscn root missing Ingredient.gd!")
+		push_error("Ingredients.tscn root must extend Ingredient.gd!")
 		ing_node.queue_free()
 		return
 
-	# duplicate combo data from level data (defensive)
+	# Assign pot reference immediately
+	if is_instance_valid(pot_node):
+		ing.pot = pot_node
+
+	# Update z_index after pot assigned
+	if ing.has_method("_update_z_index"):
+		ing._update_z_index()
+
+	# Assign combo array & ingredient name
 	var combo_arr: Array = []
 	if required_ingredients.has(ingredient_name) and required_ingredients[ingredient_name].has("combo"):
 		var raw = required_ingredients[ingredient_name]["combo"]
 		if raw is Array:
 			combo_arr = raw.duplicate(true)
-
-	# give the ingredient its combo & name
 	if ing.has_method("set_combo_and_name"):
 		ing.set_combo_and_name(combo_arr, ingredient_name)
 	else:
 		push_warning("Ingredient instance missing set_combo_and_name method.")
 
-	# connect chop_completed so Main gets notified when the chop finishes (guard to avoid double-connect)
+	# Connect chop_completed signal safely
 	if ing.has_signal("chop_completed") and not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 		ing.chop_completed.connect(Callable(self, "_on_ingredient_chopped"))
 
-	# --- pass pot reference so ingredient can set its z_index behind the pot ---
-	# Try common direct child first, then search the whole tree for a node named "Pot".
-	var pot_node := get_node_or_null("Pot")
-	if pot_node == null:
-		pot_node = get_tree().get_root().find_node("Pot", true, false)
-	# set spawn position
+	# Set spawn position
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
 
@@ -312,21 +361,39 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		print("DEBUG: Ignored sequence because dish UI is active:", sequence)
 		return
 
-	# copy so we don't accidentally mutate original buffer
 	var clean_sequence := sequence.duplicate()
+	var dish := LevelManager.get_current_dish()
+	var is_boss: bool = dish.get("is_boss", false)
 
-	# --- 1) Let PestManager handle it first ---
-	if has_node("PestManager"):
-		var pm = $PestManager
-		if pm and pm.check_sequence(clean_sequence):
-			# Pest handled → clear buffer and return
+	# --- 1) Boss check (if boss level) ---
+	if is_boss and shiba_boss and is_instance_valid(shiba_boss):
+		if shiba_boss.check_sequence(clean_sequence):
+			# Boss handled → clear buffer and return
+			if "input_buffer" in player_input:
+				player_input.input_buffer.clear()
+				if player_input.has_method("_update_display"):
+					player_input._update_display()
+			return
+		else:
+			# Wrong input during boss → boss attacks & deducts a heart
+			shiba_boss.react_wrong_input()
 			if "input_buffer" in player_input:
 				player_input.input_buffer.clear()
 				if player_input.has_method("_update_display"):
 					player_input._update_display()
 			return
 
-	# --- 2) If no level ingredient requirements ---
+	# --- 2) PestManager check (non-boss flow) ---
+	if has_node("PestManager"):
+		var pm = $PestManager
+		if pm and pm.check_sequence(clean_sequence):
+			if "input_buffer" in player_input:
+				player_input.input_buffer.clear()
+				if player_input.has_method("_update_display"):
+					player_input._update_display()
+			return
+
+	# --- 3) If no level ingredient requirements ---
 	if not level_has_requirements:
 		if "input_buffer" in player_input:
 			player_input.input_buffer.clear()
@@ -334,7 +401,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 
 	print("DEBUG: submitted sequence:", sequence)
 
-	# --- 3) Ingredient matching ---
+	# --- 4) Ingredient matching ---
 	var matched: bool = false
 
 	for ing_node in ingredient_container.get_children():
@@ -343,28 +410,21 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		var ing = ing_node as Ingredient
 		if ing == null:
 			continue
-
-		# skip already chopped ingredients
 		if ing.is_chopped:
 			continue
 
 		var name: String = ing.ingredient_name
-
-		# skip if ingredient not required
 		if not required_ingredients.has(name):
 			continue
 
-		# skip if already collected enough of this ingredient
 		var req_count: int = int(required_ingredients[name]["count"])
 		var cur_count: int = collected_counts.get(name, 0)
 		if cur_count >= req_count:
 			continue
 
-		# quick length check
 		if clean_sequence.size() != ing.combo.size():
 			continue
 
-		# element-by-element compare
 		var equal := true
 		for i in range(clean_sequence.size()):
 			if str(clean_sequence[i]) != str(ing.combo[i]):
@@ -373,33 +433,27 @@ func _on_sequence_submitted(sequence: Array) -> void:
 
 		if equal:
 			matched = true
-
-			# Play slash sequence on the ingredient (Ingredient handles order & completion)
 			ing.play_slash_sequence(clean_sequence)
 
-			# ensure connection so main gets notified when the chop finishes
 			if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 				ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
 
-			# Increase combo
 			combo += 1
 			if combo > highest_combo:
 				highest_combo = combo
 			_update_combo_ui()
-			
-			# stop after the first matched ingredient
 			break
 
-	# --- 4) Wrong combo handling ---
+	# --- 5) Wrong combo handling (normal levels) ---
 	if not matched:
 		_lose_heart("Wrong combo!")
 
-	# --- 5) Always clear player's input buffer ---
+	# --- 6) Always clear player's input buffer ---
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
-
+			
 func _on_sequence_reset() -> void:
 	print("Input reset!")
 	combo = 0
@@ -409,6 +463,9 @@ func _on_sequence_reset() -> void:
 # Win / Dish celebration
 # -----------------------
 func _all_ingredients_collected() -> bool:
+	var dish_info: Dictionary = LevelManager.get_current_dish()
+	if dish_info.get("is_boss", false):
+		return false  # boss completion is handled separately
 	for name in required_ingredients.keys():
 		if collected_counts.get(name, 0) < int(required_ingredients[name]["count"]):
 			return false

@@ -21,7 +21,7 @@ func _ready() -> void:
 	# Create a background music player
 	music_player = AudioStreamPlayer.new()
 	add_child(music_player)
-	music_player.volume_db = -20
+	music_player.volume_db = 0
 	music_player.bus = "Master"
 	music_player.autoplay = false  # Play manually
 	# Optional: load a default BGM

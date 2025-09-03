@@ -67,19 +67,6 @@ position = Vector2(576.556, 323.75)
 scale = Vector2(0.600463, 0.600463)
 texture = ExtResource("2_fdnlq")
 
-[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
-visible = false
-position = Vector2(-405, -213)
-sfx_up = null
-sfx_down = null
-sfx_left = null
-sfx_right = null
-
-[node name="Pot" type="Sprite2D" parent="."]
-position = Vector2(448.644, 571.438)
-scale = Vector2(0.608868, 0.611264)
-texture = ExtResource("13_fdnlq")
-
 [node name="PlayerInput" type="Node" parent="."]
 script = ExtResource("4_jjvhh")
 
@@ -92,6 +79,23 @@ theme = ExtResource("7_d1ilt")
 alignment = 1
 
 [node name="IngredientContainer" type="Node2D" parent="."]
+
+[node name="BehindIngredients" type="Node2D" parent="IngredientContainer"]
+
+[node name="Pot" type="Sprite2D" parent="IngredientContainer"]
+position = Vector2(448.644, 571.438)
+scale = Vector2(0.608868, 0.611264)
+texture = ExtResource("13_fdnlq")
+
+[node name="FrontIngredients" type="Node2D" parent="IngredientContainer"]
+
+[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
+visible = false
+position = Vector2(-405, -213)
+sfx_up = null
+sfx_down = null
+sfx_left = null
+sfx_right = null
 
 [node name="Checklist" parent="." instance=ExtResource("5_kry3j")]
 offset_left = 919.0
@@ -131,6 +135,7 @@ script = ExtResource("7_hptm8")
 [node name="WinOverlay" type="CanvasLayer" parent="."]
 
 [node name="DishCompleteUI" type="Control" parent="WinOverlay"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -209,5 +214,8 @@ horizontal_alignment = 1
 [node name="PestManager" type="Node2D" parent="."]
 position = Vector2(77, 145)
 script = ExtResource("12_6iyac")
+
+[node name="BossSpawn" type="Node2D" parent="."]
+position = Vector2(1, 75)
 
 [connection signal="timeout" from="TimerLabel/LevelTimer" to="." method="_on_level_timer_timeout"]

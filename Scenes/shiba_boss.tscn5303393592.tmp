@@ -1,0 +1,98 @@
+[gd_scene load_steps=16 format=3 uid="uid://b8u3sabvdpfb7"]
+
+[ext_resource type="Texture2D" uid="uid://y4ime5tmgm0g" path="res://Sprites/Pests/shibalick1.png" id="1_43gmo"]
+[ext_resource type="Script" uid="uid://bvo0eednehp3w" path="res://Scenes/shiba_boss.gd" id="1_a3hgl"]
+[ext_resource type="Texture2D" uid="uid://dvvn8447snwnb" path="res://Sprites/Pests/shibalick2.png" id="2_tqs8n"]
+[ext_resource type="Texture2D" uid="uid://bpijgwg3mkv2i" path="res://Sprites/Pests/shibalick3.png" id="3_0obts"]
+[ext_resource type="Texture2D" uid="uid://c78lybhr5c1ve" path="res://Sprites/Pests/shibalick4.png" id="4_5isqc"]
+[ext_resource type="Texture2D" uid="uid://crnrr5pm1s0vj" path="res://Sprites/Pests/shibalick5.png" id="5_y8vh0"]
+[ext_resource type="Texture2D" uid="uid://cca2ihhvt5uua" path="res://Sprites/Pests/shibalick6.png" id="6_isvee"]
+[ext_resource type="Texture2D" uid="uid://bwyklfclvxxj1" path="res://Sprites/Pests/shibalick7.png" id="7_n78bp"]
+[ext_resource type="Texture2D" uid="uid://ch4kqiyp04pji" path="res://Sprites/Pests/shibalick8.png" id="8_negmv"]
+[ext_resource type="Texture2D" uid="uid://d2woyhv5wd5vq" path="res://Sprites/Pests/shibalick9.png" id="9_bqivf"]
+[ext_resource type="Texture2D" uid="uid://dxmj8eru5g3wk" path="res://Sprites/Pests/shiba1.png" id="10_y2x6k"]
+[ext_resource type="Texture2D" uid="uid://cq7jilax6w66" path="res://Sprites/Pests/shiba2.png" id="11_r3urq"]
+[ext_resource type="Texture2D" uid="uid://rsfqskh3l278" path="res://Sprites/Pests/shiba3.png" id="12_jjyc2"]
+[ext_resource type="Texture2D" uid="uid://dyg5nbwtk0oxw" path="res://Sprites/Pests/shiba4.png" id="13_6ehhx"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_638jj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_43gmo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_tqs8n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_0obts")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_5isqc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_y8vh0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_isvee")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_n78bp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_negmv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_bqivf")
+}],
+"loop": true,
+"name": &"Attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_y2x6k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_r3urq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_jjyc2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_6ehhx")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[node name="ShibaBoss" type="AnimatedSprite2D"]
+position = Vector2(469, 316)
+scale = Vector2(3.24219, 3.24219)
+sprite_frames = SubResource("SpriteFrames_638jj")
+animation = &"Idle"
+frame_progress = 0.997287
+script = ExtResource("1_a3hgl")
+combo_sets = null
+
+[node name="ComboDisplay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -74.3325
+offset_top = -73.4072
+offset_right = -34.3325
+offset_bottom = -33.4072
+metadata/_edit_use_anchors_ = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ComboDisplay"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.0539759
+anchor_top = 0.0693975
+anchor_right = -0.0539759
+anchor_bottom = 0.0693974
+offset_right = 40.0
+offset_bottom = 40.0
+alignment = 1
+metadata/_edit_use_anchors_ = true

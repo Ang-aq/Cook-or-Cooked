@@ -13,7 +13,7 @@ var levels := [
 	{   # Level 2
 		"requirements": {
 			"Potato": {"combo": ["↑","↓","Z"], "amount": 3},
-			"Carrot": {"combo": ["↑","↑","↓","Z"], "amount": 3},
+			"Carrot": {"combo": ["↑","↑","↑","Z"], "amount": 3},
 			"Onion":  {"combo": ["←","→","↓","Z"], "amount": 2}
 		},
 		"dish_texture": preload("res://Sprites/Ingredients/beefCurry.png"),
@@ -23,7 +23,7 @@ var levels := [
 	{	# Level 3
 		"requirements": {
 			"Potato": {"combo": ["↑","↓","↑","Z"], "amount": 5},
-			"Carrot": {"combo": ["↑","↑","↑","Z"], "amount": 3},
+			"Carrot": {"combo": ["↑","↑","↑","↑","Z"], "amount": 3},
 			"Onion":  {"combo": ["←","→","→","Z"], "amount": 2}
 		},
 		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
@@ -35,12 +35,19 @@ var levels := [
 			"Meat": {"combo": ["→","↑","↑","Z"], "amount": 4},
 			"Tomato": {"combo": ["←","→","←","→","Z"], "amount": 2},
 			"Onion":  {"combo": ["←","→","→","Z"], "amount": 2},
-			"GreenBean":  {"combo": ["←","→","→","Z"], "amount": 2}
+			"GreenBean":  {"combo": ["↓","↓","→","Z"], "amount": 2}
 		},
 		"dish_texture": preload("res://Sprites/Sinigang.png"),
 		"dish_name": "Sinigang!?",
 		"time_limit": 40
 	},
+	{   # Level 5 (Boss Fight)
+	"requirements": {},   # no ingredients
+	"dish_texture": preload("res://Sprites/Pests/shiba1.png"),
+	"dish_name": "Shiba Showdown",
+	"time_limit": 90,
+	"is_boss": true
+	}
 ]
 
 var current_level: int = 0
@@ -58,10 +65,12 @@ func get_requirement_for(ingredient: String) -> Dictionary:
 	return {}
 
 func get_current_dish() -> Dictionary:
+	var dish = levels[current_level]
 	return {
-		"texture": levels[current_level]["dish_texture"],
-		"name": levels[current_level]["dish_name"],
-		"time_limit": levels[current_level]["time_limit"]
+		"texture": dish["dish_texture"],
+		"name": dish["dish_name"],
+		"time_limit": dish["time_limit"],
+		"is_boss": dish.get("is_boss", false)
 	}
 
 # --- Level progression ---

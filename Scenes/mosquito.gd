@@ -7,7 +7,7 @@ signal attacked
 
 # --- Editable properties per-pest instance ---
 @export var speed: float = 30.0                # movement speed toward target
-@export var attack_delay: float = 5.0         # seconds before attack if not defeated
+@export var attack_delay: float = 8.0         # seconds before attack if not defeated
 @export var approach_threshold: float = 24.0   # distance to target to hover
 @export var combos_stages := [["→", "Z"]]
 
