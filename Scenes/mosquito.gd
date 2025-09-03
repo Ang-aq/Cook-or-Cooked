@@ -37,9 +37,7 @@ var arrow_textures := {
 func _ready() -> void:
 	_base_y = global_position.y
 	_update_combo_display()
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("floating"):
-		sprite.play("floating")
-
+	sprite.play("floating")
 	# start attack countdown
 	_start_attack_countdown()
 
@@ -93,10 +91,16 @@ func _defeat() -> void:
 	# small delay to allow animation
 	await get_tree().create_timer(0.35).timeout
 	emit_signal("defeated", self)
+	MusicManager.stop_sfx("mosquito")
+	MusicManager.play_sfx("splat")
+	MusicManager.set_sfx_volume_for("splat", 5)
+
 	queue_free()
 
 # attack countdown - if not defeated before time expires it attacks
 func _start_attack_countdown() -> void:
+	MusicManager.play_sfx("mosquito")
+	MusicManager.set_sfx_volume_for("mosquito", 20)
 	await get_tree().create_timer(attack_delay).timeout
 	if _defeated:
 		return

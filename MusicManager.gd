@@ -11,7 +11,8 @@ var sfx_library: Dictionary = {
 	"chop": preload("res://Audio/Cut.ogg"),
 	"mosquito": preload("res://Audio/mosquito.ogg"),
 	"slash": preload("res://Audio/slash.ogg"),
-	"wrong": preload("res://Audio/wrong.mp3")
+	"wrong": preload("res://Audio/wrong.mp3"),
+	"splat": preload("res://Audio/Splat.ogg")
 }
 
 # Optional music player (BGM)
@@ -91,3 +92,19 @@ func play_bgm(stream: AudioStream, loop: bool = true) -> void:
 func stop_bgm() -> void:
 	if music_player != null:
 		music_player.stop()
+
+func set_all_sfx_volume(db: float) -> void:
+	default_volume_db = db
+	for player in active_players:
+		if is_instance_valid(player):
+			player.volume_db = db
+
+func set_sfx_volume_for(sfx_name: String, db: float) -> void:
+	if not sfx_library.has(sfx_name):
+		push_warning("SFXManager: Sound not found: %s" % sfx_name)
+		return
+
+	var stream: AudioStream = sfx_library[sfx_name]
+	for player in active_players:
+		if is_instance_valid(player) and player.stream == stream:
+			player.volume_db = db

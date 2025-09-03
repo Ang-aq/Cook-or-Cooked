@@ -12,6 +12,7 @@ extends Node2D
 @onready var pest_manager: Node = $PestManager
 @onready var pot_node: Sprite2D = $IngredientContainer/Pot
 @onready var boss_spawn: Node2D = $BossSpawn
+@onready var damage_flash: ColorRect = $DamageFlash
 
 # Pests
 @onready var pest_scene: PackedScene = preload("res://Scenes/mosquito.tscn")
@@ -71,6 +72,8 @@ var shiba_boss: ShibaBoss = null   # <- add this
 # -----------------------
 func _ready() -> void:
 	add_to_group("Game")
+	MusicManager.set_all_sfx_volume(5)
+	MusicManager.set_sfx_volume_for("slash",20)
 	
 	# pot 
 	pot_node.z_index = 10
@@ -114,7 +117,19 @@ func _lose_heart(reason: String) -> void:
 	combo = 0
 	_update_combo_ui()
 	_update_hearts_ui()
+	MusicManager.play_sfx("wrong")
+	# Red flash overlay
+	if damage_flash:
+		damage_flash.visible = true
+		damage_flash.color = Color(1, 0, 0, 0.6)  # semi-transparent red
+		var tween := create_tween()
+		tween.tween_property(damage_flash, "color:a", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.finished.connect(func():
+			damage_flash.visible = false
+		)
+
 	print("%s Hearts remaining: %d" % [reason, current_hearts])
+
 	if current_hearts <= 0:
 		_game_over()
 
@@ -290,18 +305,21 @@ func spawn_ingredient(ingredient_name: String) -> void:
 	var ing_node := ingredient_scene.instantiate()
 	ingredient_container.add_child(ing_node)
 
-	# Cast to Ingredient
 	var ing := ing_node as Ingredient
 	if ing == null:
 		push_error("Ingredients.tscn root must extend Ingredient.gd!")
 		ing_node.queue_free()
 		return
 
-	# Assign pot reference immediately
+	# Level speed
+	var base_speed := 150.0  # same as Ingredient.gd default
+	var level_index := LevelManager.current_level
+	var speed_multiplier := 0.7 + (level_index * 0.20)  # +15% speed per level
+	ing.speed = base_speed * speed_multiplier
+
+	# Pot
 	if is_instance_valid(pot_node):
 		ing.pot = pot_node
-
-	# Update z_index after pot assigned
 	if ing.has_method("_update_z_index"):
 		ing._update_z_index()
 
@@ -311,16 +329,13 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		var raw = required_ingredients[ingredient_name]["combo"]
 		if raw is Array:
 			combo_arr = raw.duplicate(true)
-	if ing.has_method("set_combo_and_name"):
-		ing.set_combo_and_name(combo_arr, ingredient_name)
-	else:
-		push_warning("Ingredient instance missing set_combo_and_name method.")
+	ing.set_combo_and_name(combo_arr, ingredient_name)
 
-	# Connect chop_completed signal safely
+	# Connect chop_completed
 	if ing.has_signal("chop_completed") and not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 		ing.chop_completed.connect(Callable(self, "_on_ingredient_chopped"))
 
-	# Set spawn position
+	# Spawn position
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
 
