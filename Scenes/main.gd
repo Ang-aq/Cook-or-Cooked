@@ -4,6 +4,7 @@ extends Node2D
 # Nodes / Scenes
 # -----------------------
 @onready var ingredient_scene: PackedScene = preload("res://Scenes/Ingredients/Ingredients.tscn")
+@onready var text_popup_scene: PackedScene = preload("res://Scenes/text_popup.tscn")
 @onready var player_input: Node = $PlayerInput
 @onready var ingredient_container: Node2D = $IngredientContainer
 @onready var checklist_ui: Control = $Checklist
@@ -113,17 +114,32 @@ func _update_hearts_ui() -> void:
 
 func _lose_heart(reason: String) -> void:
 	current_hearts -= 1
-	last_fail_reason = reason  
+	last_fail_reason = reason
 	combo = 0
 	_update_combo_ui()
 	_update_hearts_ui()
 	MusicManager.play_sfx("wrong")
-	# Red flash overlay
+
+	# --- TEXT POPUP ---
+	var popup_pos: Vector2
+	if is_instance_valid(pot_node):
+		popup_pos = pot_node.global_position + Vector2(0, -60)
+	else:
+		# fallback: screen center
+		popup_pos = get_viewport().get_visible_rect().size * 0.5
+
+	_spawn_text_popup(reason, popup_pos)
+
+	# --- DAMAGE FLASH ---
 	if damage_flash:
 		damage_flash.visible = true
-		damage_flash.color = Color(1, 0, 0, 0.6)  # semi-transparent red
+		damage_flash.color = Color(1, 0, 0, 0.6)
+
 		var tween := create_tween()
-		tween.tween_property(damage_flash, "color:a", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		tween.tween_property(damage_flash, "color:a", 0.0, 0.4) \
+			.set_trans(Tween.TRANS_SINE) \
+			.set_ease(Tween.EASE_OUT)
+
 		tween.finished.connect(func():
 			damage_flash.visible = false
 		)
@@ -139,6 +155,12 @@ func _update_combo_ui() -> void:
 	else:
 		combo_label.text = ""
 
+func _spawn_text_popup(msg: String, world_pos: Vector2) -> void:
+	var popup := text_popup_scene.instantiate()
+	add_child(popup)  # Put it inside your UI layer
+	popup.position = Vector2(290, 290) # wherever in UI coords
+	popup.show_text(msg)
+
 # -----------------------
 # Load / start level (make behavior similar to old working script)
 # -----------------------
@@ -151,6 +173,8 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 
 	# Clear old ingredient nodes
 	for child in ingredient_container.get_children():
+		if child == pot_node:
+			continue
 		child.queue_free()
 
 	# Clear old boss if present
@@ -317,12 +341,6 @@ func spawn_ingredient(ingredient_name: String) -> void:
 	var speed_multiplier := 0.7 + (level_index * 0.20)  # +15% speed per level
 	ing.speed = base_speed * speed_multiplier
 
-	# Pot
-	if is_instance_valid(pot_node):
-		ing.pot = pot_node
-	if ing.has_method("_update_z_index"):
-		ing._update_z_index()
-
 	# Assign combo array & ingredient name
 	var combo_arr: Array = []
 	if required_ingredients.has(ingredient_name) and required_ingredients[ingredient_name].has("combo"):
@@ -351,12 +369,12 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 	if not required_ingredients.has(ingredient_name):
 		return
 
-	# Get required and current counts
 	var req_count: int = int(required_ingredients[ingredient_name]["count"])
 	var cur_count: int = collected_counts.get(ingredient_name, 0)
 
-	# Don’t allow duplicates after requirement is met
+	# Too many of this ingredient -> lose heart
 	if cur_count >= req_count:
+		_lose_heart("You put too many %ss!" % ingredient_name)
 		return
 
 	# Update collected count
@@ -371,11 +389,6 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 		_on_dish_completed()
 
 func _on_sequence_submitted(sequence: Array) -> void:
-	# IGNORE input while the dish-complete overlay is active
-	if dish_completed:
-		print("DEBUG: Ignored sequence because dish UI is active:", sequence)
-		return
-
 	var clean_sequence := sequence.duplicate()
 	var dish := LevelManager.get_current_dish()
 	var is_boss: bool = dish.get("is_boss", false)
@@ -414,18 +427,14 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			player_input.input_buffer.clear()
 		return
 
-	print("DEBUG: submitted sequence:", sequence)
-
-	# --- 4) Ingredient matching ---
+	# --- 4) Ingredient matching (topmost first) ---
 	var matched: bool = false
-
-	for ing_node in ingredient_container.get_children():
+	for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+		var ing_node = ingredient_container.get_child(i)
 		if not is_instance_valid(ing_node):
 			continue
 		var ing = ing_node as Ingredient
-		if ing == null:
-			continue
-		if ing.is_chopped:
+		if ing == null or ing.is_chopped:
 			continue
 
 		var name: String = ing.ingredient_name
@@ -434,32 +443,43 @@ func _on_sequence_submitted(sequence: Array) -> void:
 
 		var req_count: int = int(required_ingredients[name]["count"])
 		var cur_count: int = collected_counts.get(name, 0)
+
+		# Too many of this ingredient → penalize
 		if cur_count >= req_count:
+			if clean_sequence.size() == ing.combo.size():
+				var would_equal := true
+				for j in range(clean_sequence.size()):
+					if str(clean_sequence[j]) != str(ing.combo[j]):
+						would_equal = false
+						break
+				if would_equal:
+					_lose_heart("You put too many %ss!" % name)
+					matched = true
+					break
 			continue
 
+		# Check for exact combo match
 		if clean_sequence.size() != ing.combo.size():
 			continue
 
 		var equal := true
-		for i in range(clean_sequence.size()):
-			if str(clean_sequence[i]) != str(ing.combo[i]):
+		for j in range(clean_sequence.size()):
+			if str(clean_sequence[j]) != str(ing.combo[j]):
 				equal = false
 				break
 
 		if equal:
 			matched = true
 			ing.play_slash_sequence(clean_sequence)
-
 			if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 				ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
-
 			combo += 1
 			if combo > highest_combo:
 				highest_combo = combo
 			_update_combo_ui()
 			break
 
-	# --- 5) Wrong combo handling (normal levels) ---
+	# --- 5) Wrong combo handling ---
 	if not matched:
 		_lose_heart("Wrong combo!")
 
@@ -468,7 +488,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		player_input.input_buffer.clear()
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
-			
+
 func _on_sequence_reset() -> void:
 	print("Input reset!")
 	combo = 0
