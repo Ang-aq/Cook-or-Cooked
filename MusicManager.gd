@@ -12,7 +12,8 @@ var sfx_library: Dictionary = {
 	"mosquito": preload("res://Audio/mosquito.ogg"),
 	"slash": preload("res://Audio/slash.ogg"),
 	"wrong": preload("res://Audio/wrong.mp3"),
-	"splat": preload("res://Audio/Splat.ogg")
+	"splat": preload("res://Audio/Splat.ogg"),
+	"crossout": preload("res://Audio/crossout.ogg")
 }
 
 # Optional music player (BGM)

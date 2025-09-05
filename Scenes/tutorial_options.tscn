@@ -40,7 +40,7 @@ offset_right = 634.0
 offset_bottom = 434.0
 theme = ExtResource("3_rm07t")
 theme_override_font_sizes/font_size = 30
-text = "No"
+text = "No ( X )"
 
 [node name="Yes" type="Button" parent="."]
 layout_mode = 0
@@ -50,7 +50,7 @@ offset_right = 634.0
 offset_bottom = 355.0
 theme = ExtResource("3_rm07t")
 theme_override_font_sizes/font_size = 30
-text = "Yes"
+text = "Yes ( Z )"
 
 [connection signal="pressed" from="No" to="." method="_on_no_pressed"]
 [connection signal="pressed" from="Yes" to="." method="_on_yes_pressed"]

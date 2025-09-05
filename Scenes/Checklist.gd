@@ -52,16 +52,28 @@ func update_progress(name: String, current: int) -> void:
 
 	# Strike-through once completed
 	if current >= required_count and label.get_meta("striked") != true:
+		# Create line
 		var line = ColorRect.new()
 		line.color = Color(1, 0, 0)
+		line.custom_minimum_size = Vector2(0, 2)  # start at 0 width
 		line.size_flags_horizontal = Control.SIZE_FILL
-		line.custom_minimum_size = Vector2(0, 2)  # thickness of strike
-
-		# Slightly above center
 		line.anchor_left = 0
-		line.anchor_right = 1
-		line.anchor_top = 0.30
-		line.anchor_bottom = 0.45
+		line.anchor_right = 0   # keep right edge fixed while animating
+		line.anchor_top = 0.3
+		line.anchor_bottom = 0.4
+		line.pivot_offset = Vector2(0, 1)  # pivot left
 
 		label.add_child(line)
+
+		# Animate line width
+		await get_tree().process_frame  # let layout update so we know the label size
+		var target_width = label.size.x
+
+		var tween := create_tween()
+		tween.tween_property(
+			line, "custom_minimum_size:x", target_width, 0.4
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		
+		MusicManager.play_sfx("crossout")
+		
 		label.set_meta("striked", true)

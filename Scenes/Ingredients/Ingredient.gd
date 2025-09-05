@@ -1,50 +1,36 @@
 extends Node2D
 class_name Ingredient
 
-# -----------------------
-# Tunables
-# -----------------------
 @export var speed: float = 150.0
 @export var chopped_fallback: Texture2D    # optional fallback if no chopped animation
+@export var flash_offset: Vector2 = Vector2(0, 0) # this is unused fix soon
 
-# -----------------------
-# Identity / combo
-# -----------------------
 var combo: Array = []
 var ingredient_name: String = ""
 
-# -----------------------
-# Children (expected nodes)
-# -----------------------
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var slash: AnimatedSprite2D = $AnimatedSprite2D/Slash
 @onready var chopped_sprite: Sprite2D = $Chopped
 @onready var input_display: HBoxContainer = $InputDisplay
 
-# -----------------------
-# SFX (optional)
-# -----------------------
+# SFX
 @export var sfx_up: AudioStream
 @export var sfx_down: AudioStream
 @export var sfx_left: AudioStream
 @export var sfx_right: AudioStream
 
-# -----------------------
 # State
-# -----------------------
 var movement_enabled := true
 var is_chopped := false
 var is_animating := false
 var combo_queue: Array = []
 
-# Containers assigned by Main.gd
+# Containers assigned by Main
 var front_container: Node2D = null
 var behind_container: Node2D = null
 var spawned := false  
 
-# -----------------------
 # Visual resources
-# -----------------------
 var arrow_textures := {
 	"↑": preload("res://Sprites/arrow_up.png"),
 	"↓": preload("res://Sprites/arrow_down.png"),
@@ -80,9 +66,7 @@ func _ready() -> void:
 		slash.visible = false
 	spawned = true  # mark as added to tree safely
 
-# -----------------------
 # Setup
-# -----------------------
 func set_combo_and_name(new_combo: Array, new_name: String) -> void:
 	combo = new_combo.duplicate(true) if new_combo is Array else []
 	ingredient_name = new_name
@@ -112,9 +96,7 @@ func set_combo_and_name(new_combo: Array, new_name: String) -> void:
 		chopped_sprite.scale = sprite.scale
 		chopped_sprite.visible = false
 
-# -----------------------
 # Process
-# -----------------------
 func _process(delta: float) -> void:
 	if movement_enabled:
 		position.y += speed * delta
@@ -122,9 +104,7 @@ func _process(delta: float) -> void:
 	if spawned and position.y > get_viewport_rect().size.y:
 		queue_free()
 
-# -----------------------
 # Chop / Slash
-# -----------------------
 func play_slash_sequence(sequence: Array) -> void:
 	if is_chopped or is_animating:
 		return
@@ -271,3 +251,37 @@ func _on_sfx_timer_timeout(player: AudioStreamPlayer2D) -> void:
 	if is_instance_valid(player):
 		player.stop()
 		player.queue_free()
+# Ingredient.gd
+
+# Flash a red X over the ingredient.
+# `offset_override` is optional and added to the exported flash_offset.
+func flash_x(offset_override: Vector2 = Vector2.ZERO) -> void:
+	var final_offset := flash_offset + offset_override
+
+	# create sprite
+	var x_sprite := Sprite2D.new()
+	x_sprite.texture = preload("res://Sprites/X.png")
+	x_sprite.z_index = 1000
+	x_sprite.modulate = Color(1, 0, 0, 1.0)
+
+	# add to the ingredient so it follows the node (we'll set global_position explicitly)
+	add_child(x_sprite)
+
+	# position: prefer sprite center if available, else ingredient global position
+	if is_instance_valid(sprite):
+		# sprite.global_position is the center of the sprite in world space
+		x_sprite.global_position = sprite.global_position + final_offset
+	else:
+		x_sprite.global_position = global_position + final_offset
+
+	# animation: quick pop + fade
+	var tween := create_tween()
+	tween.tween_property(x_sprite, "scale", x_sprite.scale * 1.25, 0.12) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(x_sprite, "modulate:a", 0.0, 0.45) \
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+	tween.finished.connect(func():
+		if is_instance_valid(x_sprite):
+			x_sprite.queue_free()
+	)

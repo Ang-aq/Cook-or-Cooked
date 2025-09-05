@@ -28,10 +28,16 @@ func _ready() -> void:
 	if not restart_button.is_connected("pressed", pressed_callable):
 		restart_button.pressed.connect(pressed_callable)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if restart_button.disabled:
+		return
+	if event.is_action_pressed("joystickStart"):  # Z
+		_on_restart_pressed()
+
 func _on_restart_pressed() -> void:
-	# Reset LevelManager to the first level (index 0) so "Try Again" starts the game fresh
-	if LevelManager != null:
-		LevelManager.current_level = 0
-	else:
-		push_warning("LevelManager autoload not found — couldn't reset current_level.")
+	if restart_button.disabled:
+		return
+	# fixes glitch where the game would start from the level you died
+	LevelManager.current_level = 0
+	restart_button.disabled = true
 	get_tree().change_scene_to_file("res://Scenes/main.tscn")

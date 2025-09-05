@@ -15,6 +15,14 @@ func _ready() -> void:
 	yes_button.pressed.connect(_on_yes_pressed)
 	no_button.pressed.connect(_on_no_pressed)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if yes_button.disabled or no_button.disabled:
+		return
+	if event.is_action_pressed("joystickStart"):  # Z
+		_on_yes_pressed()
+	elif event.is_action_pressed("joystickReset"): # X
+		_on_no_pressed()
+
 func _on_yes_pressed() -> void:
 	_disable_buttons()
 	get_tree().change_scene_to_file(tutorial_scene_path)

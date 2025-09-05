@@ -161,6 +161,39 @@ func _spawn_text_popup(msg: String, world_pos: Vector2) -> void:
 	popup.position = Vector2(290, 290) # wherever in UI coords
 	popup.show_text(msg)
 
+# Helper: find the topmost ingredient matching `name` and flash an X on it.
+func _flash_topmost_ingredient(name: String) -> void:
+	# First prefer an un-chopped matching ingredient (topmost)
+	for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+		var node = ingredient_container.get_child(i)
+		if not is_instance_valid(node):
+			continue
+		var ing = node as Ingredient
+		if ing == null:
+			continue
+		if ing.ingredient_name != name:
+			continue
+		# prefer un-chopped
+		if not ing.is_chopped:
+			if ing.has_method("flash_x"):
+				ing.flash_x()
+				print("DEBUG: flashed X on topmost unchopped ", name)
+			return
+
+	# If none un-chopped, flash the topmost one anyway (fallback)
+	for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+		var node = ingredient_container.get_child(i)
+		if not is_instance_valid(node):
+			continue
+		var ing = node as Ingredient
+		if ing == null:
+			continue
+		if ing.ingredient_name == name:
+			if ing.has_method("flash_x"):
+				ing.flash_x()
+				print("DEBUG: flashed X on topmost (fallback) ", name)
+			return
+
 # -----------------------
 # Load / start level (make behavior similar to old working script)
 # -----------------------
@@ -322,10 +355,9 @@ func _pick_weighted_ingredient_name() -> String:
 # ---------------------
 func _on_boss_defeated() -> void:
 	print("Boss defeated!")
-	_on_dish_completed()  # reuse your dish celebration flow
+	_on_dish_completed()
 
 func spawn_ingredient(ingredient_name: String) -> void:
-	# Instantiate ingredient
 	var ing_node := ingredient_scene.instantiate()
 	ingredient_container.add_child(ing_node)
 
@@ -336,12 +368,12 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		return
 
 	# Level speed
-	var base_speed := 150.0  # same as Ingredient.gd default
+	var base_speed := 150.0
 	var level_index := LevelManager.current_level
-	var speed_multiplier := 0.7 + (level_index * 0.20)  # +15% speed per level
+	var speed_multiplier := 0.7 + (level_index * 0.15)
 	ing.speed = base_speed * speed_multiplier
 
-	# Assign combo array & ingredient name
+	# Assign combo & name
 	var combo_arr: Array = []
 	if required_ingredients.has(ingredient_name) and required_ingredients[ingredient_name].has("combo"):
 		var raw = required_ingredients[ingredient_name]["combo"]
@@ -353,7 +385,7 @@ func spawn_ingredient(ingredient_name: String) -> void:
 	if ing.has_signal("chop_completed") and not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
 		ing.chop_completed.connect(Callable(self, "_on_ingredient_chopped"))
 
-	# Spawn position
+	# Random spawn position
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
 
@@ -365,6 +397,8 @@ func _on_pest_attacked(pest_node: Node) -> void:
 	last_fail_reason = "A pest attacked you!"
 	_lose_heart(last_fail_reason)
 
+# Main.gd
+
 func _on_ingredient_chopped(ingredient_name: String) -> void:
 	if not required_ingredients.has(ingredient_name):
 		return
@@ -372,8 +406,15 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 	var req_count: int = int(required_ingredients[ingredient_name]["count"])
 	var cur_count: int = collected_counts.get(ingredient_name, 0)
 
-	# Too many of this ingredient -> lose heart
+	# Too many of this ingredient
 	if cur_count >= req_count:
+		# find the topmost ingredient (last in container) that matches
+		for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+			var ing_node = ingredient_container.get_child(i)
+			if ing_node is Ingredient and ing_node.ingredient_name == ingredient_name and not ing_node.is_chopped:
+				ing_node.flash_x()
+				break
+
 		_lose_heart("You put too many %ss!" % ingredient_name)
 		return
 
@@ -393,17 +434,17 @@ func _on_sequence_submitted(sequence: Array) -> void:
 	var dish := LevelManager.get_current_dish()
 	var is_boss: bool = dish.get("is_boss", false)
 
-	# --- 1) Boss check (if boss level) ---
+	# --- 1) Boss check ---
 	if is_boss and shiba_boss and is_instance_valid(shiba_boss):
 		if shiba_boss.check_sequence(clean_sequence):
-			# Boss handled → clear buffer and return
+			# correct boss input → clear buffer
 			if "input_buffer" in player_input:
 				player_input.input_buffer.clear()
 				if player_input.has_method("_update_display"):
 					player_input._update_display()
 			return
 		else:
-			# Wrong input during boss → boss attacks & deducts a heart
+			# wrong boss input → react & deduct heart
 			shiba_boss.react_wrong_input()
 			if "input_buffer" in player_input:
 				player_input.input_buffer.clear()
@@ -411,7 +452,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 					player_input._update_display()
 			return
 
-	# --- 2) PestManager check (non-boss flow) ---
+	# --- 2) PestManager (non-boss flow) ---
 	if has_node("PestManager"):
 		var pm = $PestManager
 		if pm and pm.check_sequence(clean_sequence):
@@ -421,13 +462,13 @@ func _on_sequence_submitted(sequence: Array) -> void:
 					player_input._update_display()
 			return
 
-	# --- 3) If no level ingredient requirements ---
+	# --- 3) Ingredient levels ---
 	if not level_has_requirements:
 		if "input_buffer" in player_input:
 			player_input.input_buffer.clear()
 		return
 
-	# --- 4) Ingredient matching (topmost first) ---
+	# --- 4) Check ingredients (topmost first) ---
 	var matched: bool = false
 	for i in range(ingredient_container.get_child_count() - 1, -1, -1):
 		var ing_node = ingredient_container.get_child(i)
@@ -444,7 +485,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		var req_count: int = int(required_ingredients[name]["count"])
 		var cur_count: int = collected_counts.get(name, 0)
 
-		# Too many of this ingredient → penalize
+		# Too many → lose heart
 		if cur_count >= req_count:
 			if clean_sequence.size() == ing.combo.size():
 				var would_equal := true
@@ -453,12 +494,16 @@ func _on_sequence_submitted(sequence: Array) -> void:
 						would_equal = false
 						break
 				if would_equal:
+					# flash X on the topmost matching ingredient
+					_flash_topmost_ingredient(name)
+
 					_lose_heart("You put too many %ss!" % name)
 					matched = true
 					break
+					
 			continue
 
-		# Check for exact combo match
+		# Exact combo match
 		if clean_sequence.size() != ing.combo.size():
 			continue
 
@@ -483,7 +528,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 	if not matched:
 		_lose_heart("Wrong combo!")
 
-	# --- 6) Always clear player's input buffer ---
+	# --- 6) Always clear input buffer ---
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
 		if player_input.has_method("_update_display"):
@@ -500,18 +545,17 @@ func _on_sequence_reset() -> void:
 func _all_ingredients_collected() -> bool:
 	var dish_info: Dictionary = LevelManager.get_current_dish()
 	if dish_info.get("is_boss", false):
-		return false  # boss completion is handled separately
+		return false  # boss completion handled separately
 	for name in required_ingredients.keys():
 		if collected_counts.get(name, 0) < int(required_ingredients[name]["count"]):
 			return false
 	return true
 
 func _on_dish_completed() -> void:
-	# mark completed and pause gameplay immediately
 	dish_completed = true
 	game_paused = true
 
-	# Save hearts & combo for next level
+	# Save hearts & combo
 	saved_hearts = clamp(current_hearts, 0, max_hearts)
 	saved_combo = combo
 
@@ -522,36 +566,32 @@ func _on_dish_completed() -> void:
 	if dish_ui and dish_ui.has_method("show_dish"):
 		dish_ui.show_dish(dish_texture, dish_name)
 
-	# Show overlay visuals
+	# Overlay effects
 	win_overlay.visible = true
 	if $WinOverlay/DishCompleteUI/Star/AnimationPlayer:
 		$WinOverlay/DishCompleteUI/Star/AnimationPlayer.play("Spin")
 
-	# play sfx if available
+	# Play SFX
 	var sfx := get_node_or_null("/root/SFXManager")
 	if sfx == null:
 		sfx = get_node_or_null("/root/MusicManager")
 	if sfx != null and sfx.has_method("play_sfx"):
 		sfx.play_sfx("level_up")
 
-	# wait briefly, then automatically continue to next level
+	# Wait 2 seconds, then continue
 	await get_tree().create_timer(2.0).timeout
 
-	# hide overlay before transition
-	if win_overlay.visible:
-		win_overlay.visible = false
-
-	# Unpause local flags (we will immediately load next level)
+	win_overlay.visible = false
 	game_paused = false
 	dish_completed = false
 
-	# ensure any leftover input buffer is cleared so stray events don't apply on new level
+	# Clear leftover input buffer
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
 
-	# Advance to next level and load it, passing saved state
+	# Next level
 	LevelManager.next_level()
 	_load_level(saved_hearts, saved_combo)
 		

@@ -34,20 +34,11 @@ text = "Cook or Cooked
 "
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="."]
-offset_left = 322.0
-offset_top = 580.0
-offset_right = 812.0
-offset_bottom = 631.0
-theme = ExtResource("3_h87bp")
-theme_override_font_sizes/font_size = 50
-text = "Press any button to start"
-
 [node name="Label2" type="Label" parent="."]
-offset_left = 322.0
-offset_top = 580.0
-offset_right = 812.0
-offset_bottom = 631.0
+offset_left = 226.0
+offset_top = 579.0
+offset_right = 907.0
+offset_bottom = 630.0
 theme = ExtResource("3_h87bp")
 theme_override_font_sizes/font_size = 50
-text = "Press any button to start"
+text = "Press any keyboard button to start"

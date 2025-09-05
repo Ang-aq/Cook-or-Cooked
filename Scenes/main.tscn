@@ -212,7 +212,7 @@ horizontal_alignment = 1
 [node name="LevelTimer" type="Timer" parent="TimerLabel"]
 
 [node name="PestManager" type="Node2D" parent="."]
-position = Vector2(77, 145)
+position = Vector2(106, 100)
 script = ExtResource("12_6iyac")
 
 [node name="BossSpawn" type="Node2D" parent="."]

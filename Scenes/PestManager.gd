@@ -2,21 +2,21 @@
 extends Node2D
 class_name PestManager
 
-# --- Configurable pest types (PackedScenes) ---
+# Configurable pest types (PackedScenes)
 @export var pest_types: Array[PackedScene] = [
 	preload("res://Scenes/mosquito.tscn")
 ]
 
-# --- Spawn timing ---
+# Spawn timing
 @export var spawn_interval_min: float = 5.0
 @export var spawn_interval_max: float = 12.0
 @export var max_active_pests: int = 3
 
-# --- Optional spawn bounds (local to this manager node) ---
-@export var spawn_x_min: float = 50.0
-@export var spawn_x_max: float = 800.0
-@export var spawn_y_min: float = 150.0
-@export var spawn_y_max: float = 500.0
+# Optional spawn bounds (local to this manager node)
+@export var spawn_x_min: float = 1.0
+@export var spawn_x_max: float = 650.0
+@export var spawn_y_min: float = 50.0
+@export var spawn_y_max: float = 400.0
 
 # --- Internal state ---
 var _spawn_timer: float = 0.0
