@@ -18,11 +18,11 @@ func _ready() -> void:
 		last = int(cfg.get_value("scores", "last_score", 0))
 		high = int(cfg.get_value("scores", "high_score", 0))
 		reason = str(cfg.get_value("scores", "last_fail_reason", ""))
-
+	
 	score_label.text = "Score: %d" % last
 	highscore_label.text = "High Score: %d" % high
 	reason_label.text = reason
-
+	
 	# connect pressed safely
 	var pressed_callable := Callable(self, "_on_restart_pressed")
 	if not restart_button.is_connected("pressed", pressed_callable):

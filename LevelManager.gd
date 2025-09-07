@@ -3,7 +3,7 @@ extends Node
 var levels := [
 	{   # Level 1
 		"requirements": {
-			"Onion":  {"combo": ["←","→","Z"], "amount": 1},
+			"Spring Onion":  {"combo": ["←","→","Z"], "amount": 1},
 			"Meat":   {"combo": ["→","↑","Z"], "amount": 3},
 		},
 		"dish_texture": preload("res://Sprites/Ingredients/yakitori.png"),

@@ -24,11 +24,13 @@ var movement_enabled := true
 var is_chopped := false
 var is_animating := false
 var combo_queue: Array = []
+var _game_node = null
 
 # Containers assigned by Main
 var front_container: Node2D = null
 var behind_container: Node2D = null
 var spawned := false  
+var original_speed: float = 150.0
 
 # Visual resources
 var arrow_textures := {
@@ -45,7 +47,8 @@ var ingredient_scales := {
 	"Carrot": Vector2(1, 1),
 	"Meat": Vector2(2, 2),
 	"GreenBean": Vector2(2, 2),
-	"Tomato": Vector2(2, 2)
+	"Tomato": Vector2(2, 2),
+	"Spring Onion": Vector2(2, 2)
 }
 
 var slash_anim_map := {
@@ -60,11 +63,21 @@ const DEFAULT_SLASH_DURATION := 0.18
 signal chop_completed(ingredient_name: String)
 
 func _ready() -> void:
+	# existing initialization
 	if chopped_sprite:
 		chopped_sprite.visible = false
 	if slash:
 		slash.visible = false
 	spawned = true  # mark as added to tree safely
+
+	# Cache the Game node by group (Main already does add_to_group("Game"))
+	# This is safe even if Main is not autoloaded; it finds the node in the scene.
+	var nodes := get_tree().get_nodes_in_group("Game")
+	if nodes.size() > 0:
+		# pick the first node in the group as the central Game node
+		self._game_node = nodes[0]
+	else:
+		self._game_node = null
 
 # Setup
 func set_combo_and_name(new_combo: Array, new_name: String) -> void:
@@ -98,9 +111,30 @@ func set_combo_and_name(new_combo: Array, new_name: String) -> void:
 
 # Process
 func _process(delta: float) -> void:
+	# Movement: use the global multiplier from the Game node when present.
+	var mult: float = 1.0
+	if _game_node and _game_node.has_method("get"):
+		if "ingredient_speed_multiplier" in _game_node:
+			mult = float(_game_node.ingredient_speed_multiplier)
+
+	# Apply movement using the multiplier
 	if movement_enabled:
-		position.y += speed * delta
-	# Only free if the ingredient has been fully spawned in the scene
+		position.y += speed * mult * delta
+
+	# Also scale animation playback speed
+	if is_instance_valid(sprite):
+		sprite.speed_scale = max(0.05, mult)
+	if is_instance_valid(slash):
+		slash.speed_scale = max(0.05, mult)
+
+	# --- Kill line check ---
+	if _game_node and _game_node.has_node("KillLine"):
+		var line_y = _game_node.get_node("KillLine").global_position.y
+		if global_position.y >= line_y:
+			queue_free()  # disappear when touching the line
+			return
+
+	# Free if fully off the screen (fallback)
 	if spawned and position.y > get_viewport_rect().size.y:
 		queue_free()
 
@@ -229,7 +263,7 @@ func _play_sfx_for_anim_name(anim_name: String) -> void:
 		"down": stream = sfx_down
 		"left": stream = sfx_left
 		"right": stream = sfx_right
-
+		
 	if stream != null:
 		var p := AudioStreamPlayer2D.new()
 		p.stream = stream
@@ -242,7 +276,7 @@ func _play_sfx_for_anim_name(anim_name: String) -> void:
 		t.autostart = true
 		t.timeout.connect(Callable(self, "_on_sfx_timer_timeout").bind(p))
 		return
-
+		
 	var gm = get_node_or_null("/root/SFXManager")
 	if gm != null and gm.has_method("play_sfx"):
 		gm.play_sfx("chop")

@@ -11,9 +11,14 @@ var sfx_library: Dictionary = {
 	"chop": preload("res://Audio/Cut.ogg"),
 	"mosquito": preload("res://Audio/mosquito.ogg"),
 	"slash": preload("res://Audio/slash.ogg"),
-	"wrong": preload("res://Audio/wrong.mp3"),
+	"wrong": preload("res://Audio/wrong.ogg"),
 	"splat": preload("res://Audio/Splat.ogg"),
-	"crossout": preload("res://Audio/crossout.ogg")
+	"crossout": preload("res://Audio/crossout.ogg"),
+	"powerup": preload("res://Audio/powerup.ogg"),
+	"sauce_hot": preload("res://Audio/powerup.ogg"),
+	"sauce_soy": preload("res://Audio/powerup.ogg"),
+	"sauce_sweet": preload("res://Audio/powerup.ogg"),
+	"sauce_mystery": preload("res://Audio/powerup.ogg")
 }
 
 # Optional music player (BGM)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=81 format=3 uid="uid://dcfr8h2sdtptv"]
+[gd_scene load_steps=91 format=3 uid="uid://dcfr8h2sdtptv"]
 
 [ext_resource type="Script" uid="uid://s0vqbbn504wt" path="res://Scenes/Ingredients/Ingredient.gd" id="1_b51vn"]
 [ext_resource type="Texture2D" uid="uid://bljgdf2pbyyrd" path="res://Sprites/Ingredients/carrot.png" id="2_5uxxy"]
@@ -48,19 +48,29 @@
 [ext_resource type="Texture2D" uid="uid://4semdj4nl042" path="res://Sprites/SlashAnimations/slashdown7.png" id="32_ih44e"]
 [ext_resource type="Texture2D" uid="uid://bdo5ocdqyv54e" path="res://Sprites/SlashAnimations/slashdown8.png" id="33_0aio8"]
 [ext_resource type="Texture2D" uid="uid://bmvq43pr0rcae" path="res://Sprites/Ingredients/tomatt7.png" id="33_p35vq"]
+[ext_resource type="Texture2D" uid="uid://b682w1xj8juvd" path="res://Sprites/Ingredients/SpringOnion1.png" id="33_pb1sg"]
+[ext_resource type="Texture2D" uid="uid://gdmvjpas4nwv" path="res://Sprites/Ingredients/chopped/SpringChopped.png" id="33_v82px"]
+[ext_resource type="Texture2D" uid="uid://lkdtcxm2hwot" path="res://Sprites/Ingredients/SpringOnion2.png" id="34_00bqb"]
 [ext_resource type="Texture2D" uid="uid://b84f27tv2eoec" path="res://Sprites/SlashAnimations/slashleft1.png" id="34_pjrwq"]
 [ext_resource type="Texture2D" uid="uid://fgmoi0e4kv7v" path="res://Sprites/Ingredients/tomatt8.png" id="34_v82px"]
 [ext_resource type="Texture2D" uid="uid://g66nlk6kuflv" path="res://Sprites/Ingredients/tomatt9.png" id="35_cd8rt"]
 [ext_resource type="Texture2D" uid="uid://bmhfuc60apgfh" path="res://Sprites/SlashAnimations/slashleft2.png" id="35_f5fiw"]
+[ext_resource type="Texture2D" uid="uid://dxbp1f4673g2m" path="res://Sprites/Ingredients/SpringOnion3.png" id="35_vlv0m"]
+[ext_resource type="Texture2D" uid="uid://bcwkkapthh8kc" path="res://Sprites/Ingredients/SpringOnion4.png" id="36_2txdm"]
 [ext_resource type="Texture2D" uid="uid://cqv0mwlww1n1t" path="res://Sprites/Ingredients/tomatt10.png" id="36_hcpf6"]
 [ext_resource type="Texture2D" uid="uid://bbhoi1nd5hnel" path="res://Sprites/SlashAnimations/slashleft3.png" id="36_qwofj"]
 [ext_resource type="Texture2D" uid="uid://2q2cf2bdkfe1" path="res://Sprites/Ingredients/tomatt11.png" id="37_4m42b"]
 [ext_resource type="Texture2D" uid="uid://j65j6blj66u3" path="res://Sprites/SlashAnimations/slashleft4.png" id="37_5krv1"]
+[ext_resource type="Texture2D" uid="uid://p4ps5o2vkdau" path="res://Sprites/Ingredients/SpringOnion5.png" id="37_86xjh"]
 [ext_resource type="Texture2D" uid="uid://147sy7d40aeb" path="res://Sprites/SlashAnimations/slashleft5.png" id="38_2t4t2"]
 [ext_resource type="Texture2D" uid="uid://b8f5hn2qanth7" path="res://Sprites/Ingredients/tomatt12.png" id="38_c6a8o"]
+[ext_resource type="Texture2D" uid="uid://cmyiakkuv6363" path="res://Sprites/Ingredients/SpringOnion6.png" id="38_xu3kg"]
 [ext_resource type="Texture2D" uid="uid://cy4fypjh0iha" path="res://Sprites/Ingredients/chopped/Tomato_chopped.png" id="39_8e5qe"]
+[ext_resource type="Texture2D" uid="uid://b3aiuy7alsrun" path="res://Sprites/Ingredients/SpringOnion7.png" id="39_agj3a"]
 [ext_resource type="Texture2D" uid="uid://c20011roj61lc" path="res://Sprites/SlashAnimations/slashleft6.png" id="39_u5n8w"]
 [ext_resource type="Texture2D" uid="uid://02n763qyragr" path="res://Sprites/SlashAnimations/slashleft7.png" id="40_8e5qe"]
+[ext_resource type="Texture2D" uid="uid://3gxk7shqf5ue" path="res://Sprites/Ingredients/SpringOnion8.png" id="40_bglmy"]
+[ext_resource type="Texture2D" uid="uid://d2li7jigegm33" path="res://Sprites/Ingredients/SpringOnion9.png" id="41_3h2ie"]
 [ext_resource type="Texture2D" uid="uid://ohvnu56g5wqk" path="res://Sprites/SlashAnimations/slashleft8.png" id="41_8m5py"]
 [ext_resource type="Texture2D" uid="uid://dkcn4vwbx6h0k" path="res://Sprites/SlashAnimations/slashright1.png" id="42_3ov35"]
 [ext_resource type="Texture2D" uid="uid://dmwmimkuoqgfi" path="res://Sprites/SlashAnimations/slashright2.png" id="43_dvjqi"]
@@ -221,9 +231,44 @@ animations = [{
 "name": &"Potato_chopped",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("33_pb1sg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_00bqb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_vlv0m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_2txdm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_86xjh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_xu3kg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_agj3a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_bglmy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_3h2ie")
+}],
 "loop": true,
 "name": &"Spring Onion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("33_v82px")
+}],
+"loop": true,
+"name": &"Spring Onion_chopped",
 "speed": 5.0
 }, {
 "frames": [{
@@ -413,7 +458,7 @@ offset_bottom = 237.0
 position = Vector2(574, 278)
 scale = Vector2(2.82534, 2.82534)
 sprite_frames = SubResource("SpriteFrames_vfc8r")
-animation = &"GreenBean_chopped"
+animation = &"Spring Onion"
 
 [node name="Slash" type="AnimatedSprite2D" parent="AnimatedSprite2D"]
 position = Vector2(2.47757, 2.47758)

@@ -16,7 +16,7 @@ func setup_checklist(ingredients: Dictionary) -> void:
 	# Create new labels
 	for name in ingredients.keys():
 		var raw_value = ingredients[name]
-
+		
 		# Handle both formats: { "amount": X } or just X
 		var count: int
 		if typeof(raw_value) == TYPE_DICTIONARY and raw_value.has("amount"):
@@ -26,18 +26,18 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		else:
 			push_warning("Unexpected ingredient format for %s: %s" % [name, str(raw_value)])
 			continue
-
+		
 		ingredient_required[name] = count
-
+		
 		var label = Label.new()
 		label.text = "%s: 0 / %d" % [name, count]
 		label.modulate = Color.BLACK
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.custom_minimum_size = Vector2(0, 32)
-
+		
 		# Make text larger
 		label.add_theme_font_size_override("font_size", 22)
-
+		
 		$VBoxContainer.add_child(label)
 		ingredient_labels[name] = label
 
@@ -45,11 +45,11 @@ func setup_checklist(ingredients: Dictionary) -> void:
 func update_progress(name: String, current: int) -> void:
 	if not ingredient_labels.has(name):
 		return
-
+		
 	var label: Label = ingredient_labels[name]
 	var required_count: int = ingredient_required[name]
 	label.text = "%s: %d / %d" % [name, current, required_count]
-
+	
 	# Strike-through once completed
 	if current >= required_count and label.get_meta("striked") != true:
 		# Create line
@@ -68,7 +68,7 @@ func update_progress(name: String, current: int) -> void:
 		# Animate line width
 		await get_tree().process_frame  # let layout update so we know the label size
 		var target_width = label.size.x
-
+		
 		var tween := create_tween()
 		tween.tween_property(
 			line, "custom_minimum_size:x", target_width, 0.4

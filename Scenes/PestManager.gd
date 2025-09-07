@@ -8,7 +8,7 @@ class_name PestManager
 ]
 
 # Spawn timing
-@export var spawn_interval_min: float = 5.0
+@export var spawn_interval_min: float = 7.0
 @export var spawn_interval_max: float = 12.0
 @export var max_active_pests: int = 3
 
@@ -84,12 +84,8 @@ func _on_pest_failed(pest_node: Node, reason: String) -> void:
 	last_fail_reason = reason
 	if is_instance_valid(pest_node) and pest_node.get_parent() == self:
 		pest_node.queue_free()
-	# Forward to Main so it can reduce life / trigger GameOver
-	# get_tree().call_group("Game", "_on_pest_failed", reason)
 
 # --- Utility ---
-# Called by Main (or player input) to check if any pest consumes the submitted combo.
-# Returns true if a pest consumed (handled) the sequence — useful to stop ingredient checks.
 func check_sequence(sequence: Array) -> bool:
 	for pest in get_children():
 		if not is_instance_valid(pest):

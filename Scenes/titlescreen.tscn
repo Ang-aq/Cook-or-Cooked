@@ -7,6 +7,13 @@
 [node name="TitleScreen" type="CanvasLayer"]
 script = ExtResource("1_goadl")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -174.0
+offset_top = -119.0
+offset_right = 1320.0
+offset_bottom = 771.0
+color = Color(0, 0, 0, 1)
+
 [node name="Main" type="Sprite2D" parent="."]
 position = Vector2(577, 322)
 texture = ExtResource("2_u4xby")

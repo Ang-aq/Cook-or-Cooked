@@ -11,6 +11,14 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_trcjo")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -152.0
+offset_top = -107.0
+offset_right = 1342.0
+offset_bottom = 783.0
+color = Color(0, 0, 0, 1)
+
 [node name="Ui" type="Sprite2D" parent="."]
 position = Vector2(575.333, 323.5)
 scale = Vector2(0.600926, 0.600926)

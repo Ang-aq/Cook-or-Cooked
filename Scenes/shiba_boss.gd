@@ -9,16 +9,12 @@ signal boss_defeated
 	["↓","↓","↓","Z"],
 	["↑","→","↓","←","Z"],
 	["→","→","↓","↓","←","←","↑","↑","Z"],
+	["→","→","←","←","→","→","←","←","Z"],
 	["↓","↑","↓","↑","↓","↑","↓","↑","↓","↑","Z"]
 ]
 
-# Size for each arrow (adjust as needed)
 @export var arrow_size: Vector2 = Vector2(24, 24)
-
-# vertical offset of the combo display relative to the boss
 @export var combo_offset: Vector2 = Vector2(-60, -80)
-
-# pool size (max number of arrows that will be shown) - auto-calculated in _ready
 @export var pool_size: int = 12
 
 # --- State ---
@@ -41,7 +37,8 @@ var arrow_textures := {
 
 func _ready() -> void:
 	play("Idle")
-	# compute pool size from max combo length
+
+	# Compute pool size from max combo length
 	var max_len := 0
 	for cs in combo_sets:
 		if cs.size() > max_len:
@@ -93,32 +90,37 @@ func _update_combo_display() -> void:
 		if icon.texture != tex:
 			icon.texture = tex
 		icon.visible = true
+		icon.modulate = Color(1, 1, 1)  # reset tint
 
 	# Hide extras
 	for i in range(combo_len, combo_hbox.get_child_count()):
 		var icon := combo_hbox.get_child(i) as TextureRect
 		icon.visible = false
+		icon.modulate = Color(1, 1, 1)
 
-# --- Input checking ---
+# Input checking
 func check_sequence(sequence: Array) -> bool:
 	if not waiting_for_input:
 		return false
-
+		
+	if current_combo_index < 0 or current_combo_index >= combo_sets.size():
+		return false  
+		
 	var expected: Array = combo_sets[current_combo_index]
 	if sequence.size() != expected.size():
 		return false
-
+		
 	for i in range(sequence.size()):
 		if str(sequence[i]) != str(expected[i]):
 			return false
-
+			
 	_on_combo_success()
 	return true
 
 func _on_combo_success() -> void:
 	play("Hurt")
 	current_combo_index += 1
-
+	
 	if current_combo_index >= combo_sets.size():
 		_defeat()
 	else:
@@ -142,3 +144,22 @@ func react_wrong_input() -> void:
 	await animation_finished
 	play("Idle")
 	get_tree().call_group("Game", "_on_pest_failed", "Wrong combo on boss!")
+
+func on_input_buffer_changed(buffer: Array) -> void:
+	if not waiting_for_input:
+		return
+	if current_combo_index < 0 or current_combo_index >= combo_sets.size():
+		return
+		
+	var expected: Array = combo_sets[current_combo_index]
+	var pool_count: int = combo_hbox.get_child_count()
+	
+	for i in range(pool_count):
+		var icon := combo_hbox.get_child(i) as TextureRect
+		if i < expected.size() and i < buffer.size():
+			if str(buffer[i]) == str(expected[i]):
+				icon.modulate = Color(1.0, 0.35, 0.35)  # highlight correct input
+			else:
+				icon.modulate = Color(1, 1, 1)          # reset mismatch
+		else:
+			icon.modulate = Color(1, 1, 1)              # untouched steps neutral

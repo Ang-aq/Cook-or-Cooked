@@ -9,6 +9,14 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_ojehl")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = -174.0
+offset_top = -119.0
+offset_right = 1320.0
+offset_bottom = 771.0
+color = Color(0, 0, 0, 1)
+
 [node name="FinalUi" type="Sprite2D" parent="."]
 position = Vector2(575.778, 323)
 scale = Vector2(0.601852, 0.601852)

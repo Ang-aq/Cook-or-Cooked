@@ -1,0 +1,478 @@
+[gd_scene load_steps=90 format=3 uid="uid://ds0i5lbk0wmj0"]
+
+[ext_resource type="Script" uid="uid://dglotivg56pv8" path="res://VersusScenes/versus_ingredient.gd" id="1_0mpj1"]
+[ext_resource type="Texture2D" uid="uid://bljgdf2pbyyrd" path="res://Sprites/Ingredients/carrot.png" id="2_o2bvh"]
+[ext_resource type="Texture2D" uid="uid://d1rvk57ykfjjm" path="res://Sprites/Ingredients/chopped/Carrot_chopped.png" id="3_bip2d"]
+[ext_resource type="Texture2D" uid="uid://dmmodwrxtsu8n" path="res://Sprites/Ingredients/greenBeans.png" id="4_nxlcc"]
+[ext_resource type="Texture2D" uid="uid://dpajvswy3bije" path="res://Sprites/Ingredients/chopped/choppedGreen.png" id="5_aocfu"]
+[ext_resource type="Texture2D" uid="uid://kureadi0dffd" path="res://Sprites/Ingredients/steak1.png" id="6_hf3dj"]
+[ext_resource type="Texture2D" uid="uid://bndvir1w4t7ev" path="res://Sprites/Ingredients/steak2.png" id="7_fqmao"]
+[ext_resource type="Texture2D" uid="uid://dkfigreib4h1j" path="res://Sprites/Ingredients/steak3.png" id="8_sude2"]
+[ext_resource type="Texture2D" uid="uid://bal6llyxxcqyg" path="res://Sprites/Ingredients/steak4.png" id="9_gul2t"]
+[ext_resource type="Texture2D" uid="uid://bvceg1ciyploj" path="res://Sprites/Ingredients/steak5.png" id="10_d5gdg"]
+[ext_resource type="Texture2D" uid="uid://drehp4chshbn8" path="res://Sprites/Ingredients/steak6.png" id="11_ykvil"]
+[ext_resource type="Texture2D" uid="uid://b7tmmicw8d22d" path="res://Sprites/Ingredients/steak7.png" id="12_uafel"]
+[ext_resource type="Texture2D" uid="uid://2umbcixofj4s" path="res://Sprites/Ingredients/steak8.png" id="13_d7gmf"]
+[ext_resource type="Texture2D" uid="uid://cohv1g2swixem" path="res://Sprites/Ingredients/chopped/Meat_chopped.png" id="14_72e5j"]
+[ext_resource type="Texture2D" uid="uid://y7h76pi0vw6s" path="res://Sprites/Ingredients/Onion (1).png" id="15_simiy"]
+[ext_resource type="Texture2D" uid="uid://53fwjktg647i" path="res://Sprites/Ingredients/Onion (2).png" id="16_sy7k2"]
+[ext_resource type="Texture2D" uid="uid://buy2ggujdxll" path="res://Sprites/Ingredients/Onion (3).png" id="17_2gdct"]
+[ext_resource type="Texture2D" uid="uid://dxyvxwa474ay" path="res://Sprites/Ingredients/Onion (4).png" id="18_up3w0"]
+[ext_resource type="Texture2D" uid="uid://c32o32rkh0yik" path="res://Sprites/Ingredients/Onion (5).png" id="19_b757b"]
+[ext_resource type="Texture2D" uid="uid://duflpjmswmmd2" path="res://Sprites/Ingredients/Onion (6).png" id="20_oxffx"]
+[ext_resource type="Texture2D" uid="uid://difmf2it7pose" path="res://Sprites/Ingredients/Onion (7).png" id="21_swed2"]
+[ext_resource type="Texture2D" uid="uid://c3k1jiboe81vp" path="res://Sprites/Ingredients/Onion (8).png" id="22_4wt2y"]
+[ext_resource type="Texture2D" uid="uid://d2gd5qxkbxfix" path="res://Sprites/Ingredients/chopped/Onion_chopped.png" id="23_yyvh1"]
+[ext_resource type="Texture2D" uid="uid://cdqdm6k0vfldn" path="res://Sprites/Ingredients/Potato1.png" id="24_5e5ht"]
+[ext_resource type="Texture2D" uid="uid://c2k1en3aw6dh2" path="res://Sprites/Ingredients/Potato2.png" id="25_xw08o"]
+[ext_resource type="Texture2D" uid="uid://eaywvsllf2k1" path="res://Sprites/Ingredients/Potato3.png" id="26_bbve4"]
+[ext_resource type="Texture2D" uid="uid://cu36mdcksev61" path="res://Sprites/Ingredients/Potato4.png" id="27_ei0pf"]
+[ext_resource type="Texture2D" uid="uid://pfjyadoxbslf" path="res://Sprites/Ingredients/Potato5.png" id="28_gld3k"]
+[ext_resource type="Texture2D" uid="uid://5k8bnlxtv8yk" path="res://Sprites/Ingredients/Potato6.png" id="29_r71cb"]
+[ext_resource type="Texture2D" uid="uid://divdh0kc34qw" path="res://Sprites/Ingredients/Potato7.png" id="30_ovxbr"]
+[ext_resource type="Texture2D" uid="uid://dr6m56w1jpdno" path="res://Sprites/Ingredients/chopped/Potato_chopped.png" id="31_jwwbd"]
+[ext_resource type="Texture2D" uid="uid://b682w1xj8juvd" path="res://Sprites/Ingredients/SpringOnion1.png" id="32_r84b3"]
+[ext_resource type="Texture2D" uid="uid://lkdtcxm2hwot" path="res://Sprites/Ingredients/SpringOnion2.png" id="33_op3w6"]
+[ext_resource type="Texture2D" uid="uid://dxbp1f4673g2m" path="res://Sprites/Ingredients/SpringOnion3.png" id="34_t0w07"]
+[ext_resource type="Texture2D" uid="uid://bcwkkapthh8kc" path="res://Sprites/Ingredients/SpringOnion4.png" id="35_praaa"]
+[ext_resource type="Texture2D" uid="uid://p4ps5o2vkdau" path="res://Sprites/Ingredients/SpringOnion5.png" id="36_s1m0f"]
+[ext_resource type="Texture2D" uid="uid://cmyiakkuv6363" path="res://Sprites/Ingredients/SpringOnion6.png" id="37_lbaam"]
+[ext_resource type="Texture2D" uid="uid://b3aiuy7alsrun" path="res://Sprites/Ingredients/SpringOnion7.png" id="38_i0a1a"]
+[ext_resource type="Texture2D" uid="uid://3gxk7shqf5ue" path="res://Sprites/Ingredients/SpringOnion8.png" id="39_vqxw1"]
+[ext_resource type="Texture2D" uid="uid://d2li7jigegm33" path="res://Sprites/Ingredients/SpringOnion9.png" id="40_lq3v7"]
+[ext_resource type="Texture2D" uid="uid://gdmvjpas4nwv" path="res://Sprites/Ingredients/chopped/SpringChopped.png" id="41_ybi1l"]
+[ext_resource type="Texture2D" uid="uid://nwysmsuqfspj" path="res://Sprites/Ingredients/tomatt1.png" id="42_vxkbo"]
+[ext_resource type="Texture2D" uid="uid://cyufu8kpus06" path="res://Sprites/Ingredients/tomatt2.png" id="43_mgk2f"]
+[ext_resource type="Texture2D" uid="uid://vbeerhkdujpw" path="res://Sprites/Ingredients/tomatt3.png" id="44_ei6on"]
+[ext_resource type="Texture2D" uid="uid://44q008mygdmg" path="res://Sprites/Ingredients/tomatt4.png" id="45_dsggo"]
+[ext_resource type="Texture2D" uid="uid://cxwvxrho6j2oh" path="res://Sprites/Ingredients/tomatt5.png" id="46_5l4p7"]
+[ext_resource type="Texture2D" uid="uid://dn25llpemgn3l" path="res://Sprites/Ingredients/tomatt6.png" id="47_asti0"]
+[ext_resource type="Texture2D" uid="uid://bmvq43pr0rcae" path="res://Sprites/Ingredients/tomatt7.png" id="48_v0h4k"]
+[ext_resource type="Texture2D" uid="uid://fgmoi0e4kv7v" path="res://Sprites/Ingredients/tomatt8.png" id="49_bqo5w"]
+[ext_resource type="Texture2D" uid="uid://g66nlk6kuflv" path="res://Sprites/Ingredients/tomatt9.png" id="50_rjojg"]
+[ext_resource type="Texture2D" uid="uid://cqv0mwlww1n1t" path="res://Sprites/Ingredients/tomatt10.png" id="51_es6dy"]
+[ext_resource type="Texture2D" uid="uid://2q2cf2bdkfe1" path="res://Sprites/Ingredients/tomatt11.png" id="52_bc3ow"]
+[ext_resource type="Texture2D" uid="uid://b8f5hn2qanth7" path="res://Sprites/Ingredients/tomatt12.png" id="53_qv63t"]
+[ext_resource type="Texture2D" uid="uid://cy4fypjh0iha" path="res://Sprites/Ingredients/chopped/Tomato_chopped.png" id="54_qvj3f"]
+[ext_resource type="Texture2D" uid="uid://1akn4sau6tmq" path="res://Sprites/SlashAnimations/slashdown1.png" id="55_gh76y"]
+[ext_resource type="Texture2D" uid="uid://yyh2gh8uo6wb" path="res://Sprites/SlashAnimations/slashdown2.png" id="56_vns03"]
+[ext_resource type="Texture2D" uid="uid://d1df0xtxwxh6q" path="res://Sprites/SlashAnimations/slashdown3.png" id="57_41hqq"]
+[ext_resource type="Texture2D" uid="uid://njpah2t7ca8f" path="res://Sprites/SlashAnimations/slashdown4.png" id="58_xgpby"]
+[ext_resource type="Texture2D" uid="uid://bi1qx403d4ew1" path="res://Sprites/SlashAnimations/slashdown5.png" id="59_g8ycl"]
+[ext_resource type="Texture2D" uid="uid://bkq11u2mvxobi" path="res://Sprites/SlashAnimations/slashdown6.png" id="60_kwxei"]
+[ext_resource type="Texture2D" uid="uid://4semdj4nl042" path="res://Sprites/SlashAnimations/slashdown7.png" id="61_mb7hm"]
+[ext_resource type="Texture2D" uid="uid://bdo5ocdqyv54e" path="res://Sprites/SlashAnimations/slashdown8.png" id="62_0ngya"]
+[ext_resource type="Texture2D" uid="uid://b84f27tv2eoec" path="res://Sprites/SlashAnimations/slashleft1.png" id="63_7sf28"]
+[ext_resource type="Texture2D" uid="uid://bmhfuc60apgfh" path="res://Sprites/SlashAnimations/slashleft2.png" id="64_mbbal"]
+[ext_resource type="Texture2D" uid="uid://bbhoi1nd5hnel" path="res://Sprites/SlashAnimations/slashleft3.png" id="65_edavv"]
+[ext_resource type="Texture2D" uid="uid://j65j6blj66u3" path="res://Sprites/SlashAnimations/slashleft4.png" id="66_nuc38"]
+[ext_resource type="Texture2D" uid="uid://147sy7d40aeb" path="res://Sprites/SlashAnimations/slashleft5.png" id="67_bv527"]
+[ext_resource type="Texture2D" uid="uid://c20011roj61lc" path="res://Sprites/SlashAnimations/slashleft6.png" id="68_quqkv"]
+[ext_resource type="Texture2D" uid="uid://02n763qyragr" path="res://Sprites/SlashAnimations/slashleft7.png" id="69_ceyff"]
+[ext_resource type="Texture2D" uid="uid://ohvnu56g5wqk" path="res://Sprites/SlashAnimations/slashleft8.png" id="70_rsxap"]
+[ext_resource type="Texture2D" uid="uid://dkcn4vwbx6h0k" path="res://Sprites/SlashAnimations/slashright1.png" id="71_5x4yy"]
+[ext_resource type="Texture2D" uid="uid://dmwmimkuoqgfi" path="res://Sprites/SlashAnimations/slashright2.png" id="72_r664b"]
+[ext_resource type="Texture2D" uid="uid://bcjy0hmaxuly4" path="res://Sprites/SlashAnimations/slashright3.png" id="73_nt7gx"]
+[ext_resource type="Texture2D" uid="uid://dm0lcxpj0wuux" path="res://Sprites/SlashAnimations/slashright4.png" id="74_ghunb"]
+[ext_resource type="Texture2D" uid="uid://pvll1t0thjr" path="res://Sprites/SlashAnimations/slashright5.png" id="75_2bd5x"]
+[ext_resource type="Texture2D" uid="uid://c3yqex6gk4x28" path="res://Sprites/SlashAnimations/slashright6.png" id="76_lxn1v"]
+[ext_resource type="Texture2D" uid="uid://llr2lpbte8xk" path="res://Sprites/SlashAnimations/slashright7.png" id="77_qo5p4"]
+[ext_resource type="Texture2D" uid="uid://cl0xtke2vx2b8" path="res://Sprites/SlashAnimations/slashright8.png" id="78_q2x38"]
+[ext_resource type="Texture2D" uid="uid://dscgrmt8oceu" path="res://Sprites/SlashAnimations/slashup1.png" id="79_0bjxw"]
+[ext_resource type="Texture2D" uid="uid://b618yrvy24m8l" path="res://Sprites/SlashAnimations/slashup2.png" id="80_0k6pb"]
+[ext_resource type="Texture2D" uid="uid://bgykueb1j3jsn" path="res://Sprites/SlashAnimations/slashup3.png" id="81_75q5j"]
+[ext_resource type="Texture2D" uid="uid://b03rhfx5i74m4" path="res://Sprites/SlashAnimations/slashup4.png" id="82_17bod"]
+[ext_resource type="Texture2D" uid="uid://d3j5lx8w1fpnk" path="res://Sprites/SlashAnimations/slashup5.png" id="83_lcmlb"]
+[ext_resource type="Texture2D" uid="uid://cdc6pflo36ku8" path="res://Sprites/SlashAnimations/slashup6.png" id="84_rd6wl"]
+[ext_resource type="Texture2D" uid="uid://b2cavsqwc4xcv" path="res://Sprites/SlashAnimations/slashup7.png" id="85_wrjhu"]
+[ext_resource type="Texture2D" uid="uid://bvn8k7o3i0tjd" path="res://Sprites/SlashAnimations/slashup8.png" id="86_dgsm4"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="87_hrkk2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_42qfe"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_o2bvh")
+}],
+"loop": true,
+"name": &"Carrot",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_bip2d")
+}],
+"loop": true,
+"name": &"Carrot_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_nxlcc")
+}],
+"loop": true,
+"name": &"GreenBean",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_aocfu")
+}],
+"loop": true,
+"name": &"GreenBean_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("6_hf3dj")
+}, {
+"duration": 0.75,
+"texture": ExtResource("7_fqmao")
+}, {
+"duration": 0.75,
+"texture": ExtResource("8_sude2")
+}, {
+"duration": 0.75,
+"texture": ExtResource("9_gul2t")
+}, {
+"duration": 0.75,
+"texture": ExtResource("10_d5gdg")
+}, {
+"duration": 0.75,
+"texture": ExtResource("11_ykvil")
+}, {
+"duration": 0.75,
+"texture": ExtResource("12_uafel")
+}, {
+"duration": 0.75,
+"texture": ExtResource("13_d7gmf")
+}],
+"loop": true,
+"name": &"Meat",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_72e5j")
+}],
+"loop": true,
+"name": &"Meat_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("15_simiy")
+}, {
+"duration": 0.75,
+"texture": ExtResource("16_sy7k2")
+}, {
+"duration": 0.75,
+"texture": ExtResource("17_2gdct")
+}, {
+"duration": 0.75,
+"texture": ExtResource("18_up3w0")
+}, {
+"duration": 0.75,
+"texture": ExtResource("19_b757b")
+}, {
+"duration": 0.75,
+"texture": ExtResource("20_oxffx")
+}, {
+"duration": 0.75,
+"texture": ExtResource("21_swed2")
+}, {
+"duration": 0.75,
+"texture": ExtResource("22_4wt2y")
+}],
+"loop": true,
+"name": &"Onion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("23_yyvh1")
+}],
+"loop": true,
+"name": &"Onion_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.75,
+"texture": ExtResource("24_5e5ht")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_xw08o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_bbve4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_ei0pf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_gld3k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_r71cb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_ovxbr")
+}],
+"loop": true,
+"name": &"Potato",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("31_jwwbd")
+}],
+"loop": true,
+"name": &"Potato_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("32_r84b3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_op3w6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_t0w07")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_praaa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_s1m0f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_lbaam")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_i0a1a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_vqxw1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_lq3v7")
+}],
+"loop": true,
+"name": &"Spring Onion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("41_ybi1l")
+}],
+"loop": true,
+"name": &"Spring Onion_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("42_vxkbo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_mgk2f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_ei6on")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45_dsggo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_5l4p7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_asti0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_v0h4k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_bqo5w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50_rjojg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("51_es6dy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("52_bc3ow")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_qv63t")
+}],
+"loop": true,
+"name": &"Tomato",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("54_qvj3f")
+}],
+"loop": true,
+"name": &"Tomato_chopped",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jooew"]
+animations = [{
+"frames": [{
+"duration": 0.2,
+"texture": ExtResource("55_gh76y")
+}, {
+"duration": 0.2,
+"texture": ExtResource("56_vns03")
+}, {
+"duration": 0.2,
+"texture": ExtResource("57_41hqq")
+}, {
+"duration": 0.2,
+"texture": ExtResource("58_xgpby")
+}, {
+"duration": 0.2,
+"texture": ExtResource("59_g8ycl")
+}, {
+"duration": 0.2,
+"texture": ExtResource("60_kwxei")
+}, {
+"duration": 0.2,
+"texture": ExtResource("61_mb7hm")
+}, {
+"duration": 0.2,
+"texture": ExtResource("62_0ngya")
+}],
+"loop": true,
+"name": &"slash_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.2,
+"texture": ExtResource("63_7sf28")
+}, {
+"duration": 0.2,
+"texture": ExtResource("64_mbbal")
+}, {
+"duration": 0.2,
+"texture": ExtResource("65_edavv")
+}, {
+"duration": 0.2,
+"texture": ExtResource("66_nuc38")
+}, {
+"duration": 0.2,
+"texture": ExtResource("67_bv527")
+}, {
+"duration": 0.2,
+"texture": ExtResource("68_quqkv")
+}, {
+"duration": 0.2,
+"texture": ExtResource("69_ceyff")
+}, {
+"duration": 0.2,
+"texture": ExtResource("70_rsxap")
+}],
+"loop": true,
+"name": &"slash_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.2,
+"texture": ExtResource("71_5x4yy")
+}, {
+"duration": 0.2,
+"texture": ExtResource("72_r664b")
+}, {
+"duration": 0.2,
+"texture": ExtResource("73_nt7gx")
+}, {
+"duration": 0.2,
+"texture": ExtResource("74_ghunb")
+}, {
+"duration": 0.2,
+"texture": ExtResource("75_2bd5x")
+}, {
+"duration": 0.2,
+"texture": ExtResource("76_lxn1v")
+}, {
+"duration": 0.2,
+"texture": ExtResource("77_qo5p4")
+}, {
+"duration": 0.2,
+"texture": ExtResource("78_q2x38")
+}],
+"loop": true,
+"name": &"slash_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.2,
+"texture": ExtResource("79_0bjxw")
+}, {
+"duration": 0.2,
+"texture": ExtResource("80_0k6pb")
+}, {
+"duration": 0.2,
+"texture": ExtResource("81_75q5j")
+}, {
+"duration": 0.2,
+"texture": ExtResource("82_17bod")
+}, {
+"duration": 0.2,
+"texture": ExtResource("83_lcmlb")
+}, {
+"duration": 0.2,
+"texture": ExtResource("84_rd6wl")
+}, {
+"duration": 0.2,
+"texture": ExtResource("85_wrjhu")
+}, {
+"duration": 0.2,
+"texture": ExtResource("86_dgsm4")
+}],
+"loop": true,
+"name": &"slash_up",
+"speed": 5.0
+}]
+
+[node name="VersusIngredient" type="Node2D"]
+script = ExtResource("1_0mpj1")
+
+[node name="InputDisplay" type="HBoxContainer" parent="."]
+offset_left = 515.0
+offset_top = 197.0
+offset_right = 621.0
+offset_bottom = 237.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(574, 278)
+scale = Vector2(2.82534, 2.82534)
+sprite_frames = SubResource("SpriteFrames_42qfe")
+animation = &"Carrot"
+
+[node name="Slash" type="AnimatedSprite2D" parent="AnimatedSprite2D"]
+position = Vector2(2.47757, 2.47758)
+sprite_frames = SubResource("SpriteFrames_jooew")
+animation = &"slash_up"
+
+[node name="Chopped" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(578, 280)
+scale = Vector2(2.57813, 2.57813)
+
+[node name="ComboLabel" type="Label" parent="."]
+visible = false
+offset_left = 546.0
+offset_top = 276.0
+offset_right = 607.0
+offset_bottom = 299.0
+theme = ExtResource("87_hrkk2")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "COMBO"
+
+[node name="SFX" type="AudioStreamPlayer" parent="."]
+volume_db = -6.803

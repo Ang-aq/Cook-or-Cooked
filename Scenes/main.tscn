@@ -62,8 +62,15 @@ _data = {
 [node name="Main" type="Node2D"]
 script = ExtResource("1_jjvhh")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = -113.0
+offset_right = 1322.0
+offset_bottom = 777.0
+color = Color(0, 0, 0, 1)
+
 [node name="FinalUi" type="Sprite2D" parent="."]
-position = Vector2(576.556, 323.75)
+position = Vector2(577, 324)
 scale = Vector2(0.600463, 0.600463)
 texture = ExtResource("2_fdnlq")
 
@@ -78,6 +85,14 @@ offset_bottom = 635.0
 theme = ExtResource("7_d1ilt")
 alignment = 1
 
+[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
+visible = false
+position = Vector2(-405, -213)
+sfx_up = null
+sfx_down = null
+sfx_left = null
+sfx_right = null
+
 [node name="IngredientContainer" type="Node2D" parent="."]
 
 [node name="BehindIngredients" type="Node2D" parent="IngredientContainer"]
@@ -88,14 +103,6 @@ scale = Vector2(0.608868, 0.611264)
 texture = ExtResource("13_fdnlq")
 
 [node name="FrontIngredients" type="Node2D" parent="IngredientContainer"]
-
-[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
-visible = false
-position = Vector2(-405, -213)
-sfx_up = null
-sfx_down = null
-sfx_left = null
-sfx_right = null
 
 [node name="Checklist" parent="." instance=ExtResource("5_kry3j")]
 offset_left = 919.0
@@ -229,5 +236,8 @@ offset_bottom = 648.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.618933, 1.73271e-06, 3.85046e-07, 1)
+
+[node name="KillLine" type="Node2D" parent="."]
+position = Vector2(-22, 654)
 
 [connection signal="timeout" from="TimerLabel/LevelTimer" to="." method="_on_level_timer_timeout"]

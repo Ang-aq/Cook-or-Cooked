@@ -7,6 +7,7 @@ var input_buffer: Array[String] = []
 
 signal sequence_submitted(sequence: Array[String])
 signal sequence_reset()
+signal buffer_changed(sequence: Array)
 
 # Map input symbols to textures
 var arrow_textures := {
@@ -20,36 +21,39 @@ var arrow_textures := {
 func _unhandled_input(event: InputEvent) -> void:
 	var added := false
 	var step_pressed := "" 
-	
+
 	if event.is_action_pressed("joystickUp"):
 		input_buffer.append("↑")
-		step_pressed = "↑" 
+		step_pressed = "↑"
 		added = true
 	elif event.is_action_pressed("joystickDown"):
 		input_buffer.append("↓")
-		step_pressed = "↓" 
+		step_pressed = "↓"
 		added = true
 	elif event.is_action_pressed("joystickLeft"):
 		input_buffer.append("←")
-		step_pressed = "←" 
+		step_pressed = "←"
 		added = true
 	elif event.is_action_pressed("joystickRight"):
 		input_buffer.append("→")
-		step_pressed = "→" 
+		step_pressed = "→"
 		added = true
-	elif event.is_action_pressed("joystickStart"): # Z
+	elif event.is_action_pressed("joystickStart"): # Z (submit)
 		input_buffer.append("Z")
 		emit_signal("sequence_submitted", input_buffer.duplicate())
+		# clear immediately after submission
 		input_buffer.clear()
 		added = true
-	elif event.is_action_pressed("joystickReset"): # X
+	elif event.is_action_pressed("joystickReset"): # X (reset)
 		input_buffer.clear()
 		emit_signal("sequence_reset")
 		added = true
 
 	if added:
 		_update_display()
-		
+		# notify listeners (boss) about the buffer change
+		emit_signal("buffer_changed", input_buffer.duplicate())
+
 		if step_pressed != "":
 			MusicManager.play_sfx("chop")
 

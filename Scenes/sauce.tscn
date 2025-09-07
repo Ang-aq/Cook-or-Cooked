@@ -1,0 +1,178 @@
+[gd_scene load_steps=11 format=3 uid="uid://731jqcbok6oa"]
+
+[ext_resource type="Script" uid="uid://bp5falxlnei1x" path="res://Scenes/sauce.gd" id="1_tndvy"]
+[ext_resource type="Texture2D" uid="uid://c2klevrkouk7q" path="res://Sprites/PowerUps/Sauce1.png" id="2_vpd58"]
+[ext_resource type="Texture2D" uid="uid://bpqdnsb6pqi42" path="res://Sprites/PowerUps/Sauce2.png" id="3_lpwec"]
+[ext_resource type="Texture2D" uid="uid://dn4m2ypij2eo2" path="res://Sprites/PowerUps/Sauce3.png" id="4_mrsuo"]
+[ext_resource type="Texture2D" uid="uid://cjv875arxltcx" path="res://Sprites/PowerUps/Sauce4.png" id="5_81v8y"]
+[ext_resource type="Texture2D" uid="uid://cl2ddwt0uh5wb" path="res://Sprites/PowerUps/Sauce5.png" id="6_vhstm"]
+[ext_resource type="Texture2D" uid="uid://b3vlyakeh2xeg" path="res://Sprites/PowerUps/Sauce6.png" id="7_t6qnv"]
+[ext_resource type="Texture2D" uid="uid://dy110c1wgvpx4" path="res://Sprites/PowerUps/Sauce7.png" id="8_nrput"]
+[ext_resource type="Texture2D" uid="uid://b0bqq77wu6cuw" path="res://Sprites/PowerUps/Sauce8.png" id="9_3nd5g"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7qncx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vpd58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_lpwec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mrsuo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_81v8y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vhstm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_t6qnv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nrput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3nd5g")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vpd58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_lpwec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mrsuo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_81v8y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vhstm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_t6qnv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nrput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3nd5g")
+}],
+"loop": true,
+"name": &"hot",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vpd58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_lpwec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mrsuo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_81v8y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vhstm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_t6qnv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nrput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3nd5g")
+}],
+"loop": true,
+"name": &"mystery",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vpd58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_lpwec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mrsuo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_81v8y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vhstm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_t6qnv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nrput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3nd5g")
+}],
+"loop": true,
+"name": &"soy",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_vpd58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_lpwec")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mrsuo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_81v8y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_vhstm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_t6qnv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_nrput")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_3nd5g")
+}],
+"loop": true,
+"name": &"sweet",
+"speed": 5.0
+}]
+
+[node name="Sauce" type="Node2D"]
+position = Vector2(0, 5)
+script = ExtResource("1_tndvy")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(545, 301)
+sprite_frames = SubResource("SpriteFrames_7qncx")
+animation = &"hot"
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="ComboDisplay" type="HBoxContainer" parent="."]
+offset_left = 394.0
+offset_top = 253.0
+offset_right = 694.0
+offset_bottom = 293.0
+alignment = 1
+metadata/_edit_use_anchors_ = true
