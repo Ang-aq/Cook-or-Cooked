@@ -64,7 +64,6 @@ offset_right = 750.0
 offset_bottom = 534.0
 
 [node name="WinLabel2" type="Label" parent="CanvasLayer/WinScreen"]
-layout_mode = 0
 offset_left = 427.0
 offset_top = 251.0
 offset_right = 726.0

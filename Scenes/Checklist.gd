@@ -45,35 +45,46 @@ func setup_checklist(ingredients: Dictionary) -> void:
 func update_progress(name: String, current: int) -> void:
 	if not ingredient_labels.has(name):
 		return
-		
+	
 	var label: Label = ingredient_labels[name]
+	if not is_instance_valid(label):
+		return
+
 	var required_count: int = ingredient_required[name]
 	label.text = "%s: %d / %d" % [name, current, required_count]
-	
+
 	# Strike-through once completed
-	if current >= required_count and label.get_meta("striked") != true:
+	if current >= required_count and (is_instance_valid(label) and label.get_meta("striked") != true):
 		# Create line
 		var line = ColorRect.new()
 		line.color = Color(1, 0, 0)
 		line.custom_minimum_size = Vector2(0, 2)  # start at 0 width
 		line.size_flags_horizontal = Control.SIZE_FILL
 		line.anchor_left = 0
-		line.anchor_right = 0   # keep right edge fixed while animating
+		line.anchor_right = 0
 		line.anchor_top = 0.3
 		line.anchor_bottom = 0.4
-		line.pivot_offset = Vector2(0, 1)  # pivot left
+		line.pivot_offset = Vector2(0, 1)
 
+		if not is_instance_valid(label):
+			return
 		label.add_child(line)
 
-		# Animate line width
-		await get_tree().process_frame  # let layout update so we know the label size
-		var target_width = label.size.x
-		
+		# Wait one frame so layout updates
+		await get_tree().process_frame
+
+		if not is_instance_valid(label):
+			return
+
+		var target_width = label.get_size().x  # safe in Godot 4
 		var tween := create_tween()
 		tween.tween_property(
 			line, "custom_minimum_size:x", target_width, 0.4
 		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		
-		MusicManager.play_sfx("crossout")
+		if MusicManager.has_method("play_sfx"):
+			MusicManager.play_sfx("crossout")
 		
-		label.set_meta("striked", true)
+		# Mark as striked only if label is still valid
+		if is_instance_valid(label):
+			label.set_meta("striked", true)
