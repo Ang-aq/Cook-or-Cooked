@@ -1,0 +1,265 @@
+[gd_scene load_steps=21 format=3 uid="uid://o4pm8thkwcly"]
+
+[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="1_pvapi"]
+[ext_resource type="Script" uid="uid://bpibvds2khp16" path="res://VersusScenes/versus_main.gd" id="1_yuico"]
+[ext_resource type="PackedScene" uid="uid://d0qhxxtsol2o6" path="res://VersusScenes/versus_player_input.tscn" id="2_fm825"]
+[ext_resource type="Texture2D" uid="uid://cql0s3kv1jml8" path="res://Sprites/versus.png" id="2_qimcy"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="4_vnwg8"]
+[ext_resource type="Script" uid="uid://37cm084c4yf2" path="res://VersusScenes/versus_player_input.gd" id="5_mrpgy"]
+[ext_resource type="Texture2D" uid="uid://bodvjdkk7mm34" path="res://Sprites/outsidePot.png" id="7_rtyx4"]
+[ext_resource type="Texture2D" uid="uid://d2bnqhva6ea4t" path="res://Sprites/VersusTutorial/2Player Tutorial2.png" id="8_y7uqg"]
+[ext_resource type="Texture2D" uid="uid://bvll1jr2gb1o2" path="res://Sprites/VersusTutorial/2Player Tutorial3.png" id="9_l7pi0"]
+[ext_resource type="Texture2D" uid="uid://th0ime2au0nr" path="res://Sprites/VersusTutorial/2Player Tutorial4.png" id="10_1hnvp"]
+[ext_resource type="Texture2D" uid="uid://38k8g6htxie" path="res://Sprites/VersusTutorial/2Player Tutorial5.png" id="11_dqvpy"]
+[ext_resource type="Texture2D" uid="uid://b7j2g5bilycgs" path="res://Sprites/VersusTutorial/2Player Tutorial6.png" id="12_mwhmf"]
+[ext_resource type="Texture2D" uid="uid://du6dq4ldpt2pj" path="res://Sprites/VersusTutorial/2Player Tutorial7.png" id="13_w3xoa"]
+[ext_resource type="Texture2D" uid="uid://bw5gnvcynp4yo" path="res://Sprites/VersusTutorial/2Player Tutorial8.png" id="14_3dret"]
+[ext_resource type="Texture2D" uid="uid://c645i6hn677jd" path="res://Sprites/VersusTutorial/2Player Tutorial9.png" id="14_dqvpy"]
+[ext_resource type="Texture2D" uid="uid://dbrj2xwwxu4fu" path="res://Sprites/VersusTutorial/2Player Tutorial10.png" id="15_mwhmf"]
+[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="15_y7uqg"]
+[ext_resource type="Texture2D" uid="uid://cy0rinkrhy673" path="res://Sprites/VersusTutorial/2Player Tutorial11.png" id="16_w3xoa"]
+[ext_resource type="Texture2D" uid="uid://w0yw0am6wubd" path="res://Sprites/VersusTutorial/2Player Tutorial12.png" id="17_3dret"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1bvec"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_dqvpy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_y7uqg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_l7pi0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_1hnvp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_dqvpy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mwhmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_w3xoa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_3dret")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_dqvpy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_mwhmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_w3xoa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_3dret")
+}],
+"loop": true,
+"name": &"tutorial",
+"speed": 5.0
+}]
+
+[node name="VersusMain" type="Node2D"]
+script = ExtResource("1_yuico")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(576, 324)
+scale = Vector2(0.60179, 0.607855)
+texture = ExtResource("2_qimcy")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="P2" type="Label" parent="CanvasLayer"]
+offset_left = 998.0
+offset_top = 200.0
+offset_right = 1133.0
+offset_bottom = 250.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "PLAYER 2"
+horizontal_alignment = 1
+
+[node name="P1" type="Label" parent="CanvasLayer"]
+offset_left = 20.0
+offset_top = 200.0
+offset_right = 154.0
+offset_bottom = 250.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 40
+text = "PLAYER 1"
+horizontal_alignment = 1
+
+[node name="ChecklistP1" parent="CanvasLayer" instance=ExtResource("1_pvapi")]
+offset_left = 22.0
+offset_top = 251.0
+offset_right = 154.0
+offset_bottom = 569.0
+theme = ExtResource("4_vnwg8")
+
+[node name="ChecklistP2" parent="CanvasLayer" instance=ExtResource("1_pvapi")]
+offset_left = 998.0
+offset_top = 251.0
+offset_right = 1130.0
+offset_bottom = 567.0
+theme = ExtResource("4_vnwg8")
+
+[node name="PlayerInputP1" parent="CanvasLayer" instance=ExtResource("2_fm825")]
+position = Vector2(16, 590)
+
+[node name="PlayerInputP2" parent="CanvasLayer" instance=ExtResource("2_fm825")]
+position = Vector2(870, 590)
+script = ExtResource("5_mrpgy")
+player_id = 2
+
+[node name="TimerLabel" type="Label" parent="CanvasLayer"]
+offset_left = 480.0
+offset_top = -1.0
+offset_right = 668.0
+offset_bottom = 107.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 100
+horizontal_alignment = 1
+
+[node name="WinScreen" type="Control" parent="CanvasLayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="CanvasLayer/WinScreen"]
+layout_mode = 0
+offset_left = 385.0
+offset_top = 171.0
+offset_right = 750.0
+offset_bottom = 534.0
+
+[node name="WinLabel2" type="Label" parent="CanvasLayer/WinScreen"]
+layout_mode = 0
+offset_left = 427.0
+offset_top = 251.0
+offset_right = 726.0
+offset_bottom = 333.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 50
+text = "Rematch?"
+horizontal_alignment = 1
+
+[node name="WinLabel" type="Label" parent="CanvasLayer/WinScreen"]
+layout_mode = 0
+offset_left = 423.0
+offset_top = 202.0
+offset_right = 722.0
+offset_bottom = 284.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 50
+horizontal_alignment = 1
+
+[node name="RematchButton" type="Button" parent="CanvasLayer/WinScreen"]
+layout_mode = 0
+offset_left = 462.0
+offset_top = 310.0
+offset_right = 682.0
+offset_bottom = 394.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 45
+text = "Yes ( Z )"
+
+[node name="MenuButton" type="Button" parent="CanvasLayer/WinScreen"]
+layout_mode = 0
+offset_left = 462.0
+offset_top = 405.0
+offset_right = 680.0
+offset_bottom = 490.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 45
+text = "No ( X )"
+
+[node name="TutorialScreen" type="Control" parent="CanvasLayer"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/TutorialScreen"]
+visible = false
+modulate = Color(0, 0, 0, 0.0901961)
+layout_mode = 0
+offset_right = 1148.0
+offset_bottom = 672.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CanvasLayer/TutorialScreen"]
+position = Vector2(574, 352)
+sprite_frames = SubResource("SpriteFrames_1bvec")
+animation = &"tutorial"
+frame_progress = 0.566542
+
+[node name="CountdownLabel" type="Label" parent="CanvasLayer"]
+offset_left = 483.0
+offset_top = 278.0
+offset_right = 681.0
+offset_bottom = 478.0
+theme = ExtResource("4_vnwg8")
+theme_override_font_sizes/font_size = 200
+horizontal_alignment = 1
+
+[node name="HeartsContainerP2" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 33.0
+offset_top = 14.0
+offset_right = 233.0
+offset_bottom = 78.0
+
+[node name="Heart" type="TextureRect" parent="CanvasLayer/HeartsContainerP2"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="Heart2" type="TextureRect" parent="CanvasLayer/HeartsContainerP2"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="Heart3" type="TextureRect" parent="CanvasLayer/HeartsContainerP2"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="HeartsContainerP1" type="HBoxContainer" parent="CanvasLayer"]
+offset_left = 913.0
+offset_top = 14.0
+offset_right = 1113.0
+offset_bottom = 78.0
+
+[node name="Heart" type="TextureRect" parent="CanvasLayer/HeartsContainerP1"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="Heart2" type="TextureRect" parent="CanvasLayer/HeartsContainerP1"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="Heart3" type="TextureRect" parent="CanvasLayer/HeartsContainerP1"]
+layout_mode = 2
+texture = ExtResource("15_y7uqg")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+modulate = Color(0, 0, 0, 0)
+offset_right = 1157.0
+offset_bottom = 655.0
+color = Color(0, 0, 0, 1)
+
+[node name="IngredientContainer" type="Node2D" parent="."]
+position = Vector2(-1, 6)
+
+[node name="OutsidePot" type="Sprite2D" parent="."]
+position = Vector2(588.837, 575)
+scale = Vector2(0.606889, 0.571429)
+texture = ExtResource("7_rtyx4")
+
+[connection signal="pressed" from="CanvasLayer/WinScreen/RematchButton" to="." method="_on_rematch_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/WinScreen/MenuButton" to="." method="_on_menu_button_pressed"]

@@ -1,84 +1,141 @@
-[gd_scene load_steps=4 format=3 uid="uid://d02wc3k6aphj"]
+[gd_scene load_steps=19 format=3 uid="uid://d02wc3k6aphj"]
 
 [ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scenes/titlescreen.gd" id="1_goadl"]
-[ext_resource type="Texture2D" uid="uid://bc65pbugdwam7" path="res://Sprites/main.png" id="2_u4xby"]
+[ext_resource type="Texture2D" uid="uid://dm2tawicka5hf" path="res://Sprites/Untitled design (4).png" id="3_47k5g"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="3_h87bp"]
+[ext_resource type="Texture2D" uid="uid://dxivbeum8k7ru" path="res://Sprites/title/title2.png" id="4_sn34e"]
+[ext_resource type="Texture2D" uid="uid://c1j8nxkpxihp6" path="res://Sprites/title/title3.png" id="5_47k5g"]
+[ext_resource type="Texture2D" uid="uid://h80wbldgfgle" path="res://Sprites/title/title4.png" id="6_blg7r"]
+[ext_resource type="Texture2D" uid="uid://bestrwd57j77" path="res://Sprites/title/title5.png" id="7_lonod"]
+[ext_resource type="Texture2D" uid="uid://dalddfe7y7ofk" path="res://Sprites/title/title6.png" id="8_ca13h"]
+[ext_resource type="Texture2D" uid="uid://cwd74oi28rmgs" path="res://Sprites/title/title7.png" id="9_do0x0"]
+[ext_resource type="Texture2D" uid="uid://bj5jds2pxxfyq" path="res://Sprites/title/title8.png" id="10_ubjdt"]
+[ext_resource type="Texture2D" uid="uid://qxil8igj6pmg" path="res://Sprites/title/title9.png" id="11_amkbd"]
+[ext_resource type="Texture2D" uid="uid://b7v24g18jhjqa" path="res://Sprites/title/title10.png" id="12_8l05y"]
+[ext_resource type="Texture2D" uid="uid://cd4xtiyhxn2to" path="res://Sprites/title/title11.png" id="13_m8gqo"]
+[ext_resource type="Texture2D" uid="uid://dxc6q0lcw1ruv" path="res://Sprites/title/title12.png" id="14_emcry"]
+[ext_resource type="Texture2D" uid="uid://b3t17fyq7sx70" path="res://Sprites/title/title13.png" id="15_68cui"]
+[ext_resource type="Texture2D" uid="uid://b20aimyttchd5" path="res://Sprites/title/title14.png" id="16_a8xdt"]
+[ext_resource type="Texture2D" uid="uid://bmtbs5w16mw2r" path="res://Sprites/title/title15.png" id="17_frh15"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7qi16"]
+animations = [{
+"frames": [{
+"duration": 5.0,
+"texture": ExtResource("4_sn34e")
+}, {
+"duration": 0.5,
+"texture": ExtResource("5_47k5g")
+}, {
+"duration": 0.5,
+"texture": ExtResource("6_blg7r")
+}, {
+"duration": 0.5,
+"texture": ExtResource("7_lonod")
+}, {
+"duration": 0.5,
+"texture": ExtResource("8_ca13h")
+}, {
+"duration": 0.5,
+"texture": ExtResource("9_do0x0")
+}, {
+"duration": 0.5,
+"texture": ExtResource("10_ubjdt")
+}, {
+"duration": 0.5,
+"texture": ExtResource("11_amkbd")
+}, {
+"duration": 0.5,
+"texture": ExtResource("12_8l05y")
+}, {
+"duration": 0.5,
+"texture": ExtResource("13_m8gqo")
+}, {
+"duration": 0.5,
+"texture": ExtResource("14_emcry")
+}, {
+"duration": 0.5,
+"texture": ExtResource("15_68cui")
+}, {
+"duration": 0.5,
+"texture": ExtResource("16_a8xdt")
+}, {
+"duration": 0.5,
+"texture": ExtResource("17_frh15")
+}],
+"loop": true,
+"name": &"title",
+"speed": 5.0
+}]
 
 [node name="TitleScreen" type="CanvasLayer"]
 script = ExtResource("1_goadl")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-offset_left = -174.0
-offset_top = -119.0
-offset_right = 1320.0
-offset_bottom = 771.0
-color = Color(0, 0, 0, 1)
-
 [node name="Main" type="Sprite2D" parent="."]
-position = Vector2(577, 322)
-texture = ExtResource("2_u4xby")
-
-[node name="Panel" type="Panel" parent="."]
-offset_left = 105.0
-offset_top = 198.0
-offset_right = 1058.0
-offset_bottom = 491.0
-
-[node name="Cook or Cooked" type="Label" parent="."]
-offset_left = 1.0
-offset_top = 207.0
-offset_right = 1177.0
-offset_bottom = 610.0
-theme = ExtResource("3_h87bp")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 150
-text = "Cook or Cooked
-"
-horizontal_alignment = 1
-
-[node name="Cook or Cooked2" type="Label" parent="Cook or Cooked"]
-layout_mode = 0
-offset_left = -4.0
-offset_top = -7.0
-offset_right = 1172.0
-offset_bottom = 396.0
-theme = ExtResource("3_h87bp")
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 150
-text = "Cook or Cooked
-"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="."]
-offset_left = 252.0
-offset_top = 521.0
-offset_right = 977.0
-offset_bottom = 572.0
-theme = ExtResource("3_h87bp")
-theme_override_font_sizes/font_size = 50
-text = "Use arrow Keys and enter to navigate"
+position = Vector2(583.199, 324)
+scale = Vector2(1.0125, 1.0125)
+texture = ExtResource("3_47k5g")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_left = 480.0
-offset_top = 352.0
-offset_right = 675.0
-offset_bottom = 458.0
+offset_left = 478.0
+offset_top = 414.0
+offset_right = 722.0
+offset_bottom = 520.0
 
 [node name="Solo" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("3_h87bp")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 50
 text = "Solo"
 
 [node name="Versus" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("3_h87bp")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 50
 text = "Versus (WIP)"
 
 [node name="Arrow" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 213.0
+offset_top = -215.0
+offset_right = 477.0
+offset_bottom = -164.0
 theme = ExtResource("3_h87bp")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 50
 text = ">"
+
+[node name="Title" type="AnimatedSprite2D" parent="."]
+position = Vector2(587, 216)
+scale = Vector2(1.72558, 1.72558)
+sprite_frames = SubResource("SpriteFrames_7qi16")
+animation = &"title"
+frame_progress = 0.967115
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 241.0
+offset_top = 587.0
+offset_right = 966.0
+offset_bottom = 638.0
+theme = ExtResource("3_h87bp")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 50
+text = "Use ARROW KEYS and Z to navigate"
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+modulate = Color(0, 0, 0, 0)
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 1160.0
+offset_bottom = 659.0
+color = Color(0, 0, 0, 1)

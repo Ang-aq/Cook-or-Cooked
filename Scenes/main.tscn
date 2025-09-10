@@ -74,17 +74,6 @@ position = Vector2(577, 324)
 scale = Vector2(0.600463, 0.600463)
 texture = ExtResource("2_fdnlq")
 
-[node name="PlayerInput" type="Node" parent="."]
-script = ExtResource("4_jjvhh")
-
-[node name="InputDisplay" type="HBoxContainer" parent="PlayerInput"]
-offset_left = 155.0
-offset_top = 490.0
-offset_right = 718.0
-offset_bottom = 635.0
-theme = ExtResource("7_d1ilt")
-alignment = 1
-
 [node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
 visible = false
 position = Vector2(-405, -213)
@@ -104,32 +93,27 @@ texture = ExtResource("13_fdnlq")
 
 [node name="FrontIngredients" type="Node2D" parent="IngredientContainer"]
 
-[node name="Checklist" parent="." instance=ExtResource("5_kry3j")]
-offset_left = 919.0
-offset_top = 273.0
-offset_right = 1096.0
-offset_bottom = 457.0
-theme = ExtResource("7_d1ilt")
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="HeartsContainer" type="HBoxContainer" parent="."]
+[node name="HeartsContainer" type="HBoxContainer" parent="UI"]
 offset_left = 913.0
 offset_top = 14.0
 offset_right = 1113.0
 offset_bottom = 78.0
 
-[node name="Heart" type="TextureRect" parent="HeartsContainer"]
+[node name="Heart" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
 
-[node name="Heart2" type="TextureRect" parent="HeartsContainer"]
+[node name="Heart2" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
 
-[node name="Heart3" type="TextureRect" parent="HeartsContainer"]
+[node name="Heart3" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
 
-[node name="ComboLabel" type="Label" parent="."]
+[node name="ComboLabel" type="Label" parent="UI"]
 offset_left = 18.0
 offset_top = 27.0
 offset_right = 217.0
@@ -138,6 +122,24 @@ theme = ExtResource("7_d1ilt")
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 script = ExtResource("7_hptm8")
+
+[node name="Checklist" parent="UI" instance=ExtResource("5_kry3j")]
+offset_left = 919.0
+offset_top = 273.0
+offset_right = 1096.0
+offset_bottom = 457.0
+theme = ExtResource("7_d1ilt")
+
+[node name="PlayerInput" type="Node" parent="UI"]
+script = ExtResource("4_jjvhh")
+
+[node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
+offset_left = 155.0
+offset_top = 490.0
+offset_right = 718.0
+offset_bottom = 635.0
+theme = ExtResource("7_d1ilt")
+alignment = 1
 
 [node name="WinOverlay" type="CanvasLayer" parent="."]
 

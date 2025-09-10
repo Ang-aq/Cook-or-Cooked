@@ -1,4 +1,3 @@
-# res://Scripts/VersusPlayerInput.gd
 extends Node
 
 @export var player_id: int = 1

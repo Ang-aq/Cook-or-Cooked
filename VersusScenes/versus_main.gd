@@ -5,38 +5,67 @@ extends Node2D
 @onready var ingredient_scene: PackedScene = preload("res://VersusScenes/versus_ingredient.tscn")
 
 # UI nodes (set in scene)
+@onready var fade_rect: ColorRect = $CanvasLayer/TutorialScreen/ColorRect
 @onready var checklist_p1: Control = $CanvasLayer/ChecklistP1
 @onready var checklist_p2: Control = $CanvasLayer/ChecklistP2
 @onready var player_input_p1: Node = $CanvasLayer/PlayerInputP1
 @onready var player_input_p2: Node = $CanvasLayer/PlayerInputP2
 @onready var ingredient_container: Node2D = $IngredientContainer
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
+@onready var tutorial_screen: Control = $CanvasLayer/TutorialScreen
+@onready var tutorial_anim: AnimatedSprite2D = $CanvasLayer/TutorialScreen/AnimatedSprite2D
+var tutorial_shown := true 
+@onready var countdown_label: Label = $CanvasLayer/CountdownLabel
 
 # Tunables
-@export var spawn_interval: float = 1.2
+@export var spawn_interval: float = 0.8
 @export var spawn_min_x: float = -300.0
 @export var spawn_max_x: float = 300.0
 @export var spawn_start_y: float = -100.0
-@export var round_time: float = 20.0   # length of round
+@export var round_time: float = 90.0   # length of round
 
 # Game Finished!
 @onready var win_screen: Control = $CanvasLayer/WinScreen
 @onready var win_label: Label = $CanvasLayer/WinScreen/WinLabel
 @onready var rematch_button: Button = $CanvasLayer/WinScreen/RematchButton
 @onready var menu_button: Button = $CanvasLayer/WinScreen/MenuButton
+
 # State
 var spawn_timer: float = 0.0
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var time_left: float = 0.0
+var gameplay_paused: bool = false
+
+# HEARTS (versus mode: internal 6 lives per player, show 3 hearts UI)
+@export var lives_per_player: int = 6   # real lives (6 halves)
+@onready var hearts_p1: HBoxContainer = $CanvasLayer/HeartsP1
+@onready var hearts_p2: HBoxContainer = $CanvasLayer/HeartsP2
+
+# preload heart textures (adjust paths to your project)
+@onready var tex_heart_full: Texture2D = preload("res://Sprites/HeartFull.png")
+@onready var tex_heart_half: Texture2D = preload("res://Sprites/HeartHalf2.png")
+@onready var tex_heart_empty: Texture2D = preload("res://Sprites/blank3.png")
+
+# actual lives state (1..6 for each player)
+var lives: Dictionary = {1: lives_per_player, 2: lives_per_player}
 
 var dish_list: Array = [
 	# Dish 1
-	{"Tomato": {"count":3, "combo":["→","Z"]}, 
+	{"Tomato": {"count":3, "combo":["→","→","Z"]}, 
 	"Onion": {"count":2, "combo":["↓","Z"]}
 	},
 	# Dish 2
 	{"Carrot": {"count":2, "combo":["↑","Z"]},
 	 "Meat": {"count":2, "combo":["←","→","Z"]}
+	},
+	# Dish 3
+	{"Spring Onion":  {"count":2, "combo": ["←","↓","Z"]},
+	 "Meat":   {"count":2,"combo": ["→","↑","Z"]},
+	},
+	# Dish 4
+	{"Potato": {"count":1,"combo": ["↑","↓","Z"]},
+	"Carrot": {"count":1, "combo": ["↑","↑","↑","Z"],},
+	"Onion":  {"count":1, "combo": ["←","→","↓","Z"]}
 	}
 ]
 
@@ -48,12 +77,30 @@ var dishes_completed: Dictionary = {1: 0, 2: 0}
 var reserved_map: Dictionary = {}  # ingredient_node -> player_id
 
 func _ready() -> void:
+	fade_rect.modulate.a = 1.0   # start fully black
+	fade_rect.visible = true
+	await fade_in(0.5)
+	
+	lives[1] = lives_per_player
+	lives[2] = lives_per_player
+	_update_player_hearts_ui(1)
+	_update_player_hearts_ui(2)
+	
 	rng.randomize()
 	spawn_timer = spawn_interval
 	time_left = round_time
 	_update_timer_label()
 	
-	# ensure VersusMain is in "Game" group so Ingredient nodes that look for the Game node can find something
+	# Background music
+	var bgm = preload("res://Audio/bgm.ogg")
+	MusicManager.play_bgm(bgm, true)
+	
+	# Initialize win screen
+	if win_screen:
+		win_screen.visible = false
+		win_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	# Ensure VersusMain is in "Game" group (for Ingredient nodes to find it)
 	if not is_in_group("Game"):
 		add_to_group("Game")
 
@@ -63,52 +110,148 @@ func _ready() -> void:
 	print("PlayerInput P1:", player_input_p1, "PlayerInput P2:", player_input_p2)
 	print("Ingredient container:", ingredient_container)
 
+	# Setup initial checklists
 	_setup_checklist_for_player(1)
 	_setup_checklist_for_player(2)
 
-	# connect player input signals (make sure the nodes are instances of VersusPlayerInput)
+	# Connect player input signals (ensure PlayerInput nodes are correct type)
 	if player_input_p1:
-		player_input_p1.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
-		player_input_p1.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
+		if player_input_p1.has_signal("sequence_submitted"):
+			player_input_p1.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
+		if player_input_p1.has_signal("sequence_reset"):
+			player_input_p1.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
 		print("Connected P1 input signals")
+
 	if player_input_p2:
-		player_input_p2.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
-		player_input_p2.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
+		if player_input_p2.has_signal("sequence_submitted"):
+			player_input_p2.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
+		if player_input_p2.has_signal("sequence_reset"):
+			player_input_p2.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
 		print("Connected P2 input signals")
-	
+
+	# Connect win screen buttons
 	if rematch_button:
-		rematch_button.pressed.connect(_on_rematch_button_pressed)
+		rematch_button.pressed.connect(Callable(self, "_on_rematch_button_pressed"))
+		print("Connected rematch_button pressed signal")
 	if menu_button:
-		menu_button.pressed.connect(_on_menu_button_pressed)
+		menu_button.pressed.connect(Callable(self, "_on_menu_button_pressed"))
+		print("Connected menu_button pressed signal")
+
+	# --- IMPORTANT FIX ---
+	# Prevent round timer and spawns from running until tutorial + countdown are done
+	gameplay_paused = true
+
+	# Show tutorial immediately on match start
+	_show_tutorial()
 
 func _process(delta: float) -> void:
-	# Timer
-	if time_left > 0:
-		time_left -= delta
-		if time_left <= 0:
-			time_left = 0
-			_end_round()
-		_update_timer_label()
+	# -----------------
+	# Handle gameplay if not paused
+	# -----------------
+	if not gameplay_paused:
+		# Timer
+		if time_left > 0:
+			time_left -= delta
+			if time_left <= 0:
+				time_left = 0
+				_end_round()
+			_update_timer_label()
 
-	# Spawning
-	spawn_timer -= delta
-	if spawn_timer <= 0:
-		_try_spawn_ingredient()
-		spawn_timer = spawn_interval
+		# Spawning
+		spawn_timer -= delta
+		if spawn_timer <= 0:
+			_try_spawn_ingredient()
+			spawn_timer = spawn_interval
 
-	# Allow pressing Z/X to trigger buttons when win screen is visible
+	# -----------------
+	# Handle win screen input regardless of pause
+	# -----------------
 	if win_screen and win_screen.visible:
-		if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("z"): # Z
+		if Input.is_action_just_pressed("joystickStart"): # Z
 			if rematch_button:
 				_on_rematch_button_pressed()
-		if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("x"): # X
+		if Input.is_action_just_pressed("joystickReset"): # X
 			if menu_button:
 				_on_menu_button_pressed()
+
+func fade_out(time: float = 1.0) -> void:
+	fade_rect.visible = true
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = timer / time
+		await RenderingServer.frame_post_draw  # wait one frame safely
+	fade_rect.modulate.a = 1.0
+
+
+func fade_in(time: float = 1.0) -> void:
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = 1.0 - (timer / time)
+		await RenderingServer.frame_post_draw
+	fade_rect.modulate.a = 0.0
+	fade_rect.visible = false
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+# Tutorial UI
+func _show_tutorial() -> void:
+	if tutorial_screen:
+		tutorial_screen.visible = true
+		if tutorial_anim:
+			tutorial_anim.play("tutorial")
+			print("Tutorial animation started")
+	
+	tutorial_shown = true
+	gameplay_paused = true  # freeze game
+
+	# Pause gameplay nodes
+	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
+		node.set_process(false)
+		node.set_physics_process(false)
+
+func _hide_tutorial():
+	tutorial_screen.visible = false
+	tutorial_shown = false
+
+	# Start countdown AFTER tutorial closes
+	await _start_countdown()
+
+	# Now unpause gameplay
+	_resume_gameplay_nodes()
+	gameplay_paused = false
+
+func _unhandled_input(event):
+	if tutorial_screen.visible and event.is_pressed() and (event is InputEventKey or event is InputEventJoypadButton):
+		_hide_tutorial()
+
+func _start_countdown() -> void:
+	countdown_label.visible = true
+	gameplay_paused = true  # still paused during countdown
+
+	var countdown_numbers: Array = [3, 2, 1]
+	for number in countdown_numbers:
+		countdown_label.text = str(number)
+		await RenderingServer.frame_post_draw
+		await get_tree().create_timer(1.0).timeout
+
+	countdown_label.text = "Go!"
+	await RenderingServer.frame_post_draw
+	await get_tree().create_timer(0.5).timeout
+
+	countdown_label.visible = false
+	# DO NOT unpause here — _hide_tutorial() will do that after countdown finishes
+
+func _resume_gameplay_nodes() -> void:
+	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
+		node.set_process(true)
+		node.set_physics_process(true)
 
 # Checklist setup per player
 func _setup_checklist_for_player(player_id: int) -> void:
 	var dish_index: int
-
+	
 	if dish_list.size() == 0:
 		return  # no dishes defined
 
@@ -186,7 +329,8 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 		var node = ingredient_container.get_child(i)
 		if not is_instance_valid(node):
 			continue
-		# only handle Ingredient-derived nodes (your Ingredient.gd has class_name Ingredient)
+		# only handle Ingredient-derived nodes (your Ingredient.gd should ideally have `class_name Ingredient`)
+		# If you don't use class_name, remove the `is Ingredient` check
 		if not (node is Ingredient):
 			continue
 		# skip already chopped
@@ -202,24 +346,28 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 					break
 
 			if eq:
-				# Reserve via VersusIngredient
+				# Reserve via VersusIngredient (this sets node.reserved_by)
 				if node.has_method("reserve") and node.reserve(player_id):
+					# store reservation locally for fallback lookup and bookkeeping
 					reserved_map[node] = player_id
 					print("Reserved node %s for player %d" % [node.name, player_id])
+
+					# IMPORTANT: call the parent's play_slash_sequence signature (single arg).
+					# VersusIngredient.play_slash_sequence will color the slash using node.reserved_by.
 					if node.has_method("play_slash_sequence"):
 						node.play_slash_sequence(clean_sequence)
+
 					matched = true
 					break
 				else:
+					# already reserved by other player
 					print("Node %s already reserved" % node.name)
 					break
 
+	# feedback for wrong combo
 	if not matched:
-		# wrong combo — give feedback
-		var mm = get_tree().get_root().get_node_or_null("/root/MusicManager")
-		if mm and mm.has_method("play_sfx"):
-			mm.play_sfx("wrong")
-		print("Player %d wrong combo" % player_id)
+		_lose_half_heart(player_id, "Wrong combo!")
+		print("Player %d wrong combo -> lost half heart" % player_id)
 
 	_clear_player_input(player_id)
 
@@ -289,7 +437,7 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 	if dish_index < 0 or dish_index >= dish_list.size():
 		print("Invalid dish index for player", credited_player)
 		return
-
+	
 	var dish: Dictionary = dish_list[dish_index]
 	if not dish.has(ingredient_name):
 		# Ingredient not required for this dish
@@ -298,8 +446,12 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 			target_node.flash_x()
 		if reserved_map.has(target_node):
 			reserved_map.erase(target_node)
+		# penalize credited player for adding wrong ingredient
+		if credited_player > 0:
+			_lose_half_heart(credited_player, "Wrong ingredient!")
 		return
-
+	
+	
 	var prev: int = collected_counts[credited_player].get(ingredient_name, 0)
 	var req: int = int(dish[ingredient_name]["count"])
 
@@ -308,13 +460,15 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 		if target_node.has_method("flash_x"):
 			target_node.flash_x()
 		print("Versus: Player %d tried to add too many %s" % [credited_player, ingredient_name])
+		if credited_player > 0:
+			_lose_half_heart(credited_player, "Too many %s!" % ingredient_name)
 	else:
 		# credit the ingredient
 		collected_counts[credited_player][ingredient_name] = prev + 1
 		var checklist = checklist_p1 if credited_player == 1 else checklist_p2
 		if checklist and checklist.has_method("update_progress"):
 			checklist.update_progress(ingredient_name, collected_counts[credited_player][ingredient_name])
-
+	
 	# check if dish is finished
 	var finished: bool = true
 	for name in dish.keys():
@@ -335,7 +489,7 @@ func _on_player_finished_dish(player_id: int) -> void:
 	# Increment completed count
 	dishes_completed[player_id] += 1
 	print("Player %d finished a dish! Total completed: %d" % [player_id, dishes_completed[player_id]])
-
+	
 	# Pick a new random dish
 	if dish_list.size() > 0:
 		var new_index = rng.randi_range(0, dish_list.size() - 1)
@@ -344,7 +498,7 @@ func _on_player_finished_dish(player_id: int) -> void:
 	else:
 		print("No dishes defined in dish_list!")
 		return
-
+		
 	# Reset collected counts for this player
 	collected_counts[player_id] = {}
 	var new_dish: Dictionary = dish_list[current_dish_index[player_id]]
@@ -363,7 +517,13 @@ func _on_player_finished_dish(player_id: int) -> void:
 		print("Checklist node missing or has no setup_checklist() for player", player_id)
 
 func _end_round() -> void:
-	get_tree().paused = true
+	# Stop gameplay nodes
+	gameplay_paused = true
+	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
+		node.set_process(false)
+		node.set_physics_process(false)
+		
+	# Determine winner
 	var message := ""
 	if dishes_completed[1] > dishes_completed[2]:
 		message = "Player 1 Wins!"
@@ -371,24 +531,128 @@ func _end_round() -> void:
 		message = "Player 2 Wins!"
 	else:
 		message = "Draw!"
-
 	print(message)
-
+	
 	# Show win screen
 	if win_screen and win_label:
 		win_label.text = message
 		win_screen.visible = true
+		win_screen.mouse_filter = Control.MOUSE_FILTER_STOP  # let it capture clicks
 		
+		# Ensure win_screen is in front of other Controls
+		if win_screen.has_method("move_to_front"):
+			win_screen.move_to_front()  # Godot 4
+		elif win_screen.has_method("raise"):
+			win_screen.raise()  # Godot 3 fallback
+		else:
+			# fallback: reparent to end of siblings (highest draw order)
+			var parent = win_screen.get_parent()
+			if parent:
+				parent.move_child(win_screen, parent.get_child_count() - 1)
+		
+		print("Win screen shown and brought to front")
+
 func _update_timer_label() -> void:
 	if timer_label:
 		timer_label.text = str(int(ceil(time_left)))
 
 func _on_rematch_button_pressed() -> void:
-	print("Rematch pressed (button or key)")
-	get_tree().paused = false
-	get_tree().reload_current_scene()
+	print("_on_rematch_button_pressed() called")
+	await fade_out(0.5)
+	# Explicitly change to the versus scene file so it always reloads a fresh copy
+	var err = get_tree().change_scene_to_file("res://VersusScenes/versus_main.tscn")
+	if err != OK:
+		push_error("Failed to change to versus_main.tscn (err %s)" % str(err))
 
 func _on_menu_button_pressed() -> void:
-	print("Menu pressed (button or key)")
-	get_tree().paused = false
+	print("_on_menu_button_pressed() called")
+	await fade_out(0.5)
 	get_tree().change_scene_to_file("res://Scenes/titlescreen.tscn")
+
+func _update_player_hearts_ui(player_id: int) -> void:
+	# pick the correct HBox for this player
+	var container: HBoxContainer = hearts_p1 if player_id == 1 else hearts_p2
+	if container == null:
+		return
+
+	# total lives (0..lives_per_player)
+	var total_lives: int = int(lives.get(player_id, lives_per_player))
+	
+	# update 3 on-screen hearts (each heart represents two internal "half-lives")
+	for i in range(3):
+		if i >= container.get_child_count():
+			continue
+		var heart_sprite := container.get_child(i) as TextureRect
+		if heart_sprite == null:
+			continue
+
+		# compute how many half-lives this particular heart still has (0..2)
+		var lives_for_heart: int = clamp(total_lives - (i * 2), 0, 2)
+		match lives_for_heart:
+			2:
+				heart_sprite.texture = tex_heart_full
+				heart_sprite.visible = true
+			1:
+				heart_sprite.texture = tex_heart_half
+				heart_sprite.visible = true
+			_:
+				heart_sprite.texture = tex_heart_empty
+				heart_sprite.visible = true
+
+func _lose_half_heart(player_id: int, reason: String = "") -> void:
+	# decrement by 1 (one half-heart)
+	if not lives.has(player_id):
+		lives[player_id] = lives_per_player
+	lives[player_id] = max(0, lives[player_id] - 1)
+	
+	# SFX
+	var mm = get_tree().get_root().get_node_or_null("/root/MusicManager")
+	if mm and mm.has_method("play_sfx"):
+		mm.play_sfx("wrong")
+
+	# Refresh the visual hearts
+	_update_player_hearts_ui(player_id)
+
+	# Visual pulse on the heart that changed
+	# compute index for the heart to pulse
+	var heart_index: int = clamp(int(lives[player_id] / 2), 0, 2)
+	var container := hearts_p1 if player_id == 1 else hearts_p2
+	if container and heart_index < container.get_child_count():
+		var theart := container.get_child(heart_index) as TextureRect
+		if theart:
+			var tween := create_tween()
+			tween.tween_property(theart, "scale", Vector2(1.15, 1.15), 0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+			tween.tween_property(theart, "scale", Vector2(1, 1), 0.12).set_delay(0.08)
+	
+	# optional popup with a reason
+#	if reason != "":
+#		var popup_pos := Vector2.ZERO
+#		var root_view := get_viewport()
+#		if root_view:
+#			popup_pos = root_view.get_visible_rect().size * 0.5
+#		_spawn_text_popup(reason, popup_pos)
+	
+	# check elimination
+	if lives[player_id] <= 0:
+		_on_player_eliminated(player_id)
+	
+func _on_player_eliminated(player_id: int) -> void:
+	# determine winner: the other player
+	var winner := 2 if player_id == 1 else 1
+
+	# Stop gameplay
+	gameplay_paused = true
+	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
+		node.set_process(false)
+		node.set_physics_process(false)
+
+	# Show winner on the win screen
+	if win_label:
+		win_label.text = "Player %d Wins!" % winner
+	if win_screen:
+		win_screen.visible = true
+		win_screen.mouse_filter = Control.MOUSE_FILTER_STOP
+		# bring to front
+		var parent := win_screen.get_parent()
+		if parent:
+			parent.move_child(win_screen, parent.get_child_count() - 1)

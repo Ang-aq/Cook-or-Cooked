@@ -4,9 +4,9 @@ extends Node2D
 @onready var ingredient_scene: PackedScene = preload("res://Scenes/Ingredients/Ingredients.tscn")
 @onready var text_popup_scene: PackedScene = preload("res://Scenes/text_popup.tscn")
 @onready var sauce_scene: PackedScene = preload("res://Scenes/sauce.tscn")
-@onready var player_input: Node = $PlayerInput
+@onready var player_input: Node = $UI/PlayerInput
 @onready var ingredient_container: Node2D = $IngredientContainer
-@onready var checklist_ui: Control = $Checklist
+@onready var checklist_ui: Control = $UI/Checklist
 @onready var dish_ui: Control = $WinOverlay/DishCompleteUI   # expects `show_dish(texture, name)`
 @onready var win_overlay: CanvasLayer = $WinOverlay
 @onready var pest_manager: Node = $PestManager
@@ -14,6 +14,7 @@ extends Node2D
 @onready var boss_spawn: Node2D = $BossSpawn
 @onready var damage_flash: ColorRect = $DamageFlash
 @onready var kill_line: Node2D = $KillLine
+@export var max_input_length: int = 10
 
 # Pests
 @onready var pest_scene: PackedScene = preload("res://Scenes/mosquito.tscn")
@@ -44,11 +45,11 @@ var sauce_max_cooldown: float = 8.0 # 8
 
 # State
 var current_hearts: int = max_hearts
-@onready var hearts_ui: HBoxContainer = $HeartsContainer
+@onready var hearts_ui: HBoxContainer = $UI/HeartsContainer
 
 var combo: int = 0
 var highest_combo: int = 0
-@onready var combo_label: Label = $ComboLabel
+@onready var combo_label: Label = $UI/ComboLabel
 
 var required_ingredients: Dictionary = {}   # filled per-level by _load_level()
 var collected_counts: Dictionary = {}
@@ -77,17 +78,16 @@ var ingredient_speed_multiplier: float = 1.0  # 1 = normal speed
 func _ready() -> void:
 	add_to_group("Game")
 	MusicManager.set_all_sfx_volume(5)
-	MusicManager.set_sfx_volume_for("slzzash",20)
+	MusicManager.set_sfx_volume_for("slash",20)
 	# sauce
 	rng.randomize()
 	# set cooldown so first sauce won't spawn immediately
 	sauce_cooldown = rng.randf_range(sauce_min_cooldown, sauce_max_cooldown)
 	
-	# pot (remove later...)
-	pot_node.z_index = 10
-	pot_node.z_as_relative = false
+	pot_node.z_index = 10 
+	pot_node.z_as_relative = false 
 	pot_node = $IngredientContainer/Pot
-
+	
 	# BGM 
 	var title_music = preload("res://Audio/bgm.ogg")
 	MusicManager.play_bgm(title_music, true)
@@ -125,7 +125,7 @@ func _lose_heart(reason: String) -> void:
 	_update_combo_ui()
 	_update_hearts_ui()
 	MusicManager.play_sfx("wrong")
-
+	
 	#  TEXT POPUP 
 	var popup_pos: Vector2
 	if is_instance_valid(pot_node):
@@ -133,9 +133,9 @@ func _lose_heart(reason: String) -> void:
 	else:
 		# fallback: screen center
 		popup_pos = get_viewport().get_visible_rect().size * 0.5
-
+	
 	_spawn_text_popup(reason, popup_pos)
-
+	
 	#  DAMAGE FLASH 
 	if damage_flash:
 		damage_flash.visible = true
@@ -302,23 +302,30 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 
 # Main process
 func _process(delta: float) -> void:
-	# Stop all game logic if paused (e.g. dish overlay)
 	if game_paused:
 		return
-		
+
+	# --- Input limiter ---
+	if "input_buffer" in player_input:
+		while player_input.input_buffer.size() > max_input_length:
+			player_input.input_buffer.pop_front()  # remove oldest input
+		if player_input.has_method("_update_display"):
+			player_input._update_display()
+	
+	# sauce spawning
 	sauce_cooldown -= delta
 	if sauce_cooldown <= 0.0:
 		if rng.randf() < 0.1:  
 			spawn_sauce()	
 		sauce_cooldown = rng.randf_range(sauce_min_cooldown, sauce_max_cooldown)	
 		
-	# Ingredient spawn handling
+	# ingredient spawning
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
 		_try_spawn_needed()
 		spawn_timer = spawn_interval
 		
-	# Dish completion check
+	# dish completion check
 	if not dish_completed and _all_ingredients_collected():
 		_on_dish_completed()
 
@@ -429,7 +436,7 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		return
 		
 	# Level speed
-	var base_speed := 120.0
+	var base_speed := 130.0
 	var level_index := LevelManager.current_level
 	var speed_multiplier := 0.7 + (level_index * 0.15)
 	ing.speed = base_speed * speed_multiplier

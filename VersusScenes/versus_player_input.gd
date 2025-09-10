@@ -29,23 +29,25 @@ func _unhandled_input(event: InputEvent) -> void:
 	var added := false
 	var step_pressed := ""
 
-	if event.is_action_pressed(map.up):
+	if event.is_action_pressed(map.up) and input_buffer.size() < max_buffer_size:
 		input_buffer.append("↑"); step_pressed = "↑"; added = true
-	elif event.is_action_pressed(map.down):
+	elif event.is_action_pressed(map.down) and input_buffer.size() < max_buffer_size:
 		input_buffer.append("↓"); step_pressed = "↓"; added = true
-	elif event.is_action_pressed(map.left):
+	elif event.is_action_pressed(map.left) and input_buffer.size() < max_buffer_size:
 		input_buffer.append("←"); step_pressed = "←"; added = true
-	elif event.is_action_pressed(map.right):
+	elif event.is_action_pressed(map.right) and input_buffer.size() < max_buffer_size:
 		input_buffer.append("→"); step_pressed = "→"; added = true
 	elif event.is_action_pressed(map.submit):
-		input_buffer.append("Z")
-		emit_signal("sequence_submitted", input_buffer.duplicate(), player_id)
-		input_buffer.clear()
-		added = true
+		if input_buffer.size() > 0:
+			input_buffer.append("Z")
+			emit_signal("sequence_submitted", input_buffer.duplicate(), player_id)
+			input_buffer.clear()
+			added = true
 	elif event.is_action_pressed(map.reset):
-		input_buffer.clear()
-		emit_signal("sequence_reset", player_id)
-		added = true
+		if input_buffer.size() > 0:
+			input_buffer.clear()
+			emit_signal("sequence_reset", player_id)
+			added = true
 
 	if added:
 		_update_display()
