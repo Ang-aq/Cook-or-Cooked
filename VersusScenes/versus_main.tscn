@@ -1,12 +1,13 @@
-[gd_scene load_steps=20 format=3 uid="uid://o4pm8thkwcly"]
+[gd_scene load_steps=24 format=3 uid="uid://o4pm8thkwcly"]
 
 [ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="1_pvapi"]
 [ext_resource type="Script" uid="uid://bpibvds2khp16" path="res://VersusScenes/versus_main.gd" id="1_yuico"]
 [ext_resource type="PackedScene" uid="uid://d0qhxxtsol2o6" path="res://VersusScenes/versus_player_input.tscn" id="2_fm825"]
 [ext_resource type="Texture2D" uid="uid://cql0s3kv1jml8" path="res://Sprites/versus.png" id="2_qimcy"]
+[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="3_w3xoa"]
+[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="4_3dret"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="4_vnwg8"]
 [ext_resource type="Script" uid="uid://37cm084c4yf2" path="res://VersusScenes/versus_player_input.gd" id="5_mrpgy"]
-[ext_resource type="Texture2D" uid="uid://bodvjdkk7mm34" path="res://Sprites/outsidePot.png" id="7_rtyx4"]
 [ext_resource type="Texture2D" uid="uid://d2bnqhva6ea4t" path="res://Sprites/VersusTutorial/2Player Tutorial2.png" id="8_y7uqg"]
 [ext_resource type="Texture2D" uid="uid://bvll1jr2gb1o2" path="res://Sprites/VersusTutorial/2Player Tutorial3.png" id="9_l7pi0"]
 [ext_resource type="Texture2D" uid="uid://th0ime2au0nr" path="res://Sprites/VersusTutorial/2Player Tutorial4.png" id="10_1hnvp"]
@@ -18,6 +19,22 @@
 [ext_resource type="Texture2D" uid="uid://dbrj2xwwxu4fu" path="res://Sprites/VersusTutorial/2Player Tutorial10.png" id="15_mwhmf"]
 [ext_resource type="Texture2D" uid="uid://cy0rinkrhy673" path="res://Sprites/VersusTutorial/2Player Tutorial11.png" id="16_w3xoa"]
 [ext_resource type="Texture2D" uid="uid://w0yw0am6wubd" path="res://Sprites/VersusTutorial/2Player Tutorial12.png" id="17_3dret"]
+[ext_resource type="PackedScene" uid="uid://dnq3yw7jvd42m" path="res://VersusScenes/dish_mini.tscn" id="18_dqvpy"]
+[ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="21_1bvec"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1hnvp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_w3xoa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_3dret")
+}],
+"loop": true,
+"name": &"boil",
+"speed": 5.0
+}]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_1bvec"]
 animations = [{
@@ -70,6 +87,12 @@ script = ExtResource("1_yuico")
 position = Vector2(576, 324)
 scale = Vector2(0.60179, 0.607855)
 texture = ExtResource("2_qimcy")
+
+[node name="Pot" type="AnimatedSprite2D" parent="."]
+position = Vector2(697.256, 322.4)
+scale = Vector2(0.61037, 0.61037)
+sprite_frames = SubResource("SpriteFrames_1hnvp")
+animation = &"boil"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -252,13 +275,29 @@ stretch_mode = 5
 layout_mode = 2
 stretch_mode = 5
 
+[node name="DishMiniP1" parent="CanvasLayer" instance=ExtResource("18_dqvpy")]
+offset_left = 33.0
+offset_top = 545.0
+offset_right = 33.0
+offset_bottom = 545.0
+pivot_offset = Vector2(45.8, 45.8)
+
+[node name="DishMiniP2" parent="CanvasLayer" instance=ExtResource("18_dqvpy")]
+offset_left = 1018.0
+offset_top = 548.0
+offset_right = 1018.0
+offset_bottom = 548.0
+pivot_offset = Vector2(45.8, 45.8)
+
 [node name="IngredientContainer" type="Node2D" parent="."]
 position = Vector2(-1, 6)
 
-[node name="OutsidePot" type="Sprite2D" parent="."]
-position = Vector2(588.837, 575)
-scale = Vector2(0.606889, 0.571429)
-texture = ExtResource("7_rtyx4")
+[node name="SpawnTimer" type="Timer" parent="IngredientContainer"]
+
+[node name="Frontpotanimation1" type="Sprite2D" parent="."]
+position = Vector2(575.111, 323)
+scale = Vector2(0.609259, 0.609259)
+texture = ExtResource("21_1bvec")
 
 [connection signal="pressed" from="CanvasLayer/WinScreen/RematchButton" to="." method="_on_rematch_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/WinScreen/MenuButton" to="." method="_on_menu_button_pressed"]

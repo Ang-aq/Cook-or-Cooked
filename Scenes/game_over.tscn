@@ -1,81 +1,72 @@
-[gd_scene load_steps=4 format=3 uid="uid://nl4efxdkvvkn"]
+[gd_scene load_steps=6 format=3 uid="uid://nl4efxdkvvkn"]
 
 [ext_resource type="Script" uid="uid://brkucx10aff32" path="res://Scenes/game_over.gd" id="1_ojehl"]
-[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_8fo1c"]
-[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="3_ek8ke"]
+[ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="2_8fo1c"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="3_ek8ke"]
+[ext_resource type="Texture2D" uid="uid://dolk8g2r57uyc" path="res://Sprites/GameOverAngel.png" id="4_eoghk"]
+[ext_resource type="Texture2D" uid="uid://ptgjyf0g0i65" path="res://Sprites/spilledpot.png" id="5_14u15"]
 
 [node name="GameOver" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_ojehl")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 0
-offset_left = -174.0
-offset_top = -119.0
-offset_right = 1320.0
-offset_bottom = 771.0
-color = Color(0, 0, 0, 1)
-
 [node name="FinalUi" type="Sprite2D" parent="."]
-position = Vector2(575.778, 323)
-scale = Vector2(0.601852, 0.601852)
-texture = ExtResource("3_ek8ke")
+position = Vector2(613, 371)
+scale = Vector2(0.732407, 0.732407)
+texture = ExtResource("2_8fo1c")
 
-[node name="Panel" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 311.0
-offset_top = 132.0
-offset_right = 806.0
-offset_bottom = 574.0
-
-[node name="GAME OVER" type="Label" parent="."]
+[node name="Title" type="Label" parent="."]
 layout_mode = 2
-offset_left = 363.0
-offset_top = 149.0
-offset_right = 763.0
-offset_bottom = 249.0
-theme = ExtResource("2_8fo1c")
-theme_override_font_sizes/font_size = 100
-text = "GAME OVER!"
-horizontal_alignment = 1
+offset_left = 354.0
+offset_top = 33.0
+offset_right = 748.0
+offset_bottom = 405.0
+theme = ExtResource("3_ek8ke")
+theme_override_constants/line_spacing = -80
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 225
+text = "GAME
+OVER"
 
-[node name="VBox" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 452.0
-offset_top = 289.0
-offset_right = 675.0
-offset_bottom = 436.0
-theme = ExtResource("2_8fo1c")
-
-[node name="HighscoreLabel" type="Label" parent="VBox"]
+[node name="StatsContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme = ExtResource("2_8fo1c")
-theme_override_font_sizes/font_size = 40
-text = "Highscore"
+offset_left = 410.0
+offset_top = 361.0
+offset_right = 676.0
+offset_bottom = 718.0
+theme = ExtResource("3_ek8ke")
 
-[node name="ScoreLabel" type="Label" parent="VBox"]
+[node name="ReasonLabel" type="Label" parent="StatsContainer"]
 layout_mode = 2
-theme = ExtResource("2_8fo1c")
-theme_override_font_sizes/font_size = 40
-text = "Score "
-
-[node name="Button" type="Button" parent="."]
-layout_mode = 0
-offset_left = 383.0
-offset_top = 389.0
-offset_right = 722.0
-offset_bottom = 548.0
-theme = ExtResource("2_8fo1c")
 theme_override_font_sizes/font_size = 50
-text = "Try Again ( Z )"
-
-[node name="ReasonLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 413.0
-offset_top = 239.0
-offset_right = 712.0
-offset_bottom = 288.0
-theme = ExtResource("2_8fo1c")
-theme_override_font_sizes/font_size = 25
 horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="StatsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+horizontal_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="ContinueLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 185.0
+offset_top = 561.0
+offset_right = 955.0
+offset_bottom = 719.0
+theme = ExtResource("3_ek8ke")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 70
+text = "Press any button to continue"
+
+[node name="GameOverAngel" type="Sprite2D" parent="."]
+position = Vector2(939, 379)
+scale = Vector2(2.85156, 2.85156)
+texture = ExtResource("4_eoghk")
+
+[node name="Spilledpot" type="Sprite2D" parent="."]
+position = Vector2(184, 428)
+rotation = -0.289725
+scale = Vector2(1.39844, 1.39844)
+texture = ExtResource("5_14u15")

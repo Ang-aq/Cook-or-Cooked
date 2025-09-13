@@ -1,0 +1,44 @@
+[gd_scene load_steps=5 format=3 uid="uid://dnq3yw7jvd42m"]
+
+[ext_resource type="Script" uid="uid://bvvd81rwdepmj" path="res://VersusScenes/dish_mini.gd" id="1_afci0"]
+[ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="2_mtifi"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="3_ifrqx"]
+[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="3_r2lxx"]
+
+[node name="DishMini" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 35.0
+offset_top = 530.0
+offset_right = 35.0
+offset_bottom = 530.0
+script = ExtResource("1_afci0")
+
+[node name="Star" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 91.0
+offset_bottom = 91.0
+pivot_offset = Vector2(45.8, 45.8)
+texture = ExtResource("2_mtifi")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Dish" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 17.0
+offset_right = 77.0
+offset_bottom = 81.0
+texture = ExtResource("3_r2lxx")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = -14.0
+offset_top = 15.0
+offset_right = 102.0
+offset_bottom = 38.0
+theme = ExtResource("3_ifrqx")
+theme_override_constants/outline_size = 2
+text = "Shrimp Curry"
+horizontal_alignment = 1

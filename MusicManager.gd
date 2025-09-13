@@ -11,21 +11,22 @@ var sfx_library: Dictionary = {
 	"chop": preload("res://Audio/Cut.ogg"),
 	"mosquito": preload("res://Audio/mosquito.ogg"),
 	"slash": preload("res://Audio/slash.ogg"),
-	"wrong": preload("res://Audio/wrong.ogg"),
+	"wrong": preload("res://Audio/heart.ogg"),
 	"splat": preload("res://Audio/Splat.ogg"),
 	"crossout": preload("res://Audio/crossout.ogg"),
 	"powerup": preload("res://Audio/powerup.ogg"),
 	"sauce_hot": preload("res://Audio/powerup.ogg"),
 	"sauce_soy": preload("res://Audio/powerup.ogg"),
 	"sauce_sweet": preload("res://Audio/powerup.ogg"),
-	"sauce_mystery": preload("res://Audio/powerup.ogg")
+	"sauce_mystery": preload("res://Audio/powerup.ogg"),
+	"menu": preload("res://Audio/MenuPop.ogg"),
+	"boil": preload("res://Audio/bubbles-72783.ogg"),
+	"sad": preload("res://Audio/failed.ogg"),
 }
 
-# Optional music player (BGM)
 var music_player: AudioStreamPlayer
 
 func _ready() -> void:
-	# Create a background music player
 	music_player = AudioStreamPlayer.new()
 	add_child(music_player)
 	music_player.volume_db = 5
@@ -77,6 +78,13 @@ func stop_sfx(sfx_name: String) -> void:
 			player.queue_free()
 			active_players.erase(player)
 
+func stop_all_sfx() -> void:
+	for player in active_players.duplicate():
+		if is_instance_valid(player):
+			player.stop()
+			player.queue_free()
+	active_players.clear()
+
 # Internal: remove and free the player
 func _remove_and_free_player(player: AudioStreamPlayer) -> void:
 	if active_players.has(player):
@@ -90,7 +98,6 @@ func play_bgm(stream: AudioStream, loop: bool = true) -> void:
 	music_player.stop()
 	music_player.stream = stream
 	music_player.play()
-
 
 func stop_bgm() -> void:
 	if music_player != null:

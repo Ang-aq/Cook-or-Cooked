@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c4vdc86lr12je"]
+[gd_scene load_steps=37 format=3 uid="uid://c4vdc86lr12je"]
 
 [ext_resource type="Script" uid="uid://c6i2s37g2mqqy" path="res://Scenes/tutorialManager.gd" id="1_ys4pu"]
 [ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_lexqi"]
@@ -20,6 +20,19 @@
 [ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scenes/PlayerInput.gd" id="17_2nb4t"]
 [ext_resource type="Script" uid="uid://dud3picjfdmov" path="res://Scenes/arrow_indicator.gd" id="19_dxsep"]
 [ext_resource type="Texture2D" uid="uid://brykjc36faa85" path="res://Sprites/longarrow.png" id="20_lexqi"]
+[ext_resource type="Texture2D" uid="uid://cv7ls7bbamfus" path="res://Sprites/TutorialUI/keys (1)1.png" id="21_nsxev"]
+[ext_resource type="Texture2D" uid="uid://cb1rj7jb0wbkc" path="res://Sprites/TutorialUI/keys (1)2.png" id="22_dhbxl"]
+[ext_resource type="Texture2D" uid="uid://de43wn11soo2l" path="res://Sprites/TutorialUI/keys (1)3.png" id="23_b5uxt"]
+[ext_resource type="Texture2D" uid="uid://bcbqsun72sg6" path="res://Sprites/TutorialUI/keys (1)4.png" id="24_mi3ry"]
+[ext_resource type="Texture2D" uid="uid://bs8ejwna7ewpu" path="res://Sprites/TutorialUI/keys (1)5.png" id="25_1yfkk"]
+[ext_resource type="Texture2D" uid="uid://clsfdomlt73pr" path="res://Sprites/TutorialUI/keys (1)6.png" id="26_enkcc"]
+[ext_resource type="Texture2D" uid="uid://cpo0vhhtfst76" path="res://Sprites/TutorialUI/keys (1)7.png" id="27_cv7sw"]
+[ext_resource type="Texture2D" uid="uid://o5e04wbsj45r" path="res://Sprites/TutorialUI/keys (1)8.png" id="28_gyc06"]
+[ext_resource type="Texture2D" uid="uid://ceott78ipj115" path="res://Sprites/TutorialUI/keys (1)9.png" id="29_0uns8"]
+[ext_resource type="Texture2D" uid="uid://3h8ipl4nen76" path="res://Sprites/TutorialUI/keys (1)10.png" id="30_d0bl5"]
+[ext_resource type="Texture2D" uid="uid://cl7epjx6ggqxr" path="res://Sprites/TutorialUI/keys (1)11.png" id="31_boubs"]
+[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="32_b5uxt"]
+[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="33_mi3ry"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_h2ono"]
 animations = [{
@@ -53,6 +66,61 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_b3wap"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("21_nsxev")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_dhbxl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_b5uxt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_mi3ry")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_1yfkk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_enkcc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_cv7sw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_gyc06")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_0uns8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_d0bl5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_boubs")
+}],
+"loop": true,
+"name": &"click",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1yfkk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("32_b5uxt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_mi3ry")
+}],
+"loop": true,
+"name": &"boil",
+"speed": 5.0
+}]
+
 [node name="Tutorial" type="Node2D"]
 script = ExtResource("1_ys4pu")
 
@@ -70,7 +138,7 @@ sprite_frames = SubResource("SpriteFrames_h2ono")
 animation = &"Meat"
 
 [node name="Right" type="Sprite2D" parent="."]
-position = Vector2(243, 232)
+position = Vector2(233, 305)
 scale = Vector2(2.21094, 2.35358)
 texture = ExtResource("5_on4kn")
 
@@ -110,6 +178,7 @@ offset_top = -320.25
 offset_right = -4.33301
 offset_bottom = -220.25
 theme = ExtResource("2_omtrn")
+theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 100
 text = "60"
 
@@ -163,3 +232,16 @@ position = Vector2(744, 237)
 
 [node name="TimerT" type="Node2D" parent="."]
 position = Vector2(355, 52)
+
+[node name="Keys" type="AnimatedSprite2D" parent="."]
+visible = false
+position = Vector2(719, 467)
+scale = Vector2(0.969866, 0.969866)
+sprite_frames = SubResource("SpriteFrames_b3wap")
+animation = &"click"
+
+[node name="Pot" type="AnimatedSprite2D" parent="."]
+position = Vector2(559, 319)
+scale = Vector2(0.612037, 0.612037)
+sprite_frames = SubResource("SpriteFrames_1yfkk")
+animation = &"boil"

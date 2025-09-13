@@ -6,7 +6,10 @@ extends Node
 @onready var combo_container: Node2D = $ComboDisplay
 @onready var player_input: Node = $PlayerInput
 @onready var arrow_indicator: ArrowIndicator = $Directions
-	
+@onready var keys: AnimatedSprite2D = $Keys
+@onready var pot: AnimatedSprite2D = $Pot
+
+
 # UI references
 @onready var HeartTarget = $HeartT
 @onready var TimerTarget = $TimerT
@@ -36,6 +39,8 @@ var meat_already_stopped: bool = false
 var instruction_shown: bool = false
 
 func _ready() -> void:
+	pot.play("boil")
+	
 	if not tutorial_dialog.dialogue_finished.is_connected(_on_intro_dialogue_finished):
 		tutorial_dialog.dialogue_finished.connect(_on_intro_dialogue_finished)
 	if not player_input.sequence_submitted.is_connected(_on_sequence_submitted):
@@ -89,7 +94,10 @@ func _show_instruction_dialogue() -> void:
 	instruction_shown = true
 	tutorial_dialog.get_node("UI").position = Vector2(100, -60)
 	tutorial_dialog.get_node("Transition").position = Vector2(420, 68)
-
+	
+	keys.show()
+	indicator.show()
+	keys.play("click")
 	var prompt: Array[String] = ["Use ARROW KEYS to chop ingredients then press Z to confirm. If you mess up press X to reset."]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 
@@ -121,9 +129,7 @@ func _on_instruction_dialogue_finished() -> void:
 	
 	# Lock dialogue input during combo
 	tutorial_dialog.input_locked = true  
-
-	indicator.position = meat.position + Vector2(0, -60)
-	indicator.visible = true
+	
 	_show_combo_arrows()
 	player_input.input_display.visible = true
 
@@ -135,12 +141,7 @@ func _show_combo_arrows() -> void:
 	for child in combo_container.get_children():
 		child.queue_free()
 	combo_container.visible = true
-	var spacing := 40
-	for i in range(arrow_combo.size()):
-		var arrow_sprite := Sprite2D.new()
-		arrow_sprite.texture = arrow_textures[arrow_combo[i]]
-		arrow_sprite.position = Vector2(i * spacing - (arrow_combo.size()-1)*spacing/2, -60)
-		combo_container.add_child(arrow_sprite)
+	indicator.show()
 
 func _on_sequence_submitted(sequence: Array[String]) -> void:
 	if input_locked or not (ready_for_combo and waiting_for_input):
@@ -192,7 +193,9 @@ func _update_combo_visual(reset: bool=false) -> void:
 func _on_combo_success() -> void:
 	waiting_for_input = false
 	ready_for_combo = false
-
+	keys.hide()
+	meat.hide()
+	
 	# Unlock dialogue input now that combo is over
 	tutorial_dialog.input_locked = false  
 

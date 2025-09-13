@@ -1,43 +1,65 @@
 extends Control
 
-@onready var score_label: Label = $VBox/ScoreLabel
-@onready var highscore_label: Label = $VBox/HighscoreLabel
-@onready var restart_button: Button = $Button
-@onready var reason_label: Label = $ReasonLabel
+@onready var title_label: Label = $Title
+@onready var score_label: Label = $StatsContainer/ScoreLabel
+@onready var reason_label: Label = $StatsContainer/ReasonLabel
+@onready var continue_label: Label = $ContinueLabel
+
+var input_locked := true
 
 func _ready() -> void:
-	# load saved scores
-	var cfg: ConfigFile = ConfigFile.new()
-	var err: int = cfg.load("user://scores.cfg")
+	_load_scores()
+	# start invisible
+	title_label.modulate.a = 0.0
+	reason_label.modulate.a = 0.0
+	score_label.modulate.a = 0.0
+	continue_label.modulate.a = 0.0
+	_play_intro()
 
-	var last: int = 0
-	var high: int = 0
-	var reason: String = ""
-
-	if err == OK:
-		last = int(cfg.get_value("scores", "last_score", 0))
-		high = int(cfg.get_value("scores", "high_score", 0))
-		reason = str(cfg.get_value("scores", "last_fail_reason", ""))
-	
+func _load_scores() -> void:
+	var cfg := ConfigFile.new()
+	cfg.load("user://scores.cfg")
+	var last := int(cfg.get_value("scores", "last_score", 0))
+	var reason := str(cfg.get_value("scores", "last_fail_reason", ""))
 	score_label.text = "Score: %d" % last
-	highscore_label.text = "High Score: %d" % high
 	reason_label.text = reason
-	
-	# connect pressed safely
-	var pressed_callable := Callable(self, "_on_restart_pressed")
-	if not restart_button.is_connected("pressed", pressed_callable):
-		restart_button.pressed.connect(pressed_callable)
+
+func _play_intro() -> void:
+	MusicManager.play_sfx("sad")
+	var tween := create_tween()
+
+	tween.tween_property(title_label, "modulate:a", 1.0, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+	var tween2 := create_tween()
+	tween2.tween_property(reason_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tween2.finished
+
+	var tween3 := create_tween()
+	tween3.tween_property(score_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tween3.finished
+
+	var tween4 := create_tween()
+	tween4.tween_property(continue_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tween4.finished
+
+	_start_continue_blink()
+
+	input_locked = false
+
+func _start_continue_blink() -> void:
+	var tween := create_tween()
+	tween.set_loops()  # infinite loops
+	tween.tween_property(continue_label, "modulate:a", 0.3, 1.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(continue_label, "modulate:a", 1.0, 1.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if restart_button.disabled:
+	if input_locked:
 		return
-	if event.is_action_pressed("joystickStart"):  # Z
-		_on_restart_pressed()
+	if event.is_pressed() and not event.is_echo():
+		MusicManager.play_sfx("level_up")
+		_go_to_title()
 
-func _on_restart_pressed() -> void:
-	if restart_button.disabled:
-		return
-	# fixes glitch where the game would start from the level you died
+func _go_to_title() -> void:
 	LevelManager.current_level = 0
-	restart_button.disabled = true
-	get_tree().change_scene_to_file("res://Scenes/main.tscn")
+	get_tree().change_scene_to_file("res://Scenes/titlescreen.tscn")
