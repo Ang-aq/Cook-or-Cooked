@@ -3,21 +3,17 @@ extends Control
 var ingredient_labels: Dictionary = {}
 var ingredient_required: Dictionary = {}
 
-# Initialize the checklist
 func setup_checklist(ingredients: Dictionary) -> void:
 	print("Checklist setup called with:", ingredients)
 	
-	# Clear old labels
 	for child in $VBoxContainer.get_children():
 		child.queue_free()
 	ingredient_labels.clear()
 	ingredient_required.clear()
 
-	# Create new labels
 	for name in ingredients.keys():
 		var raw_value = ingredients[name]
 		
-		# Handle both formats: { "amount": X } or just X
 		var count: int
 		if typeof(raw_value) == TYPE_DICTIONARY and raw_value.has("amount"):
 			count = raw_value["amount"]
@@ -35,13 +31,11 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.custom_minimum_size = Vector2(0, 32)
 		
-		# Make text larger
 		label.add_theme_font_size_override("font_size", 22)
 		
 		$VBoxContainer.add_child(label)
 		ingredient_labels[name] = label
 
-# Update progress
 func update_progress(name: String, current: int) -> void:
 	if not ingredient_labels.has(name):
 		return
@@ -53,9 +47,7 @@ func update_progress(name: String, current: int) -> void:
 	var required_count: int = ingredient_required[name]
 	label.text = "%s: %d / %d" % [name, current, required_count]
 
-	# Strike-through once completed
 	if current >= required_count and (is_instance_valid(label) and label.get_meta("striked") != true):
-		# Create line
 		var line = ColorRect.new()
 		line.color = Color(1, 0, 0)
 		line.custom_minimum_size = Vector2(0, 2)  # start at 0 width
@@ -70,7 +62,6 @@ func update_progress(name: String, current: int) -> void:
 			return
 		label.add_child(line)
 
-		# Wait one frame so layout updates
 		await get_tree().process_frame
 
 		if not is_instance_valid(label):
@@ -85,6 +76,5 @@ func update_progress(name: String, current: int) -> void:
 		if MusicManager.has_method("play_sfx"):
 			MusicManager.play_sfx("crossout")
 		
-		# Mark as striked only if label is still valid
 		if is_instance_valid(label):
 			label.set_meta("striked", true)

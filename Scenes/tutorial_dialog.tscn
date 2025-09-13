@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://c53q46lxpkuv6"]
 
-[ext_resource type="Script" uid="uid://d1rpn7yi17kpt" path="res://Scenes/tutorial_dialog.gd" id="1_y03wo"]
+[ext_resource type="Script" uid="uid://d1rpn7yi17kpt" path="res://Scripts/tutorial_dialog.gd" id="1_y03wo"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_1gxax"]
 [ext_resource type="Texture2D" uid="uid://b0ujgfyur5656" path="res://Sprites/TutorialUI/tutorialUIl2.png" id="4_s0f4e"]
 [ext_resource type="Texture2D" uid="uid://bw15p2x5rckyt" path="res://Sprites/TutorialUI/tutorialUIl3.png" id="5_26hlg"]

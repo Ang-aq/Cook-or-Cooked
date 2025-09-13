@@ -1,4 +1,3 @@
-# res://Scenes/Pests/Mosquito.gd
 extends Node2D
 class_name Mosquito
 

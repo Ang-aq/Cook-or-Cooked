@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://ctvmlj8uvck63"]
 
 [ext_resource type="Texture2D" uid="uid://dldqkkknyrwfr" path="res://Sprites/UI.png" id="1_mg1t0"]
-[ext_resource type="Script" uid="uid://das0uj4wrtfmf" path="res://Scenes/demo_complete.gd" id="1_trcjo"]
+[ext_resource type="Script" uid="uid://das0uj4wrtfmf" path="res://Scripts/demo_complete.gd" id="1_trcjo"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="2_trcjo"]
 
 [node name="DemoComplete" type="Control"]

@@ -22,6 +22,7 @@ var sfx_library: Dictionary = {
 	"menu": preload("res://Audio/MenuPop.ogg"),
 	"boil": preload("res://Audio/bubbles-72783.ogg"),
 	"sad": preload("res://Audio/failed.ogg"),
+	"countdown": preload("res://Audio/countdown.ogg"),
 }
 
 var music_player: AudioStreamPlayer
@@ -58,7 +59,6 @@ func play_sfx(sfx_name: String, loop: bool = false) -> void:
 	player.play()
 	active_players.append(player)
 
-	# If not looping, queue free after playing
 	if not loop:
 		var duration: float = 0.0
 		if player.stream != null:

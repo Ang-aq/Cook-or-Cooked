@@ -52,7 +52,6 @@ var levels := [
 
 var current_level: int = 0
 
-# --- Helpers for current level ---
 func get_current_requirements() -> Dictionary:
 	return levels[current_level]["requirements"]
 
@@ -73,13 +72,11 @@ func get_current_dish() -> Dictionary:
 		"is_boss": dish.get("is_boss", false)
 	}
 
-# --- Level progression ---
 func next_level() -> void:
 	if levels.size() == 0:
 		return
 
 	if current_level >= levels.size() - 1:
-		# Last level finished → calculate score and go to demo_complete
 		var main_node = get_node_or_null("/root/Main")
 		if main_node:
 			var final_score = main_node._calculate_score()

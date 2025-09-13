@@ -1,4 +1,3 @@
-# res://Managers/PestManager.gd
 extends Node2D
 class_name PestManager
 

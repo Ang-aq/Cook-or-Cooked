@@ -273,7 +273,7 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 func _process(delta: float) -> void:
 	if game_paused:
 		return
-
+	
 	if "input_buffer" in player_input:
 		while player_input.input_buffer.size() > max_input_length:
 			player_input.input_buffer.pop_front()  # remove oldest input
@@ -388,7 +388,7 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		push_error("Ingredients.tscn root must extend Ingredient.gd!")
 		ing_node.queue_free()
 		return
-		
+	
 	var base_speed = 130.0
 	var level = LevelManager.current_level
 	var speed_multiplier = 0.7 + (level * 0.15)
@@ -580,11 +580,7 @@ func _on_dish_completed() -> void:
 	if $WinOverlay/DishCompleteUI/Star/AnimationPlayer:
 		$WinOverlay/DishCompleteUI/Star/AnimationPlayer.play("Spin")
 	
-	var sfx := get_node_or_null("/root/SFXManager")
-	if sfx == null:
-		sfx = get_node_or_null("/root/MusicManager")
-	if sfx != null and sfx.has_method("play_sfx"):
-		sfx.play_sfx("level_up")
+	MusicManager.play_sfx("level_up")
 	
 	await get_tree().create_timer(2.0).timeout
 	

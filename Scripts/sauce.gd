@@ -37,14 +37,11 @@ func _ready() -> void:
 		elif sprite.sprite_frames.has_animation("default"):
 			sprite.play("default")
 			
-	# build combo visuals
 	_update_combo_display()
 
 func _process(delta: float) -> void:
-	# fall like an ingredient
 	position.y += fall_speed * delta
 	
-	# auto despawn if offscreen or timed out
 	var screen_h = get_viewport_rect().size.y
 	if position.y > screen_h + 64:
 		queue_free()
@@ -59,7 +56,6 @@ func check_sequence(sequence: Array) -> bool:
 	if sequence.size() != combo.size():
 		return false
 		
-	# compare normalized steps (accept "up"/"UP" and arrow unicode)
 	for i in range(sequence.size()):
 		if _normalize_step(sequence[i]) != _normalize_step(combo[i]):
 			return false

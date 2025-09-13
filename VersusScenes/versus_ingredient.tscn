@@ -1,6 +1,6 @@
 [gd_scene load_steps=91 format=3 uid="uid://ds0i5lbk0wmj0"]
 
-[ext_resource type="Script" uid="uid://dglotivg56pv8" path="res://VersusScenes/versus_ingredient.gd" id="1_0mpj1"]
+[ext_resource type="Script" uid="uid://dglotivg56pv8" path="res://VersusScripts/versus_ingredient.gd" id="1_0mpj1"]
 [ext_resource type="AudioStream" uid="uid://dehj3iajqm2nx" path="res://Audio/slash.ogg" id="2_bip2d"]
 [ext_resource type="Texture2D" uid="uid://bljgdf2pbyyrd" path="res://Sprites/Ingredients/carrot.png" id="2_o2bvh"]
 [ext_resource type="Texture2D" uid="uid://d1rvk57ykfjjm" path="res://Sprites/Ingredients/chopped/Carrot_chopped.png" id="3_bip2d"]
@@ -260,6 +260,46 @@ animations = [{
 "texture": ExtResource("40_lq3v7")
 }],
 "loop": true,
+"name": &"Scallion",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("41_ybi1l")
+}],
+"loop": true,
+"name": &"Scallion_chopped",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("32_r84b3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_op3w6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_t0w07")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_praaa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_s1m0f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_lbaam")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_i0a1a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39_vqxw1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_lq3v7")
+}],
+"loop": true,
 "name": &"Spring Onion",
 "speed": 5.0
 }, {
@@ -457,9 +497,10 @@ offset_bottom = 237.0
 position = Vector2(574, 278)
 scale = Vector2(2.82534, 2.82534)
 sprite_frames = SubResource("SpriteFrames_42qfe")
-animation = &"Carrot"
+animation = &"Scallion"
 
 [node name="Slash" type="AnimatedSprite2D" parent="AnimatedSprite2D"]
+visible = false
 position = Vector2(2.47757, 2.47758)
 sprite_frames = SubResource("SpriteFrames_jooew")
 animation = &"slash_up"

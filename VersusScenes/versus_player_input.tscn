@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d0qhxxtsol2o6"]
 
-[ext_resource type="Script" uid="uid://ygx18fhnv0ib" path="res://VersusScenes/VersusPlayerInput.gd" id="1_jpat6"]
+[ext_resource type="Script" uid="uid://ygx18fhnv0ib" path="res://VersusScripts/VersusPlayerInput.gd" id="1_jpat6"]
 
 [node name="VersusPlayerInput" type="Node2D"]
 script = ExtResource("1_jpat6")

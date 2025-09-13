@@ -48,7 +48,8 @@ var ingredient_scales := {
 	"Meat": Vector2(2, 2),
 	"GreenBean": Vector2(2, 2),
 	"Tomato": Vector2(2, 2),
-	"Spring Onion": Vector2(2, 2)
+	"Spring Onion": Vector2(2, 2),
+	"Scallion": Vector2(2, 2)
 }
 
 var slash_anim_map := {
@@ -285,7 +286,6 @@ func _on_sfx_timer_timeout(player: AudioStreamPlayer2D) -> void:
 	if is_instance_valid(player):
 		player.stop()
 		player.queue_free()
-# Ingredient.gd
 
 # Flash a red X over the ingredient.
 # `offset_override` is optional and added to the exported flash_offset.

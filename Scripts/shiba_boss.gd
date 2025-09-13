@@ -1,4 +1,3 @@
-# res://Scenes/Shiba_Boss.gd
 extends AnimatedSprite2D
 class_name ShibaBoss
 

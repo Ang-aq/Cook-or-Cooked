@@ -1,22 +1,21 @@
 extends Node
 
-@export var player_id: int = 2
-var input_buffer: Array[String] = []
-
-@onready var input_display: HBoxContainer = $InputDisplay
+@export var player_id: int = 1
 @export var max_buffer_size: int = 5
+
+var input_buffer: Array[String] = []
+@onready var input_display: HBoxContainer = $InputDisplay
 
 signal sequence_submitted(sequence: Array, player_id: int)
 signal sequence_reset(player_id: int)
 signal buffer_changed(sequence: Array, player_id: int)
 
-# small arrow textures (reuse your sprite assets)
 var arrow_textures := {
 	"↑": preload("res://Sprites/arrow_up.png"),
 	"↓": preload("res://Sprites/arrow_down.png"),
 	"←": preload("res://Sprites/arrow_left.png"),
 	"→": preload("res://Sprites/arrow_right.png"),
-	"Z": preload("res://Sprites/Z.png")
+	"Z": preload("res://Sprites/SlashAnimations/blank.png")
 }
 
 var ACTIONS := {
@@ -53,9 +52,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_update_display()
 		emit_signal("buffer_changed", input_buffer.duplicate(), player_id)
 		if step_pressed != "":
-			var mm = get_tree().get_root().get_node_or_null("/root/MusicManager")
-			if mm and mm.has_method("play_sfx"):
-				mm.play_sfx("chop")
+			MusicManager.play_sfx("chop")
 
 func _update_display() -> void:
 	for ch in input_display.get_children():
@@ -65,5 +62,5 @@ func _update_display() -> void:
 			var tex := TextureRect.new()
 			tex.texture = arrow_textures[step]
 			tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tex.custom_minimum_size = Vector2(48, 48)  # smaller arrows for 1v1
+			tex.custom_minimum_size = Vector2(48, 48)
 			input_display.add_child(tex)

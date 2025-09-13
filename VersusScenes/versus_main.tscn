@@ -1,13 +1,13 @@
 [gd_scene load_steps=24 format=3 uid="uid://o4pm8thkwcly"]
 
 [ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="1_pvapi"]
-[ext_resource type="Script" uid="uid://bpibvds2khp16" path="res://VersusScenes/versus_main.gd" id="1_yuico"]
+[ext_resource type="Script" uid="uid://bpibvds2khp16" path="res://VersusScripts/versus_main.gd" id="1_yuico"]
 [ext_resource type="PackedScene" uid="uid://d0qhxxtsol2o6" path="res://VersusScenes/versus_player_input.tscn" id="2_fm825"]
 [ext_resource type="Texture2D" uid="uid://cql0s3kv1jml8" path="res://Sprites/versus.png" id="2_qimcy"]
 [ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="3_w3xoa"]
 [ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="4_3dret"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="4_vnwg8"]
-[ext_resource type="Script" uid="uid://37cm084c4yf2" path="res://VersusScenes/versus_player_input.gd" id="5_mrpgy"]
+[ext_resource type="Script" uid="uid://37cm084c4yf2" path="res://VersusScripts/versus_player_input.gd" id="5_mrpgy"]
 [ext_resource type="Texture2D" uid="uid://d2bnqhva6ea4t" path="res://Sprites/VersusTutorial/2Player Tutorial2.png" id="8_y7uqg"]
 [ext_resource type="Texture2D" uid="uid://bvll1jr2gb1o2" path="res://Sprites/VersusTutorial/2Player Tutorial3.png" id="9_l7pi0"]
 [ext_resource type="Texture2D" uid="uid://th0ime2au0nr" path="res://Sprites/VersusTutorial/2Player Tutorial4.png" id="10_1hnvp"]
@@ -146,6 +146,7 @@ offset_top = -1.0
 offset_right = 668.0
 offset_bottom = 107.0
 theme = ExtResource("4_vnwg8")
+theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 100
 horizontal_alignment = 1
 
@@ -230,6 +231,7 @@ offset_top = 278.0
 offset_right = 681.0
 offset_bottom = 478.0
 theme = ExtResource("4_vnwg8")
+theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 200
 horizontal_alignment = 1
 
@@ -276,18 +278,22 @@ layout_mode = 2
 stretch_mode = 5
 
 [node name="DishMiniP1" parent="CanvasLayer" instance=ExtResource("18_dqvpy")]
-offset_left = 33.0
-offset_top = 545.0
-offset_right = 33.0
-offset_bottom = 545.0
+offset_left = 26.0
+offset_top = 544.0
+offset_right = 26.0
+offset_bottom = 544.0
 pivot_offset = Vector2(45.8, 45.8)
 
 [node name="DishMiniP2" parent="CanvasLayer" instance=ExtResource("18_dqvpy")]
-offset_left = 1018.0
-offset_top = 548.0
-offset_right = 1018.0
-offset_bottom = 548.0
+offset_left = 1000.0
+offset_top = 544.0
+offset_right = 1000.0
+offset_bottom = 544.0
 pivot_offset = Vector2(45.8, 45.8)
+
+[node name="PowerupLabel" type="Label" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
 
 [node name="IngredientContainer" type="Node2D" parent="."]
 position = Vector2(-1, 6)

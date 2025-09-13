@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://nl4efxdkvvkn"]
 
-[ext_resource type="Script" uid="uid://brkucx10aff32" path="res://Scenes/game_over.gd" id="1_ojehl"]
+[ext_resource type="Script" uid="uid://brkucx10aff32" path="res://Scripts/game_over.gd" id="1_ojehl"]
 [ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="2_8fo1c"]
 [ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="3_ek8ke"]
 [ext_resource type="Texture2D" uid="uid://dolk8g2r57uyc" path="res://Sprites/GameOverAngel.png" id="4_eoghk"]

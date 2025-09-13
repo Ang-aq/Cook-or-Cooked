@@ -1,0 +1,161 @@
+[gd_scene load_steps=33 format=3 uid="uid://cgikcxb0ynncg"]
+
+[ext_resource type="Script" uid="uid://bjhcl2avxu6jb" path="res://VersusScripts/versus_powerup.gd" id="1_wuck4"]
+[ext_resource type="Texture2D" uid="uid://c2klevrkouk7q" path="res://Sprites/PowerUps/Sauce1.png" id="2_xo72p"]
+[ext_resource type="Texture2D" uid="uid://bpqdnsb6pqi42" path="res://Sprites/PowerUps/Sauce2.png" id="3_8mq08"]
+[ext_resource type="Texture2D" uid="uid://dn4m2ypij2eo2" path="res://Sprites/PowerUps/Sauce3.png" id="4_511ii"]
+[ext_resource type="Texture2D" uid="uid://cjv875arxltcx" path="res://Sprites/PowerUps/Sauce4.png" id="5_5k7a5"]
+[ext_resource type="Texture2D" uid="uid://cl2ddwt0uh5wb" path="res://Sprites/PowerUps/Sauce5.png" id="6_21jkd"]
+[ext_resource type="Texture2D" uid="uid://b3vlyakeh2xeg" path="res://Sprites/PowerUps/Sauce6.png" id="7_60yvx"]
+[ext_resource type="Texture2D" uid="uid://dy110c1wgvpx4" path="res://Sprites/PowerUps/Sauce7.png" id="8_pj3si"]
+[ext_resource type="Texture2D" uid="uid://b0bqq77wu6cuw" path="res://Sprites/PowerUps/Sauce8.png" id="9_7oguw"]
+[ext_resource type="Texture2D" uid="uid://cpdk71tbhcp7h" path="res://Sprites/PowerUps/sriracha (1)1.png" id="10_3yn3k"]
+[ext_resource type="Texture2D" uid="uid://doodqfk1y6a5a" path="res://Sprites/PowerUps/sriracha (1)2.png" id="11_qyc21"]
+[ext_resource type="Texture2D" uid="uid://bixoe8jtulrwm" path="res://Sprites/PowerUps/sriracha (1)3.png" id="12_xaxvy"]
+[ext_resource type="Texture2D" uid="uid://dhade2lewo7p5" path="res://Sprites/PowerUps/sriracha (1)4.png" id="13_46c8r"]
+[ext_resource type="Texture2D" uid="uid://cey2qcgu7opgc" path="res://Sprites/PowerUps/magisauce (1)1.png" id="14_ihnwf"]
+[ext_resource type="Texture2D" uid="uid://0uqi2sqmdiex" path="res://Sprites/PowerUps/magisauce (1)2.png" id="15_wili3"]
+[ext_resource type="Texture2D" uid="uid://lsyb70mxr1mp" path="res://Sprites/PowerUps/magisauce (1)3.png" id="16_hch6u"]
+[ext_resource type="Texture2D" uid="uid://coedl470h1sg6" path="res://Sprites/PowerUps/magisauce (1)4.png" id="17_8s65e"]
+[ext_resource type="Texture2D" uid="uid://de1xg51x5s3ve" path="res://Sprites/PowerUps/magisauce (1)5.png" id="18_mc0op"]
+[ext_resource type="Texture2D" uid="uid://s1dlgie1kvnp" path="res://Sprites/PowerUps/magisauce (1)6.png" id="19_i2qot"]
+[ext_resource type="Texture2D" uid="uid://ddptfnfd1o6j7" path="res://Sprites/PowerUps/magisauce (1)7.png" id="20_tellf"]
+[ext_resource type="Texture2D" uid="uid://dxd7yfb8c62eg" path="res://Sprites/PowerUps/magisauce (1)8.png" id="21_k4gww"]
+[ext_resource type="Texture2D" uid="uid://dymro3k6ji6a0" path="res://Sprites/PowerUps/magisauce (1)9.png" id="22_pp7ey"]
+[ext_resource type="Texture2D" uid="uid://d4cwblf603gsv" path="res://Sprites/PowerUps/magisauce (1)10.png" id="23_pi3vh"]
+[ext_resource type="Texture2D" uid="uid://5vad32j3ney2" path="res://Sprites/PowerUps/magisauce (1)11.png" id="24_rtvhm"]
+[ext_resource type="Texture2D" uid="uid://b844apgq6gqfv" path="res://Sprites/PowerUps/magisauce (1)12.png" id="25_xq7k5"]
+[ext_resource type="Texture2D" uid="uid://btr5n354vydmx" path="res://Sprites/PowerUps/magisauce (1)13.png" id="26_tb33p"]
+[ext_resource type="Texture2D" uid="uid://cso7n8i4jxoxr" path="res://Sprites/PowerUps/magisauce (1)14.png" id="27_c3cky"]
+[ext_resource type="Texture2D" uid="uid://dtxaru7eefo6j" path="res://Sprites/PowerUps/msg (2)1.png" id="28_tmncc"]
+[ext_resource type="Texture2D" uid="uid://bobimk37dk8ct" path="res://Sprites/PowerUps/msg (2)2.png" id="29_62kdj"]
+[ext_resource type="Texture2D" uid="uid://bguwy4hax60jt" path="res://Sprites/PowerUps/msg (2)3.png" id="30_8ruqi"]
+[ext_resource type="Texture2D" uid="uid://1s0gpawqv6eu" path="res://Sprites/PowerUps/msg (2)4.png" id="31_xeogi"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wuck4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_xo72p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_8mq08")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_511ii")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_5k7a5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_21jkd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_60yvx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_pj3si")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_7oguw")
+}],
+"loop": true,
+"name": &"dish_snatcher",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.2,
+"texture": ExtResource("10_3yn3k")
+}, {
+"duration": 1.2,
+"texture": ExtResource("11_qyc21")
+}, {
+"duration": 1.2,
+"texture": ExtResource("12_xaxvy")
+}, {
+"duration": 1.2,
+"texture": ExtResource("13_46c8r")
+}],
+"loop": true,
+"name": &"extra_life",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 0.51,
+"texture": ExtResource("14_ihnwf")
+}, {
+"duration": 0.51,
+"texture": ExtResource("15_wili3")
+}, {
+"duration": 0.51,
+"texture": ExtResource("16_hch6u")
+}, {
+"duration": 0.51,
+"texture": ExtResource("17_8s65e")
+}, {
+"duration": 0.51,
+"texture": ExtResource("18_mc0op")
+}, {
+"duration": 0.51,
+"texture": ExtResource("19_i2qot")
+}, {
+"duration": 0.51,
+"texture": ExtResource("20_tellf")
+}, {
+"duration": 0.51,
+"texture": ExtResource("21_k4gww")
+}, {
+"duration": 0.51,
+"texture": ExtResource("22_pp7ey")
+}, {
+"duration": 0.51,
+"texture": ExtResource("23_pi3vh")
+}, {
+"duration": 0.51,
+"texture": ExtResource("24_rtvhm")
+}, {
+"duration": 0.51,
+"texture": ExtResource("25_xq7k5")
+}, {
+"duration": 0.51,
+"texture": ExtResource("26_tb33p")
+}, {
+"duration": 0.51,
+"texture": ExtResource("27_c3cky")
+}],
+"loop": true,
+"name": &"heart_breaker",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("28_tmncc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_62kdj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_8ruqi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_xeogi")
+}],
+"loop": true,
+"name": &"mystery",
+"speed": 5.0
+}]
+
+[node name="VersusPowerup" type="Node2D"]
+script = ExtResource("1_wuck4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_wuck4")
+animation = &"mystery"
+
+[node name="ComboDisplay" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -85.0
+offset_top = -63.0
+offset_right = -45.0
+offset_bottom = -23.0

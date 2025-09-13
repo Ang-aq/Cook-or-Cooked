@@ -1,4 +1,3 @@
-# res://Scripts/VersusMain.gd
 extends Node2D
 
 # reuse the versus ingredient scene (duplicate of original ingredient scene)
@@ -15,7 +14,6 @@ extends Node2D
 @onready var timer_label: Label = $CanvasLayer/TimerLabel
 @onready var tutorial_screen: Control = $CanvasLayer/TutorialScreen
 @onready var tutorial_anim: AnimatedSprite2D = $CanvasLayer/TutorialScreen/AnimatedSprite2D
-var tutorial_shown := true 
 @onready var countdown_label: Label = $CanvasLayer/CountdownLabel
 @onready var dish_mini_p1: Control = $CanvasLayer/DishMiniP1
 @onready var dish_mini_p2: Control = $CanvasLayer/DishMiniP2
@@ -25,8 +23,8 @@ var tutorial_shown := true
 @export var spawn_max_x: float = 300.0
 @export var spawn_start_y: float = -100.0
 var spawn_timer: float = 0.0
-@export var start_fall_speed: float = 10 
-@export var end_fall_speed: float = 20 
+@export var start_fall_speed: float = 100
+@export var end_fall_speed: float = 150
 @export var round_time: float = 90.0   
 
 # Game Finished!
@@ -34,12 +32,14 @@ var spawn_timer: float = 0.0
 @onready var win_label: Label = $CanvasLayer/WinScreen/WinLabel
 @onready var rematch_button: Button = $CanvasLayer/WinScreen/RematchButton
 @onready var menu_button: Button = $CanvasLayer/WinScreen/MenuButton
+@onready var powerup_label: Label = $CanvasLayer/PowerupLabel
+var _powerup_tween: Tween
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var time_left: float = 0.0
 var gameplay_paused: bool = false
 
-# hearts 
+# hearts
 @export var lives_per_player: int = 6   
 @onready var hearts_p1: HBoxContainer = $CanvasLayer/HeartsP1
 @onready var hearts_p2: HBoxContainer = $CanvasLayer/HeartsP2
@@ -49,6 +49,16 @@ var gameplay_paused: bool = false
 @onready var tex_heart_empty: Texture2D = preload("res://Sprites/blank3.png")
 
 var lives: Dictionary = {1: lives_per_player, 2: lives_per_player}
+
+# power-ups
+@onready var powerup_scene: PackedScene = preload("res://VersusScenes/versus_powerup.tscn")
+@export var powerup_spawn_interval_min: float = 8.0
+@export var powerup_spawn_interval_max: float = 12.0
+var powerup_spawn_timer: float = 0.0
+var POWERUP_TYPES: Array = ["heart_breaker", "dish_snatcher", "extra_life", "mystery"]
+var POWERUP_WEIGHTS: Array = [20, 10, 20, 50] 
+var _during_fade: bool = false
+var tutorial_shown := false
 
 var dish_list: Array = [
 	# Dish 1
@@ -60,7 +70,7 @@ var dish_list: Array = [
 	 "Meat": {"count":2, "combo":["←","→","Z"]}
 	},
 	# Dish 3
-	{"Spring Onion":  {"count":2, "combo": ["←","↓","Z"]},
+	{"Scallion":  {"count":2, "combo": ["←","↓","Z"]},
 	 "Meat":   {"count":2,"combo": ["→","↑","Z"]},
 	},
 	# Dish 4
@@ -77,6 +87,14 @@ var dish_meta: Array = [
 	{"name":"Sinigang!?", "texture": preload("res://Sprites/Sinigang.png")} 
 ]
 
+var powerup_spawn_points: Array = [
+	Vector2(300, -100),
+	Vector2(400, -100),
+	Vector2(600, -100),
+	Vector2(700, -100),
+	Vector2(800, -100)
+]
+
 var current_dish_index: Dictionary = {1: 0, 2: 0}
 var collected_counts: Dictionary = {1: {}, 2: {}}
 var dishes_completed: Dictionary = {1: 0, 2: 0}
@@ -84,6 +102,7 @@ var dishes_completed: Dictionary = {1: 0, 2: 0}
 var reserved_map: Dictionary = {}  
 
 func _ready() -> void:
+	MusicManager.set_all_sfx_volume(5)
 	fade_rect.modulate.a = 1.0   
 	fade_rect.visible = true
 	await fade_in(0.5)
@@ -146,11 +165,11 @@ func _ready() -> void:
 	gameplay_paused = true
 
 	_show_tutorial()
+	powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
 
 func _process(delta: float) -> void:
-	# Only update timers and apply speed changes while gameplay is active
 	if not gameplay_paused:
-		# reduce time left
+		# decrease time left
 		if time_left > 0:
 			time_left -= delta
 			if time_left <= 0:
@@ -158,113 +177,143 @@ func _process(delta: float) -> void:
 				_end_round()
 			_update_timer_label()
 
-		# compute progress through round: 0.0 at start, 1.0 at end
-		var progress: float = 0.0
-		if round_time > 0:
-			progress = clamp(1.0 - (time_left / round_time), 0.0, 1.0)
-		# fall speed lerp: start -> end as progress goes 0->1
-		var current_fall_speed: float = lerp(start_fall_speed, end_fall_speed, progress)
+		# update fall speed for all active ingredients
+		var current_speed := get_current_fall_speed()
+		for node in ingredient_container.get_children():
+			if is_instance_valid(node) and node is Ingredient and not node.is_chopped:
+				node.set_fall_speed(current_speed)
 
-		# apply current_fall_speed to all active ingredient nodes
-		for i in range(ingredient_container.get_child_count() - 1, -1, -1):
-			var node = ingredient_container.get_child(i)
-			if not is_instance_valid(node):
-				continue
-			# Preferred: Ingredient scene exposes set_fall_speed(speed)
-			if node.has_method("set_fall_speed"):
-				node.set_fall_speed(current_fall_speed)
-			# Fallback: set common property names if present
-			elif node.has_meta("fall_speed"):
-				# some scenes use metadata; set it
-				node.set_meta("fall_speed", current_fall_speed)
-			elif "fall_speed" in node:
-				node.fall_speed = current_fall_speed
-			elif "speed" in node:
-				node.speed = current_fall_speed
-			# if node is RigidBody2D, set linear_velocity Y (best-effort)
-			elif node is RigidBody2D:
-				var lv = node.linear_velocity
-				lv.y = current_fall_speed
-				node.linear_velocity = lv
-			# else: ignore — you'll need to add a setter to your Ingredient if none match
-
-		# spawn logic (unchanged from original float countdown)
+		# handle ingredient spawning timer
 		spawn_timer -= delta
-		if spawn_timer <= 0:
+		if spawn_timer <= 0.0:
 			_try_spawn_ingredient()
 			spawn_timer = spawn_interval
+			
+		# handle powerup spawn timer (less frequent than ingredients)
+		powerup_spawn_timer -= delta
+		if powerup_spawn_timer <= 0.0:
+			_try_spawn_powerup()
+			# reset with jitter
+			powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
 
-	# Win screen input (unchanged)
+
+	# win screen input handling stays the same...
 	if win_screen and win_screen.visible:
-		if Input.is_action_just_pressed("joystickStart"): # Z
+		if Input.is_action_just_pressed("joystickStart"):
 			if rematch_button:
 				_on_rematch_button_pressed()
-		if Input.is_action_just_pressed("joystickReset"): # X
+		if Input.is_action_just_pressed("joystickReset"):
 			if menu_button:
 				_on_menu_button_pressed()
 
+func _try_spawn_powerup() -> void:
+	if rng.randf() > 0.5:
+		_spawn_powerup()
+
+func _spawn_powerup() -> void:
+	var pu := powerup_scene.instantiate() as VersusPowerUp
+	ingredient_container.add_child(pu)
+	var spawn_point = powerup_spawn_points.pick_random()
+	pu.position = spawn_point
+	pu.set_fall_speed(get_current_fall_speed())
+
+	var chosen: String = _pick_weighted(POWERUP_TYPES, POWERUP_WEIGHTS)
+	print("[DEBUG] Spawning powerup type: ", chosen)
+	pu.powerup_type = chosen
+	pu._refresh_visuals() # <-- we'll add this next
+
+func _pick_weighted(items: Array, weights: Array) -> Variant:
+	if items.size() == 0:
+		return ""
+	if items.size() != weights.size():
+		return items[0]
+	var total: int = 0
+	
+	for w in weights:
+		total += int(w)
+	var r: int = rng.randi_range(0, total - 1)
+	var acc: int = 0
+	
+	for i in range(items.size()):
+		acc += int(weights[i])
+		if r < acc:
+			return items[i]
+	# fallback
+	return items[items.size() - 1]
+
+func get_current_fall_speed() -> float:
+	if round_time <= 0.0:
+		return end_fall_speed
+	var progress: float = clamp(1.0 - (time_left / round_time), 0.0, 1.0)
+	return lerp(start_fall_speed, end_fall_speed, progress)
+
 func fade_out(time: float = 1.0) -> void:
+	_during_fade = true
 	fade_rect.visible = true
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	var tween = create_tween()
 	tween.tween_property(fade_rect, "modulate:a", 1.0, time).set_trans(Tween.TRANS_LINEAR)
 	await tween.finished
+	_during_fade = false
 
 func fade_in(time: float = 1.0) -> void:
+	_during_fade = true
 	fade_rect.visible = true
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
 	fade_rect.modulate.a = 1.0
 	var tween = create_tween()
 	tween.tween_property(fade_rect, "modulate:a", 0.0, time).set_trans(Tween.TRANS_LINEAR)
 	await tween.finished
+	
 	fade_rect.visible = false
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_during_fade = false
 
 func _show_tutorial() -> void:
 	if tutorial_screen:
 		tutorial_screen.visible = true
-		if tutorial_anim:
-			tutorial_anim.play("tutorial")
-			print("Tutorial animation started")
+		tutorial_screen.mouse_filter = Control.MOUSE_FILTER_STOP
 	
 	tutorial_shown = true
-	gameplay_paused = true 
-
+	gameplay_paused = true
 	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
 		node.set_process(false)
 		node.set_physics_process(false)
 
 func _hide_tutorial():
+	MusicManager.stop_bgm()
 	tutorial_screen.visible = false
+	tutorial_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tutorial_shown = false
-	
-	# reset round timers so the fall-speed interpolation starts from the beginning
-	time_left = round_time
-	spawn_timer = spawn_interval
-
+	# reset timers, start countdown, etc...
 	await _start_countdown()
-	
 	_resume_gameplay_nodes()
 	gameplay_paused = false
 
 func _unhandled_input(event):
-	if tutorial_screen.visible and event.is_pressed() and (event is InputEventKey or event is InputEventJoypadButton):
+	if _during_fade:
+		return
+
+	if tutorial_screen and tutorial_shown and tutorial_screen.visible and event.is_pressed() and (event is InputEventKey or event is InputEventJoypadButton):
 		_hide_tutorial()
 
 func _start_countdown() -> void:
+	
+	MusicManager.play_sfx("countdown")
 	countdown_label.visible = true
 	gameplay_paused = true  
-
 	var countdown_numbers: Array = [3, 2, 1]
 	for number in countdown_numbers:
 		countdown_label.text = str(number)
 		await RenderingServer.frame_post_draw
 		await get_tree().create_timer(1.0).timeout
-
+	
 	countdown_label.text = "Go!"
+	var title_music = preload("res://Audio/bgm.ogg")
 	await RenderingServer.frame_post_draw
 	await get_tree().create_timer(0.5).timeout
-
+	MusicManager.play_bgm(title_music, true)
+	
 	countdown_label.visible = false
 
 func _resume_gameplay_nodes() -> void:
@@ -294,6 +343,7 @@ func _setup_checklist_for_player(player_id: int) -> void:
 		checklist.setup_checklist(req_counts)
 	else:
 		print("Checklist node missing or has no setup_checklist() for player", player_id)
+		
 
 func _try_spawn_ingredient() -> void:
 	var active_names: Array = []
@@ -313,22 +363,24 @@ func _spawn_ingredient(ingredient_name: String) -> void:
 	if ing_node == null:
 		push_error("Failed to instantiate ingredient scene")
 		return
-
+	
 	ingredient_container.add_child(ing_node)
 	ing_node.position = Vector2(rng.randf_range(spawn_min_x, spawn_max_x), spawn_start_y)
-
+	
+	ing_node.set_fall_speed(get_current_fall_speed())
+	
 	var combo: Array = []
 	for dish in dish_list:
 		if dish.has(ingredient_name):
 			combo = dish[ingredient_name].get("combo", [])
 			break
-
+	
 	if ing_node.has_method("set_combo_and_name"):
 		ing_node.set_combo_and_name(combo.duplicate(true), ingredient_name)
-
+	
 	if ing_node.has_signal("chop_completed"):
 		ing_node.chop_completed.connect(Callable(self, "_on_ingredient_chopped"))
-
+	
 	var node_name = ing_node.name
 	var anim_exists = ing_node.has_node("AnimatedSprite2D") or ing_node.has_node("Sprite2D")
 	print("Spawned ingredient:", ingredient_name, "node:", node_name, "combo:", combo, "anim_exists:", anim_exists)
@@ -343,33 +395,57 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 		var node = ingredient_container.get_child(i)
 		if not is_instance_valid(node):
 			continue
-
 		if not (node is Ingredient):
 			continue
 		if node.is_chopped:
 			continue
-
+		
 		if node.combo is Array and node.combo.size() == clean_sequence.size():
 			var eq := true
 			for j in range(clean_sequence.size()):
 				if str(clean_sequence[j]) != str(node.combo[j]):
 					eq = false
 					break
-
+			
 			if eq:
 				if node.has_method("reserve") and node.reserve(player_id):
 					reserved_map[node] = player_id
-					print("Reserved node %s for player %d" % [node.name, player_id])
-
+					print("Reserved ingredient %s for player %d" % [node.name, player_id])
+					
 					if node.has_method("play_slash_sequence"):
 						node.play_slash_sequence(clean_sequence)
-
+					
 					matched = true
 					break
 				else:
-					# already reserved by other player
-					print("Node %s already reserved" % node.name)
+					print("Ingredient %s already reserved" % node.name)
 					break
+
+	if not matched:
+		for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+			var node = ingredient_container.get_child(i)
+			if not is_instance_valid(node):
+				continue
+			if not (node is VersusPowerUp):
+				continue
+
+			if node.combo is Array and node.combo.size() == clean_sequence.size():
+				var eq := true
+				for j in range(clean_sequence.size()):
+					if str(clean_sequence[j]) != str(node.combo[j]):
+						eq = false
+						break
+
+				if eq:
+					if node.has_method("reserve") and node.reserve(player_id):
+						print("Player %d activated powerup %s" % [player_id, node.powerup_type])
+						if node.has_method("play_slash_sequence"):
+							node.play_slash_sequence(clean_sequence)
+						matched = true
+						break
+					else:
+						print("Powerup %s already reserved" % node.name)
+						break
 
 	if not matched:
 		_lose_half_heart(player_id, "Wrong combo!")
@@ -389,8 +465,7 @@ func _clear_player_input(player_id: int) -> void:
 func input_player_clear(player_input_node: Node) -> void:
 	if "input_buffer" in player_input_node:
 		player_input_node.input_buffer.clear()
-	if player_input_node.has_method("_update_display"):
-		player_input_node._update_display()
+	player_input_node._update_display()
 
 
 # ingredients 
@@ -503,15 +578,9 @@ func _on_player_finished_dish(player_id: int) -> void:
 		elif player_id == 2 and dish_mini_p2:
 			if dish_mini_p2.has_method("show_dish"):
 				dish_mini_p2.show_dish(dish_texture, dish_name)
-
-	# Play SFX (try SFXManager, then MusicManager)
-	var sfx := get_node_or_null("/root/SFXManager")
-	if sfx == null:
-		sfx = get_node_or_null("/root/MusicManager")
-	if sfx != null and sfx.has_method("play_sfx"):
-		sfx.play_sfx("level_up")
-
-	# Pick a new random dish for that player
+	
+	MusicManager.play_sfx("level_up")
+	
 	if dish_list.size() > 0:
 		var new_index = rng.randi_range(0, dish_list.size() - 1)
 		current_dish_index[player_id] = new_index
@@ -520,13 +589,11 @@ func _on_player_finished_dish(player_id: int) -> void:
 		print("No dishes defined in dish_list!")
 		return
 
-	# Reset collected counts for this player
 	collected_counts[player_id] = {}
 	var new_dish: Dictionary = dish_list[current_dish_index[player_id]]
 	for ingredient_name in new_dish.keys():
 		collected_counts[player_id][ingredient_name] = 0
 
-	# Update the player's checklist UI
 	var checklist = checklist_p1 if player_id == 1 else checklist_p2
 	if checklist and checklist.has_method("setup_checklist"):
 		var req_counts: Dictionary = {}
@@ -589,7 +656,7 @@ func _update_player_hearts_ui(player_id: int) -> void:
 	var container: HBoxContainer = hearts_p1 if player_id == 1 else hearts_p2
 	if container == null:
 		return
-
+	
 	var total_lives: int = int(lives.get(player_id, lives_per_player))
 	
 	for i in range(3):
@@ -598,7 +665,7 @@ func _update_player_hearts_ui(player_id: int) -> void:
 		var heart_sprite := container.get_child(i) as TextureRect
 		if heart_sprite == null:
 			continue
-
+		
 		var lives_for_heart: int = clamp(total_lives - (i * 2), 0, 2)
 		match lives_for_heart:
 			2:
@@ -616,12 +683,10 @@ func _lose_half_heart(player_id: int, reason: String = "") -> void:
 		lives[player_id] = lives_per_player
 	lives[player_id] = max(0, lives[player_id] - 1)
 	
-	var mm = get_tree().get_root().get_node_or_null("/root/MusicManager")
-	if mm and mm.has_method("play_sfx"):
-		mm.play_sfx("wrong")
-
+	MusicManager.play_sfx("wrong")
+	
 	_update_player_hearts_ui(player_id)
-
+	
 	var heart_index: int = clamp(int(lives[player_id] / 2), 0, 2)
 	var container := hearts_p1 if player_id == 1 else hearts_p2
 	if container and heart_index < container.get_child_count():
@@ -650,3 +715,41 @@ func _on_player_eliminated(player_id: int) -> void:
 		var parent := win_screen.get_parent()
 		if parent:
 			parent.move_child(win_screen, parent.get_child_count() - 1)
+
+func _show_powerup_label(text: String, fade_time: float = 1.5, hold_time: float = 0.6) -> void:
+	if _powerup_tween != null and _powerup_tween.is_valid():
+		_powerup_tween.kill()
+		_powerup_tween = null
+
+	if powerup_label == null:
+		return
+	powerup_label.text = text
+	powerup_label.visible = true
+	var c = powerup_label.modulate
+	c.a = 1.0
+	powerup_label.modulate = c
+
+	# Create tween: hold then fade out
+	_powerup_tween = create_tween()
+	_powerup_tween.tween_callback(Callable(self, "_noop")) # avoids empty-tween warning
+	_powerup_tween.tween_interval(hold_time)
+	_powerup_tween.tween_property(powerup_label, "modulate:a", 0.0, fade_time).set_trans(Tween.TRANS_LINEAR)
+	_powerup_tween.tween_callback(Callable(self, "_on_powerup_label_faded"))
+
+func _noop() -> void:
+	# noop! 
+	pass
+
+func _on_powerup_label_faded() -> void:
+	if powerup_label:
+		powerup_label.visible = false
+		powerup_label.text = ""
+	# clear reference to tween
+	_powerup_tween = null
+
+func _on_powerup_collected(player_id: int, powerup_type: String) -> void:
+	# Format text nicely: "P1: Extra Life" or "P2: Heart Breaker"
+	var short = powerup_type.capitalize().replace("_", " ")
+	var text = "P%d: %s" % [player_id, short]
+	print("[DEBUG] Powerup collected ->", text)
+	_show_powerup_label(text)
