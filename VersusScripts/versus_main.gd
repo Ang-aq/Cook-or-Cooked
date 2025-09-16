@@ -1,6 +1,5 @@
 extends Node2D
 
-# reuse the versus ingredient scene (duplicate of original ingredient scene)
 @onready var ingredient_scene: PackedScene = preload("res://VersusScenes/versus_ingredient.tscn")
 @onready var DishMiniScene: PackedScene = preload("res://VersusScenes/dish_mini.tscn")
 
@@ -17,6 +16,8 @@ extends Node2D
 @onready var countdown_label: Label = $CanvasLayer/CountdownLabel
 @onready var dish_mini_p1: Control = $CanvasLayer/DishMiniP1
 @onready var dish_mini_p2: Control = $CanvasLayer/DishMiniP2
+@onready var powerup_popup_layer: CanvasLayer = $CanvasLayer
+@onready var speed_label: Label = $CanvasLayer/SlideLabel
 
 @export var spawn_interval: float = 0.8
 @export var spawn_min_x: float = -300.0
@@ -27,6 +28,15 @@ var spawn_timer: float = 0.0
 @export var end_fall_speed: float = 150
 @export var round_time: float = 90.0   
 
+# Speed system
+@export var speed_increase_interval: float = 30.0 
+var _current_speed_stage: int = 0
+var _max_speed_stages: int = 1
+var _speed_thresholds: Array = []     
+var _time_thresholds: Array = []
+var _triggered_time_events: Array = []   
+var _countdown_started: bool = false
+
 # Game Finished!
 @onready var win_screen: Control = $CanvasLayer/WinScreen
 @onready var win_label: Label = $CanvasLayer/WinScreen/WinLabel
@@ -34,6 +44,7 @@ var spawn_timer: float = 0.0
 @onready var menu_button: Button = $CanvasLayer/WinScreen/MenuButton
 @onready var powerup_label: Label = $CanvasLayer/PowerupLabel
 var _powerup_tween: Tween
+var sudden_death_active: bool = false
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var time_left: float = 0.0
@@ -62,16 +73,16 @@ var tutorial_shown := false
 
 var dish_list: Array = [
 	# Dish 1
-	{"Tomato": {"count":3, "combo":["→","→","Z"]}, 
-	"Onion": {"count":2, "combo":["↓","Z"]}
+	{"Scallion":  {"count":2, "combo": ["←","↓","Z"]},
+	 "Meat":   {"count":2,"combo": ["→","↑","Z"]},
 	},
 	# Dish 2
 	{"Carrot": {"count":2, "combo":["↑","Z"]},
 	 "Meat": {"count":2, "combo":["←","→","Z"]}
 	},
 	# Dish 3
-	{"Scallion":  {"count":2, "combo": ["←","↓","Z"]},
-	 "Meat":   {"count":2,"combo": ["→","↑","Z"]},
+	{"Tomato": {"count":3, "combo":["→","→","Z"]}, 
+	"Onion": {"count":2, "combo":["↓","Z"]}
 	},
 	# Dish 4
 	{"Potato": {"count":1,"combo": ["↑","↓","Z"]},
@@ -88,12 +99,24 @@ var dish_meta: Array = [
 ]
 
 var powerup_spawn_points: Array = [
-	Vector2(300, -100),
-	Vector2(400, -100),
-	Vector2(600, -100),
-	Vector2(700, -100),
-	Vector2(800, -100)
+	Vector2(300, 150),
+	Vector2(400, 150),
+	Vector2(600, 150),
+	Vector2(700, 150),
+	Vector2(800, 150)
 ]
+
+var sudden_death_dish: Dictionary = {
+	"Carrot": {"count":4, "combo": ["←","↓","→","↑","Z"]},
+	"Meat": {"count":4, "combo": ["→","→","↑","↑","Z"]},
+	"Tomato": {"count":3, "combo": ["↓","↓","←","→","Z"]},
+	"Onion": {"count":3, "combo": ["↑","↓","←","→","Z"]}
+}
+
+var sudden_death_meta: Dictionary = {
+	"name": "Super Beef Curry",
+	"texture": preload("res://Sprites/Ingredients/beefCurry.png")
+}
 
 var current_dish_index: Dictionary = {1: 0, 2: 0}
 var collected_counts: Dictionary = {1: {}, 2: {}}
@@ -102,7 +125,6 @@ var dishes_completed: Dictionary = {1: 0, 2: 0}
 var reserved_map: Dictionary = {}  
 
 func _ready() -> void:
-	MusicManager.set_all_sfx_volume(5)
 	fade_rect.modulate.a = 1.0   
 	fade_rect.visible = true
 	await fade_in(0.5)
@@ -113,13 +135,12 @@ func _ready() -> void:
 	_update_player_hearts_ui(2)
 	
 	rng.randomize()
-	# reset spawn countdown to the spawn_interval (original behaviour)
 	spawn_timer = spawn_interval
-	# initialize round timer
 	time_left = round_time
 	_update_timer_label()
 	
-	# dish mini setup...
+	_init_speed_system()
+	
 	dish_mini_p1 = DishMiniScene.instantiate() as Control
 	dish_mini_p2 = DishMiniScene.instantiate() as Control
 	$CanvasLayer.add_child(dish_mini_p1)
@@ -161,28 +182,28 @@ func _ready() -> void:
 	if menu_button:
 		menu_button.pressed.connect(Callable(self, "_on_menu_button_pressed"))
 		print("Connected menu_button pressed signal")
-
+	
 	gameplay_paused = true
-
+	
 	_show_tutorial()
 	powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
 
 func _process(delta: float) -> void:
 	if not gameplay_paused:
-		# decrease time left
 		if time_left > 0:
 			time_left -= delta
 			if time_left <= 0:
 				time_left = 0
 				_end_round()
 			_update_timer_label()
-
-		# update fall speed for all active ingredients
-		var current_speed := get_current_fall_speed()
+		
+		_maybe_check_time_events()
+		
+		var current_speed: float = get_current_fall_speed()
 		for node in ingredient_container.get_children():
 			if is_instance_valid(node) and node is Ingredient and not node.is_chopped:
 				node.set_fall_speed(current_speed)
-
+		
 		# handle ingredient spawning timer
 		spawn_timer -= delta
 		if spawn_timer <= 0.0:
@@ -195,8 +216,7 @@ func _process(delta: float) -> void:
 			_try_spawn_powerup()
 			# reset with jitter
 			powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
-
-
+	
 	# win screen input handling stays the same...
 	if win_screen and win_screen.visible:
 		if Input.is_action_just_pressed("joystickStart"):
@@ -211,16 +231,27 @@ func _try_spawn_powerup() -> void:
 		_spawn_powerup()
 
 func _spawn_powerup() -> void:
-	var pu := powerup_scene.instantiate() as VersusPowerUp
-	ingredient_container.add_child(pu)
+	var powerup := powerup_scene.instantiate() as VersusPowerUp
+	ingredient_container.add_child(powerup)
 	var spawn_point = powerup_spawn_points.pick_random()
-	pu.position = spawn_point
-	pu.set_fall_speed(get_current_fall_speed())
-
+	powerup.position = spawn_point
+	
 	var chosen: String = _pick_weighted(POWERUP_TYPES, POWERUP_WEIGHTS)
 	print("[DEBUG] Spawning powerup type: ", chosen)
-	pu.powerup_type = chosen
-	pu._refresh_visuals() # <-- we'll add this next
+	powerup.powerup_type = chosen
+	powerup._refresh_visuals() 
+
+func _spawn_powerup_popup(player_id: int, text: String) -> void:
+	# legacy small popup (fade up)
+	powerup_label.text = text
+	powerup_label.modulate.a = 1.0
+	powerup_label.visible = true
+	
+	var tween := create_tween()
+	tween.tween_property(powerup_label, "position:y", powerup_label.position.y - 50, 0.8)
+	tween.tween_property(powerup_label, "modulate:a", 0.0, 0.8)
+	tween.tween_callback(func(): 
+		powerup_label.visible = false)
 
 func _pick_weighted(items: Array, weights: Array) -> Variant:
 	if items.size() == 0:
@@ -238,14 +269,153 @@ func _pick_weighted(items: Array, weights: Array) -> Variant:
 		acc += int(weights[i])
 		if r < acc:
 			return items[i]
-	# fallback
 	return items[items.size() - 1]
 
+# ---------------------
+# Speed & countdown system
+# ---------------------
+func _init_speed_system() -> void:
+	# compute how many speed stages we will have
+	_max_speed_stages = max(1, int(ceil(round_time / speed_increase_interval)))
+	_current_speed_stage = 0
+	_triggered_time_events.clear()
+	_speed_thresholds.clear()
+	_time_thresholds.clear()
+	_countdown_started = false
+
+	# speed thresholds: multiples of speed_increase_interval from round_time - interval down to >0
+	var k: int = 1
+	while true:
+		var t := round_time - (k * speed_increase_interval)
+		if t <= 0:
+			break
+		_speed_thresholds.append(int(round(t)))
+		k += 1
+
+	# core popup thresholds we want (if applicable)
+	var extras := [60, 30, 10, 5]
+	for e in extras:
+		if round_time >= e and not _time_thresholds.has(int(e)):
+			_time_thresholds.append(int(e))
+
+	# merge speed thresholds into time thresholds
+	_time_thresholds.append_array(_speed_thresholds)
+	# dedupe & sort descending
+	_time_thresholds = _time_thresholds.duplicate(true)
+	_time_thresholds.sort() # ascending
+	var rev: Array = []
+	for i in range(_time_thresholds.size() - 1, -1, -1):
+		rev.append(_time_thresholds[i])
+	_time_thresholds = rev
+
+func _maybe_check_time_events() -> void:
+	if _time_thresholds.size() == 0:
+		return
+
+	for threshold in _time_thresholds:
+		var tval: float = float(threshold)
+		if time_left <= tval and not _triggered_time_events.has(threshold):
+			_triggered_time_events.append(threshold)
+			if _speed_thresholds.has(threshold):
+				_current_speed_stage += 1
+				if _current_speed_stage > _max_speed_stages:
+					_current_speed_stage = _max_speed_stages
+				if int(threshold) == 60:
+					_show_slide_label("60 minute left!")
+				elif int(threshold) == 30:
+					_show_slide_label("30 seconds left!")
+				else:
+					_show_slide_label("%d seconds left!" % int(threshold))
+				MusicManager.play_sfx("level_up")
+			else:
+				# non-speed thresholds (10s popup, 5s final countdown)
+				match int(threshold):
+					10:
+						_show_popup("10 seconds left")
+						MusicManager.play_sfx("countdown")
+					5:
+						if not _countdown_started:
+							_countdown_started = true
+							call_deferred("_start_final_countdown")
+					_:
+						_show_popup("%d seconds left" % int(ceil(threshold)))
+			# only process one threshold per frame
+			break
+
 func get_current_fall_speed() -> float:
-	if round_time <= 0.0:
-		return end_fall_speed
-	var progress: float = clamp(1.0 - (time_left / round_time), 0.0, 1.0)
-	return lerp(start_fall_speed, end_fall_speed, progress)
+	# Stage ratio from 0..1, stage==_max_speed_stages returns end_fall_speed
+	var ratio: float = 0.0
+	if _max_speed_stages > 0:
+		ratio = clamp(float(_current_speed_stage) / float(_max_speed_stages), 0.0, 1.0)
+	return lerp(start_fall_speed, end_fall_speed, ratio)
+
+func _show_popup(text: String, hold_time: float = 0.8, fade_time: float = 1.2) -> void:
+	# small fade popup using powerup_label (existing)
+	if powerup_label == null:
+		return
+	powerup_label.text = text
+	powerup_label.visible = true
+	var c: Color = powerup_label.modulate
+	c.a = 1.0
+	powerup_label.modulate = c
+	var tween: Tween = create_tween()
+	tween.tween_property(powerup_label, "position:y", powerup_label.position.y - 40, 0.5).set_trans(Tween.TRANS_SINE)
+	tween.tween_interval(hold_time)
+	tween.tween_property(powerup_label, "modulate:a", 0.0, fade_time).set_trans(Tween.TRANS_LINEAR)
+	tween.tween_callback(func():
+		if powerup_label:
+			powerup_label.visible = false
+			powerup_label.text = "")
+
+func _show_slide_label(text: String, hold_time: float = 0.9, enter_time: float = 0.35, exit_time: float = 0.35) -> void:
+	var label_node: Label = speed_label 
+	label_node.text = text
+	label_node.visible = true
+	await RenderingServer.frame_post_draw
+
+	# viewport & label size
+	var vp := get_viewport_rect().size
+	var min_size: Vector2 = label_node.get_minimum_size()
+	var label_w: float = max(1.0, min_size.x)   # guard against zero width
+	var label_h: float = max(1.0, min_size.y)
+
+	# compute positions (global coords) -> target is centered on screen
+	var start_x: float = -label_w - 20.0
+	var target_x: float = (vp.x - label_w) * 0.5
+	var end_x: float = vp.x + 20.0
+
+	# vertical center
+	var target_y: float = (vp.y - label_h) * 0.5
+
+	# set initial global position off-left
+	var gp: Vector2 = label_node.global_position
+	gp.x = start_x
+	gp.y = target_y
+	label_node.global_position = gp
+
+	# animate in, hold, animate out
+	var tween: Tween = create_tween()
+	tween.tween_property(label_node, "global_position:x", target_x, enter_time).set_trans(Tween.TRANS_SINE)
+	tween.tween_interval(hold_time)
+	tween.tween_property(label_node, "global_position:x", end_x, exit_time).set_trans(Tween.TRANS_SINE)
+	tween.tween_callback(func():
+		if label_node:
+			label_node.visible = false
+			label_node.text = "")
+
+func _start_final_countdown() -> void: # its the final countdown
+	if countdown_label == null:
+		return
+	countdown_label.visible = true
+	var start_num: int = min(5, int(ceil(time_left)))
+	for i in range(start_num, 0, -1):
+		countdown_label.text = str(i)
+		MusicManager.play_sfx("countdown")
+		await get_tree().create_timer(1.0).timeout
+	countdown_label.visible = false
+
+# End of speed/countdown system
+# ----------------------------
 
 func fade_out(time: float = 1.0) -> void:
 	_during_fade = true
@@ -270,6 +440,7 @@ func fade_in(time: float = 1.0) -> void:
 	_during_fade = false
 
 func _show_tutorial() -> void:
+	tutorial_anim.play("tutorial")
 	if tutorial_screen:
 		tutorial_screen.visible = true
 		tutorial_screen.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -285,7 +456,6 @@ func _hide_tutorial():
 	tutorial_screen.visible = false
 	tutorial_screen.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	tutorial_shown = false
-	# reset timers, start countdown, etc...
 	await _start_countdown()
 	_resume_gameplay_nodes()
 	gameplay_paused = false
@@ -327,12 +497,16 @@ func _setup_checklist_for_player(player_id: int) -> void:
 	if dish_list.size() == 0:
 		return  
 
-	dish_index = rng.randi_range(0, dish_list.size() - 1)
-	current_dish_index[player_id] = dish_index
-
+	# only randomize dish if current_dish_index[player_id] is -1 (not assigned)
+	if current_dish_index[player_id] == -1:
+		dish_index = rng.randi_range(0, dish_list.size() - 1)
+		current_dish_index[player_id] = dish_index
+	else:
+		dish_index = current_dish_index[player_id]
+	
 	var dish: Dictionary = dish_list[dish_index]
 	collected_counts[player_id] = {}
-
+	
 	var checklist = checklist_p1 if player_id == 1 else checklist_p2
 	if checklist and checklist.has_method("setup_checklist"):
 		var req_counts := {}
@@ -343,7 +517,6 @@ func _setup_checklist_for_player(player_id: int) -> void:
 		checklist.setup_checklist(req_counts)
 	else:
 		print("Checklist node missing or has no setup_checklist() for player", player_id)
-		
 
 func _try_spawn_ingredient() -> void:
 	var active_names: Array = []
@@ -420,7 +593,7 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 				else:
 					print("Ingredient %s already reserved" % node.name)
 					break
-
+	
 	if not matched:
 		for i in range(ingredient_container.get_child_count() - 1, -1, -1):
 			var node = ingredient_container.get_child(i)
@@ -428,7 +601,7 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 				continue
 			if not (node is VersusPowerUp):
 				continue
-
+				
 			if node.combo is Array and node.combo.size() == clean_sequence.size():
 				var eq := true
 				for j in range(clean_sequence.size()):
@@ -446,11 +619,11 @@ func _on_sequence_submitted(sequence: Array, player_id: int) -> void:
 					else:
 						print("Powerup %s already reserved" % node.name)
 						break
-
+	
 	if not matched:
 		_lose_half_heart(player_id, "Wrong combo!")
 		print("Player %d wrong combo -> lost half heart" % player_id)
-
+	
 	_clear_player_input(player_id)
 
 func _on_sequence_reset(player_id: int) -> void:
@@ -466,7 +639,6 @@ func input_player_clear(player_input_node: Node) -> void:
 	if "input_buffer" in player_input_node:
 		player_input_node.input_buffer.clear()
 	player_input_node._update_display()
-
 
 # ingredients 
 func _on_ingredient_chopped(ingredient_name: String) -> void:
@@ -561,6 +733,9 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 
 func _on_player_finished_dish(player_id: int) -> void:
 	# increment count
+	if sudden_death_active:
+		_end_sudden_death(player_id)
+		return
 	dishes_completed[player_id] += 1
 	print("Player %d finished a dish! Total completed: %d" % [player_id, dishes_completed[player_id]])
 	
@@ -604,6 +779,7 @@ func _on_player_finished_dish(player_id: int) -> void:
 	else:
 		print("Checklist node missing or has no setup_checklist() for player", player_id)
 
+#region Endgame
 func _end_round() -> void:
 	gameplay_paused = true
 	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
@@ -616,7 +792,8 @@ func _end_round() -> void:
 	elif dishes_completed[2] > dishes_completed[1]:
 		message = "Player 2 Wins!"
 	else:
-		message = "Draw!"
+		_start_sudden_death()
+		return
 	print(message)
 	
 	if win_screen and win_label:
@@ -635,6 +812,63 @@ func _end_round() -> void:
 				parent.move_child(win_screen, parent.get_child_count() - 1)
 		
 		print("Win screen shown and brought to front")
+
+func _start_sudden_death() -> void:
+	sudden_death_active = true
+	time_left = 0 # no timer
+	_show_slide_label("SUDDEN DEATH")
+	
+	# Clear current dishes
+	current_dish_index[1] = -1
+	current_dish_index[2] = -1
+	collected_counts[1].clear()
+	collected_counts[2].clear()
+	
+	var sudden_dish_index: int = 0
+	_assign_dish_to_player(1, sudden_dish_index)
+	_assign_dish_to_player(2, sudden_dish_index)
+	
+	# Reset UI checklist for both
+	_setup_checklist_for_player(1)
+	_setup_checklist_for_player(2)
+	
+	gameplay_paused = false
+
+func _assign_dish_to_player(player_id: int, dish_index: int) -> void:
+	# set current dish index
+	current_dish_index[player_id] = dish_index
+	collected_counts[player_id].clear()
+	
+	# prepare new dish counts
+	var new_dish: Dictionary = dish_list[dish_index]
+	for ingredient_name in new_dish.keys():
+		collected_counts[player_id][ingredient_name] = 0
+	
+	# update checklist
+	var checklist = checklist_p1 if player_id == 1 else checklist_p2
+	if checklist and checklist.has_method("setup_checklist"):
+		var req_counts: Dictionary = {}
+		for ingredient_name in new_dish.keys():
+			req_counts[ingredient_name] = int(new_dish[ingredient_name]["count"])
+		print("Assigning dish to player %d: %s" % [player_id, req_counts])
+		checklist.setup_checklist(req_counts)
+	
+func _end_sudden_death(winner_id: int) -> void:
+	gameplay_paused = true
+	sudden_death_active = false
+	_show_winner(winner_id)
+
+func _show_winner(winner_id: int = -1) -> void:
+	var winner = winner_id
+	if winner == -1:
+		if dishes_completed[1] > dishes_completed[2]:
+			winner = 1
+		else:
+			winner = 2
+
+	win_screen.visible = true
+	win_label.text = "Player %d Wins!" % winner
+#endregion
 
 func _update_timer_label() -> void:
 	if timer_label:
@@ -706,7 +940,7 @@ func _on_player_eliminated(player_id: int) -> void:
 	for node in [$IngredientContainer, player_input_p1, player_input_p2]:
 		node.set_process(false)
 		node.set_physics_process(false)
-
+	
 	if win_label:
 		win_label.text = "Player %d Wins!" % winner
 	if win_screen:
@@ -720,18 +954,17 @@ func _show_powerup_label(text: String, fade_time: float = 1.5, hold_time: float 
 	if _powerup_tween != null and _powerup_tween.is_valid():
 		_powerup_tween.kill()
 		_powerup_tween = null
-
+	
 	if powerup_label == null:
 		return
 	powerup_label.text = text
 	powerup_label.visible = true
 	var c = powerup_label.modulate
 	c.a = 1.0
-	powerup_label.modulate = c
-
-	# Create tween: hold then fade out
+	powerup_label.modulate = powerup_label.modulate
+	
 	_powerup_tween = create_tween()
-	_powerup_tween.tween_callback(Callable(self, "_noop")) # avoids empty-tween warning
+	_powerup_tween.tween_callback(Callable(self, "_noop")) 
 	_powerup_tween.tween_interval(hold_time)
 	_powerup_tween.tween_property(powerup_label, "modulate:a", 0.0, fade_time).set_trans(Tween.TRANS_LINEAR)
 	_powerup_tween.tween_callback(Callable(self, "_on_powerup_label_faded"))
@@ -744,12 +977,9 @@ func _on_powerup_label_faded() -> void:
 	if powerup_label:
 		powerup_label.visible = false
 		powerup_label.text = ""
-	# clear reference to tween
 	_powerup_tween = null
 
 func _on_powerup_collected(player_id: int, powerup_type: String) -> void:
-	# Format text nicely: "P1: Extra Life" or "P2: Heart Breaker"
 	var short = powerup_type.capitalize().replace("_", " ")
 	var text = "P%d: %s" % [player_id, short]
-	print("[DEBUG] Powerup collected ->", text)
 	_show_powerup_label(text)

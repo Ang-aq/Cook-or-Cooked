@@ -1,0 +1,326 @@
+[gd_scene load_steps=34 format=3 uid="uid://61prbkmmxws1"]
+
+[ext_resource type="Script" uid="uid://c26wig0n86w7y" path="res://Scripts/main.gd" id="1_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="2_bo1nx"]
+[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_fdnlq"]
+[ext_resource type="Texture2D" uid="uid://bvnoi6a3gq0j7" path="res://Sprites/pot/potanimationexplode1.png" id="3_cbgmd"]
+[ext_resource type="Texture2D" uid="uid://ybii7cxvt0ft" path="res://Sprites/pot/potanimationexplode2.png" id="4_1w6v2"]
+[ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scripts/PlayerInput.gd" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="5_kry3j"]
+[ext_resource type="Texture2D" uid="uid://df5n5l5hwsfdm" path="res://Sprites/pot/potanimationexplode3.png" id="5_ueoa1"]
+[ext_resource type="Texture2D" uid="uid://rojm6mfvr3xx" path="res://Sprites/pot/potanimationexplode4.png" id="6_6vcvc"]
+[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="6_21xkr"]
+[ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scripts/DishCompleteUi.gd" id="7_6bp64"]
+[ext_resource type="Texture2D" uid="uid://bptlj5a8ew6mo" path="res://Sprites/pot/potanimationexplode5.png" id="7_7k868"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="7_d1ilt"]
+[ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scripts/combo_label.gd" id="7_hptm8"]
+[ext_resource type="Texture2D" uid="uid://may3iqwqwect" path="res://Sprites/pot/potanimationexplode6.png" id="8_hpc6h"]
+[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="9_hptm8"]
+[ext_resource type="Texture2D" uid="uid://bqdqn0al2n6av" path="res://Sprites/pot/potanimationexplode7.png" id="9_kltya"]
+[ext_resource type="Texture2D" uid="uid://cgqyfoj6cc1yj" path="res://Sprites/pot/potanimationexplode8.png" id="10_e08e2"]
+[ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="10_fdnlq"]
+[ext_resource type="Texture2D" uid="uid://dlpiftmjhcabj" path="res://Sprites/pot/potanimationexplode9.png" id="11_neg2b"]
+[ext_resource type="Script" uid="uid://c4463uqwo28rt" path="res://Scripts/PestManager.gd" id="12_6iyac"]
+[ext_resource type="Texture2D" uid="uid://dq6emjeot4607" path="res://Sprites/pot/potanimationexplode10.png" id="12_r33sp"]
+[ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="13_hdf80"]
+[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="14_wsu2k"]
+[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="15_k12tt"]
+[ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="16_k12tt"]
+[ext_resource type="Script" uid="uid://d2reec7rce1c4" path="res://Scripts/ingredient_manager.gd" id="17_1w6v2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_h1bgf"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"boiling",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_cbgmd")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_1w6v2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ueoa1")
+}, {
+"duration": 2.0,
+"texture": ExtResource("6_6vcvc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_7k868")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_hpc6h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_kltya")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_e08e2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_neg2b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_r33sp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_hdf80")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_wsu2k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_k12tt")
+}],
+"loop": true,
+"name": &"normal",
+"speed": 5.0
+}]
+
+[sub_resource type="Animation" id="Animation_6iyac"]
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_d1ilt"]
+resource_name = "spin"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fdnlq"]
+_data = {
+&"RESET": SubResource("Animation_6iyac"),
+&"spin": SubResource("Animation_d1ilt")
+}
+
+[sub_resource type="Animation" id="Animation_hptm8"]
+resource_name = "ThreeStars"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d1ilt"]
+_data = {
+&"ThreeStars": SubResource("Animation_hptm8")
+}
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_jjvhh")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = -113.0
+offset_right = 1322.0
+offset_bottom = 777.0
+color = Color(0, 0, 0, 1)
+
+[node name="FinalUi" type="Sprite2D" parent="."]
+position = Vector2(577, 324)
+scale = Vector2(0.600463, 0.600463)
+texture = ExtResource("2_fdnlq")
+
+[node name="PotAnimation" type="AnimatedSprite2D" parent="."]
+position = Vector2(559, 318)
+scale = Vector2(0.61088, 0.61088)
+sprite_frames = SubResource("SpriteFrames_h1bgf")
+animation = &"normal"
+
+[node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
+visible = false
+position = Vector2(-405, -213)
+sfx_up = null
+sfx_down = null
+sfx_left = null
+sfx_right = null
+
+[node name="IngredientContainer" type="Node2D" parent="."]
+
+[node name="IngredientManager" type="Node" parent="."]
+script = ExtResource("17_1w6v2")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HeartsContainer" type="HBoxContainer" parent="UI"]
+offset_left = 913.0
+offset_top = 14.0
+offset_right = 1113.0
+offset_bottom = 78.0
+
+[node name="Heart" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="Heart2" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="Heart3" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_21xkr")
+
+[node name="ComboLabel" type="Label" parent="UI"]
+offset_left = 18.0
+offset_top = 24.0
+offset_right = 217.0
+offset_bottom = 79.0
+theme = ExtResource("7_d1ilt")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 50
+text = "10x COMBO!"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("7_hptm8")
+
+[node name="Checklist" parent="UI" instance=ExtResource("5_kry3j")]
+offset_left = 919.0
+offset_top = 273.0
+offset_right = 1096.0
+offset_bottom = 457.0
+theme = ExtResource("7_d1ilt")
+
+[node name="PlayerInput" type="Node" parent="UI"]
+script = ExtResource("4_jjvhh")
+
+[node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
+offset_left = 155.0
+offset_top = 490.0
+offset_right = 718.0
+offset_bottom = 635.0
+theme = ExtResource("7_d1ilt")
+alignment = 1
+
+[node name="DamageFlash" type="ColorRect" parent="UI"]
+visible = false
+custom_minimum_size = Vector2(23, 23)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.618933, 1.73271e-06, 3.85046e-07, 1)
+
+[node name="DishTitle" type="Label" parent="UI"]
+offset_left = 910.0
+offset_top = 220.0
+offset_right = 1103.0
+offset_bottom = 272.0
+theme = ExtResource("7_d1ilt")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
+
+[node name="TimerLabel" type="Label" parent="UI"]
+offset_left = 425.0
+offset_top = 3.0
+offset_right = 575.0
+offset_bottom = 103.0
+theme = ExtResource("7_d1ilt")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 100
+text = "60"
+horizontal_alignment = 1
+
+[node name="LevelTimer" type="Timer" parent="UI/TimerLabel"]
+
+[node name="Pot" type="Sprite2D" parent="UI"]
+position = Vector2(436.667, 319)
+scale = Vector2(0.610764, 0.609259)
+texture = ExtResource("16_k12tt")
+
+[node name="WinOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DishCompleteUI" type="Control" parent="WinOverlay"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("7_6bp64")
+
+[node name="Star" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 198.0
+offset_top = 76.0
+offset_right = 759.0
+offset_bottom = 638.0
+pivot_offset = Vector2(282, 283)
+texture = ExtResource("10_fdnlq")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Star"]
+libraries = {
+&"": SubResource("AnimationLibrary_fdnlq")
+}
+
+[node name="Dish" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 232.0
+offset_right = 599.0
+offset_bottom = 486.0
+texture = ExtResource("9_hptm8")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Dish"]
+libraries = {
+&"": SubResource("AnimationLibrary_d1ilt")
+}
+
+[node name="Label" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 304.0
+offset_top = 197.0
+offset_right = 653.0
+offset_bottom = 275.0
+theme = ExtResource("7_d1ilt")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "Dish Name"
+horizontal_alignment = 1
+
+[node name="Level UP!" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 441.0
+offset_right = 672.0
+offset_bottom = 533.0
+theme = ExtResource("7_d1ilt")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 35
+text = "Level Up!"
+horizontal_alignment = 1
+
+[node name="PestManager" type="Node2D" parent="."]
+position = Vector2(106, 100)
+script = ExtResource("12_6iyac")
+
+[node name="BossSpawn" type="Node2D" parent="."]
+position = Vector2(1, 75)
+
+[connection signal="timeout" from="UI/TimerLabel/LevelTimer" to="." method="_on_level_timer_timeout"]

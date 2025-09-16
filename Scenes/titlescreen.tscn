@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://d02wc3k6aphj"]
+[gd_scene load_steps=20 format=3 uid="uid://d02wc3k6aphj"]
 
 [ext_resource type="Script" uid="uid://dkpavsx1wmgv6" path="res://Scripts/titlescreen.gd" id="1_goadl"]
 [ext_resource type="Texture2D" uid="uid://dm2tawicka5hf" path="res://Sprites/Untitled design (4).png" id="3_47k5g"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://b3t17fyq7sx70" path="res://Sprites/title/title13.png" id="15_68cui"]
 [ext_resource type="Texture2D" uid="uid://b20aimyttchd5" path="res://Sprites/title/title14.png" id="16_a8xdt"]
 [ext_resource type="Texture2D" uid="uid://bmtbs5w16mw2r" path="res://Sprites/title/title15.png" id="17_frh15"]
+[ext_resource type="Texture2D" uid="uid://clefdanq6vyc1" path="res://Sprites/volume.png" id="18_47k5g"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_7qi16"]
 animations = [{
@@ -77,10 +78,10 @@ scale = Vector2(1.0125, 1.0125)
 texture = ExtResource("3_47k5g")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_left = 478.0
-offset_top = 414.0
-offset_right = 722.0
-offset_bottom = 520.0
+offset_left = 502.0
+offset_top = 424.0
+offset_right = 746.0
+offset_bottom = 530.0
 
 [node name="Solo" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -98,13 +99,13 @@ theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
 theme_override_font_sizes/font_size = 50
-text = "Versus (WIP)"
+text = "Versus"
 
 [node name="Arrow" type="Label" parent="."]
-offset_left = 213.0
-offset_top = -215.0
-offset_right = 477.0
-offset_bottom = -164.0
+offset_left = 473.0
+offset_top = 424.0
+offset_right = 737.0
+offset_bottom = 475.0
 theme = ExtResource("3_h87bp")
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2
@@ -113,7 +114,7 @@ theme_override_font_sizes/font_size = 50
 text = ">"
 
 [node name="Title" type="AnimatedSprite2D" parent="."]
-position = Vector2(587, 216)
+position = Vector2(587, 232)
 scale = Vector2(1.72558, 1.72558)
 sprite_frames = SubResource("SpriteFrames_7qi16")
 animation = &"title"
@@ -132,10 +133,47 @@ theme_override_font_sizes/font_size = 50
 text = "Use ARROW KEYS and Z to navigate"
 horizontal_alignment = 1
 
+[node name="VolumeButton" type="Button" parent="."]
+offset_left = 1077.0
+offset_top = 8.0
+offset_right = 1144.0
+offset_bottom = 71.0
+text = "
+"
+icon = ExtResource("18_47k5g")
+flat = true
+expand_icon = true
+
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 modulate = Color(0, 0, 0, 0)
 offset_left = -4.0
 offset_top = -4.0
 offset_right = 1160.0
 offset_bottom = 659.0
 color = Color(0, 0, 0, 1)
+
+[node name="VolumeMenu" type="PopupPanel" parent="."]
+position = Vector2i(879, 12)
+size = Vector2i(200, 54)
+visible = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VolumeMenu"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 196.0
+offset_bottom = 50.0
+
+[node name="Label" type="Label" parent="VolumeMenu/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_h87bp")
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 25
+text = "Volume"
+horizontal_alignment = 1
+
+[node name="VolumeSlider" type="HSlider" parent="VolumeMenu/VBoxContainer"]
+layout_mode = 2
+min_value = -60.0
+max_value = 10.0
+value = -20.0

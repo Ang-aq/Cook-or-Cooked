@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://61prbkmmxws1"]
+[gd_scene load_steps=34 format=3 uid="uid://61prbkmmxws1"]
 
 [ext_resource type="Script" uid="uid://c26wig0n86w7y" path="res://Scripts/main.gd" id="1_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="2_bo1nx"]
@@ -26,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="14_wsu2k"]
 [ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="15_k12tt"]
 [ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="16_k12tt"]
+[ext_resource type="Script" uid="uid://d2reec7rce1c4" path="res://Scripts/ingredient_manager.gd" id="17_1w6v2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_h1bgf"]
 animations = [{
@@ -152,13 +153,20 @@ animation = &"normal"
 
 [node name="Ingredient" parent="." instance=ExtResource("2_bo1nx")]
 visible = false
-position = Vector2(-405, -213)
-sfx_up = null
-sfx_down = null
-sfx_left = null
-sfx_right = null
+position = Vector2(-288, 297)
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = 648.0
+offset_right = 1322.0
+offset_bottom = 1167.0
+color = Color(0, 0, 0, 1)
 
 [node name="IngredientContainer" type="Node2D" parent="."]
+
+[node name="IngredientManager" type="Node" parent="."]
+script = ExtResource("17_1w6v2")
+ingredient_container_path = NodePath("../IngredientContainer")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -167,18 +175,22 @@ offset_left = 913.0
 offset_top = 14.0
 offset_right = 1113.0
 offset_bottom = 78.0
+alignment = 1
 
 [node name="Heart" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
+stretch_mode = 4
 
 [node name="Heart2" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
+stretch_mode = 4
 
 [node name="Heart3" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
 texture = ExtResource("6_21xkr")
+stretch_mode = 4
 
 [node name="ComboLabel" type="Label" parent="UI"]
 offset_left = 18.0

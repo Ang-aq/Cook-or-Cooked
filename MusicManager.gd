@@ -19,10 +19,11 @@ var sfx_library: Dictionary = {
 	"sauce_soy": preload("res://Audio/powerup.ogg"),
 	"sauce_sweet": preload("res://Audio/powerup.ogg"),
 	"sauce_mystery": preload("res://Audio/powerup.ogg"),
-	"menu": preload("res://Audio/MenuPop.ogg"),
 	"boil": preload("res://Audio/bubbles-72783.ogg"),
 	"sad": preload("res://Audio/failed.ogg"),
 	"countdown": preload("res://Audio/countdown.ogg"),
+	"menu": preload("res://Audio/click1.ogg"),
+	"select": preload("res://Audio/select.ogg"),
 }
 
 var music_player: AudioStreamPlayer
@@ -85,7 +86,6 @@ func stop_all_sfx() -> void:
 			player.queue_free()
 	active_players.clear()
 
-# Internal: remove and free the player
 func _remove_and_free_player(player: AudioStreamPlayer) -> void:
 	if active_players.has(player):
 		active_players.erase(player)

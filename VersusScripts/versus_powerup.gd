@@ -3,9 +3,9 @@ class_name VersusPowerUp
 
 @export var powerup_type: String = "extra_life"  # "heart_breaker", "dish_snatcher", "extra_life", "mystery"
 @export var combo: Array = []
-@export var fall_speed: float = 120.0
+@export var fall_speed: float = 70.0
 @export var lifetime: float = 12.0
-
+	
 signal powerup_collected(player_id: int, powerup_type: String)
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
@@ -40,9 +40,6 @@ func reserve(player_id: int) -> bool:
 
 func get_reserved_player() -> int:
 	return _reserved_by
-
-func set_fall_speed(s: float) -> void:
-	fall_speed = s
 
 func play_slash_sequence(sequence: Array) -> void:
 	if _collected:
@@ -113,15 +110,13 @@ func _apply_effects_to_game(gm: Node, collector: int) -> void:
 
 func _apply_heart_breaker(gm: Node, target_player: int) -> void:
 	if not gm.lives.has(target_player):
-		# initialize if not found
 		gm.lives[target_player] = gm.lives_per_player if gm.has_method("lives_per_player") == false else gm.lives_per_player
-
-	# subtract 1 life (was subtracting 2)
+	
 	gm.lives[target_player] = max(0, int(gm.lives[target_player]) - 1)
-
+	
 	if gm.has_method("_update_player_hearts_ui"):
 		gm._update_player_hearts_ui(target_player)
-
+	
 	if int(gm.lives[target_player]) <= 0:
 		if gm.has_method("_on_player_eliminated"):
 			gm._on_player_eliminated(target_player)
@@ -173,12 +168,10 @@ func _update_combo_display() -> void:
 			x += 30
 
 func _refresh_visuals() -> void:
-	# Update combo list
 	if DEFAULT_COMBOS.has(powerup_type):
 		combo = DEFAULT_COMBOS[powerup_type].duplicate(true)
 	_update_combo_display()
 
-	# Update sprite animation
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation(powerup_type):
 			sprite.play(powerup_type)

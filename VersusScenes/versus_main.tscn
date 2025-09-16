@@ -83,6 +83,13 @@ animations = [{
 [node name="VersusMain" type="Node2D"]
 script = ExtResource("1_yuico")
 
+[node name="ColorRect3" type="ColorRect" parent="."]
+offset_left = -212.0
+offset_top = -173.0
+offset_right = 1369.0
+offset_bottom = 828.0
+color = Color(0, 0, 0, 1)
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(576, 324)
 scale = Vector2(0.60179, 0.607855)
@@ -226,9 +233,9 @@ animation = &"tutorial"
 frame_progress = 0.566542
 
 [node name="CountdownLabel" type="Label" parent="CanvasLayer"]
-offset_left = 483.0
+offset_left = 484.0
 offset_top = 278.0
-offset_right = 681.0
+offset_right = 682.0
 offset_bottom = 478.0
 theme = ExtResource("4_vnwg8")
 theme_override_constants/outline_size = 5
@@ -292,8 +299,27 @@ offset_bottom = 544.0
 pivot_offset = Vector2(45.8, 45.8)
 
 [node name="PowerupLabel" type="Label" parent="CanvasLayer"]
-offset_right = 40.0
-offset_bottom = 23.0
+visible = false
+offset_left = 359.0
+offset_top = 449.0
+offset_right = 806.0
+offset_bottom = 525.0
+theme = ExtResource("4_vnwg8")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 75
+text = "+1 Heart"
+horizontal_alignment = 1
+
+[node name="SlideLabel" type="Label" parent="CanvasLayer"]
+visible = false
+offset_left = 451.0
+offset_top = 293.0
+offset_right = 643.0
+offset_bottom = 369.0
+theme = ExtResource("4_vnwg8")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 75
+text = "testing"
 
 [node name="IngredientContainer" type="Node2D" parent="."]
 position = Vector2(-1, 6)
@@ -304,6 +330,13 @@ position = Vector2(-1, 6)
 position = Vector2(575.111, 323)
 scale = Vector2(0.609259, 0.609259)
 texture = ExtResource("21_1bvec")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = -211.0
+offset_top = 648.0
+offset_right = 1369.0
+offset_bottom = 1167.0
+color = Color(0, 0, 0, 1)
 
 [connection signal="pressed" from="CanvasLayer/WinScreen/RematchButton" to="." method="_on_rematch_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/WinScreen/MenuButton" to="." method="_on_menu_button_pressed"]
