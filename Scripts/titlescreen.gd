@@ -2,12 +2,14 @@ extends CanvasLayer
 
 @export var solo_scene_path: String = "res://Scenes/tutorial.tscn"
 @export var versus_scene_path: String = "res://VersusScenes/versus_main.tscn"
+@export var infinite_scene_path: String = "res://tempscreen.tscn"
 
 @onready var fade_rect: ColorRect = $ColorRect
 
 @onready var options: Array[Label] = [
 	$VBoxContainer/Solo,
-	$VBoxContainer/Versus
+	$VBoxContainer/Versus,
+	$VBoxContainer/Infinite
 ]
 @onready var arrow: Label = $Arrow
 @onready var title: AnimatedSprite2D = $Title
@@ -18,16 +20,29 @@ extends CanvasLayer
 
 var selected_index: int = 0
 var bounce_tween: Tween
+var option_selected: bool = false
+
+func _disable_focus_recursive(node: Node) -> void:
+	if node is Control:
+		node.focus_mode = Control.FOCUS_NONE
+		node.mouse_filter = Control.MOUSE_FILTER_PASS 
+	for child in node.get_children():
+		_disable_focus_recursive(child)
 
 func _ready() -> void:
+	option_selected = false
 	MusicManager.play_bgm(preload("res://Audio/Backgroundre.ogg"), true)
 	_update_arrow_position()
 	_start_bounce()
 	title.play("title")
 	
+	volume_button.focus_mode = Control.FOCUS_NONE
+	volume_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	
 	volume_button.pressed.connect(_on_volume_button_pressed)
 	volume_slider.value_changed.connect(_on_volume_slider_value_changed)
-	volume_slider.value = -10 # default volume
+	volume_slider.value = -10 
+	_disable_focus_recursive(volume_menu)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("joystickUp"):
@@ -39,8 +54,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		_update_arrow_position()
 		MusicManager.play_sfx("menu")
 	elif event.is_action_pressed("joystickStart"):
-		_select_option()
-		MusicManager.play_sfx("select")
+		if option_selected == false:
+			_select_option()
+			MusicManager.play_sfx("select")
 
 func _update_arrow_position() -> void:
 	var target_label := options[selected_index]
@@ -54,6 +70,7 @@ func _start_bounce() -> void:
 	bounce_tween.tween_property(arrow, "position:x", arrow.position.x, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _select_option() -> void:
+	option_selected = true
 	var selected_label := options[selected_index]
 	var other_label := options[(selected_index + 1) % options.size()]
 	
@@ -80,8 +97,7 @@ func _select_option() -> void:
 		.set_delay(0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 	await select_tween.finished
-	if selected_index != 0:
-		await fade_out(0.5)
+	await fade_out(0.5)
 
 	var path := solo_scene_path if selected_index == 0 else versus_scene_path
 	var err = get_tree().change_scene_to_file(path)

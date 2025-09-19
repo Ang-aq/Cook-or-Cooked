@@ -214,10 +214,8 @@ func _process(delta: float) -> void:
 		powerup_spawn_timer -= delta
 		if powerup_spawn_timer <= 0.0:
 			_try_spawn_powerup()
-			# reset with jitter
 			powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
 	
-	# win screen input handling stays the same...
 	if win_screen and win_screen.visible:
 		if Input.is_action_just_pressed("joystickStart"):
 			if rematch_button:
@@ -242,7 +240,6 @@ func _spawn_powerup() -> void:
 	powerup._refresh_visuals() 
 
 func _spawn_powerup_popup(player_id: int, text: String) -> void:
-	# legacy small popup (fade up)
 	powerup_label.text = text
 	powerup_label.modulate.a = 1.0
 	powerup_label.visible = true
@@ -271,19 +268,14 @@ func _pick_weighted(items: Array, weights: Array) -> Variant:
 			return items[i]
 	return items[items.size() - 1]
 
-# ---------------------
-# Speed & countdown system
-# ---------------------
 func _init_speed_system() -> void:
-	# compute how many speed stages we will have
 	_max_speed_stages = max(1, int(ceil(round_time / speed_increase_interval)))
 	_current_speed_stage = 0
 	_triggered_time_events.clear()
 	_speed_thresholds.clear()
 	_time_thresholds.clear()
 	_countdown_started = false
-
-	# speed thresholds: multiples of speed_increase_interval from round_time - interval down to >0
+	
 	var k: int = 1
 	while true:
 		var t := round_time - (k * speed_increase_interval)
@@ -292,15 +284,12 @@ func _init_speed_system() -> void:
 		_speed_thresholds.append(int(round(t)))
 		k += 1
 
-	# core popup thresholds we want (if applicable)
 	var extras := [60, 30, 10, 5]
 	for e in extras:
 		if round_time >= e and not _time_thresholds.has(int(e)):
 			_time_thresholds.append(int(e))
 
-	# merge speed thresholds into time thresholds
 	_time_thresholds.append_array(_speed_thresholds)
-	# dedupe & sort descending
 	_time_thresholds = _time_thresholds.duplicate(true)
 	_time_thresholds.sort() # ascending
 	var rev: Array = []
@@ -328,29 +317,25 @@ func _maybe_check_time_events() -> void:
 					_show_slide_label("%d seconds left!" % int(threshold))
 				MusicManager.play_sfx("level_up")
 			else:
-				# non-speed thresholds (10s popup, 5s final countdown)
 				match int(threshold):
 					10:
 						_show_popup("10 seconds left")
-						MusicManager.play_sfx("countdown")
 					5:
 						if not _countdown_started:
 							_countdown_started = true
 							call_deferred("_start_final_countdown")
 					_:
 						_show_popup("%d seconds left" % int(ceil(threshold)))
-			# only process one threshold per frame
 			break
 
 func get_current_fall_speed() -> float:
-	# Stage ratio from 0..1, stage==_max_speed_stages returns end_fall_speed
 	var ratio: float = 0.0
 	if _max_speed_stages > 0:
 		ratio = clamp(float(_current_speed_stage) / float(_max_speed_stages), 0.0, 1.0)
 	return lerp(start_fall_speed, end_fall_speed, ratio)
 
 func _show_popup(text: String, hold_time: float = 0.8, fade_time: float = 1.2) -> void:
-	# small fade popup using powerup_label (existing)
+
 	if powerup_label == null:
 		return
 	powerup_label.text = text
@@ -372,28 +357,24 @@ func _show_slide_label(text: String, hold_time: float = 0.9, enter_time: float =
 	label_node.text = text
 	label_node.visible = true
 	await RenderingServer.frame_post_draw
-
-	# viewport & label size
+	
 	var vp := get_viewport_rect().size
 	var min_size: Vector2 = label_node.get_minimum_size()
-	var label_w: float = max(1.0, min_size.x)   # guard against zero width
+	var label_w: float = max(1.0, min_size.x)   
 	var label_h: float = max(1.0, min_size.y)
-
-	# compute positions (global coords) -> target is centered on screen
+	
 	var start_x: float = -label_w - 20.0
 	var target_x: float = (vp.x - label_w) * 0.5
 	var end_x: float = vp.x + 20.0
-
-	# vertical center
+	
 	var target_y: float = (vp.y - label_h) * 0.5
-
-	# set initial global position off-left
+	
 	var gp: Vector2 = label_node.global_position
 	gp.x = start_x
 	gp.y = target_y
 	label_node.global_position = gp
 
-	# animate in, hold, animate out
+	#  text slides in, stops, slides out
 	var tween: Tween = create_tween()
 	tween.tween_property(label_node, "global_position:x", target_x, enter_time).set_trans(Tween.TRANS_SINE)
 	tween.tween_interval(hold_time)
@@ -403,19 +384,18 @@ func _show_slide_label(text: String, hold_time: float = 0.9, enter_time: float =
 			label_node.visible = false
 			label_node.text = "")
 
-func _start_final_countdown() -> void: # its the final countdown
+func _start_final_countdown() -> void: 
 	if countdown_label == null:
 		return
 	countdown_label.visible = true
 	var start_num: int = min(5, int(ceil(time_left)))
+	
 	for i in range(start_num, 0, -1):
 		countdown_label.text = str(i)
-		MusicManager.play_sfx("countdown")
+		if countdown_label.text == "3":
+			MusicManager.play_sfx("countdown")
 		await get_tree().create_timer(1.0).timeout
 	countdown_label.visible = false
-
-# End of speed/countdown system
-# ----------------------------
 
 func fade_out(time: float = 1.0) -> void:
 	_during_fade = true
@@ -497,7 +477,6 @@ func _setup_checklist_for_player(player_id: int) -> void:
 	if dish_list.size() == 0:
 		return  
 
-	# only randomize dish if current_dish_index[player_id] is -1 (not assigned)
 	if current_dish_index[player_id] == -1:
 		dish_index = rng.randi_range(0, dish_list.size() - 1)
 		current_dish_index[player_id] = dish_index
@@ -519,16 +498,26 @@ func _setup_checklist_for_player(player_id: int) -> void:
 		print("Checklist node missing or has no setup_checklist() for player", player_id)
 
 func _try_spawn_ingredient() -> void:
-	var active_names: Array = []
+	var weights: Dictionary = {}
+
 	for pid in [1, 2]:
-		var idx = current_dish_index[pid]
-		if idx < dish_list.size():
-			active_names.append_array(dish_list[idx].keys())
+		var needed = _get_needed_counts(pid)
+		for ing in needed.keys():
+			weights[ing] = weights.get(ing, 1) + needed[ing] * 3  # give higher weight
 
-	if active_names.is_empty():
-		return
+	if weights.is_empty():
+		for pid in [1, 2]:
+			var idx = current_dish_index[pid]
+			if idx < dish_list.size():
+				for ing in dish_list[idx].keys():
+					weights[ing] = 1
 
-	var name: String = active_names[rng.randi() % active_names.size()]
+	var names = weights.keys()
+	var weight_values: Array = []
+	for ing in names:
+		weight_values.append(weights[ing])
+
+	var name: String = _pick_weighted(names, weight_values)
 	_spawn_ingredient(name)
 
 func _spawn_ingredient(ingredient_name: String) -> void:
@@ -835,16 +824,13 @@ func _start_sudden_death() -> void:
 	gameplay_paused = false
 
 func _assign_dish_to_player(player_id: int, dish_index: int) -> void:
-	# set current dish index
 	current_dish_index[player_id] = dish_index
 	collected_counts[player_id].clear()
 	
-	# prepare new dish counts
 	var new_dish: Dictionary = dish_list[dish_index]
 	for ingredient_name in new_dish.keys():
 		collected_counts[player_id][ingredient_name] = 0
 	
-	# update checklist
 	var checklist = checklist_p1 if player_id == 1 else checklist_p2
 	if checklist and checklist.has_method("setup_checklist"):
 		var req_counts: Dictionary = {}
@@ -983,3 +969,14 @@ func _on_powerup_collected(player_id: int, powerup_type: String) -> void:
 	var short = powerup_type.capitalize().replace("_", " ")
 	var text = "P%d: %s" % [player_id, short]
 	_show_powerup_label(text)
+
+func _get_needed_counts(player_id: int) -> Dictionary:
+	var needed: Dictionary = {}
+	if current_dish_index[player_id] < dish_list.size():
+		var dish: Dictionary = dish_list[current_dish_index[player_id]]
+		for ing in dish.keys():
+			var required: int = dish[ing]["count"]
+			var have: int = collected_counts[player_id].get(ing, 0)
+			if have < required:
+				needed[ing] = required - have
+	return needed

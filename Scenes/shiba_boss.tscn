@@ -72,7 +72,7 @@ position = Vector2(469, 316)
 scale = Vector2(3.24219, 3.24219)
 sprite_frames = SubResource("SpriteFrames_638jj")
 animation = &"Idle"
-frame_progress = 0.733398
+frame_progress = 0.344646
 script = ExtResource("1_a3hgl")
 
 [node name="ComboDisplay" type="Control" parent="."]

@@ -155,13 +155,6 @@ animation = &"normal"
 visible = false
 position = Vector2(-288, 297)
 
-[node name="ColorRect2" type="ColorRect" parent="."]
-offset_left = -172.0
-offset_top = 648.0
-offset_right = 1322.0
-offset_bottom = 1167.0
-color = Color(0, 0, 0, 1)
-
 [node name="IngredientContainer" type="Node2D" parent="."]
 
 [node name="IngredientManager" type="Node" parent="."]
@@ -212,17 +205,6 @@ offset_right = 1096.0
 offset_bottom = 457.0
 theme = ExtResource("7_d1ilt")
 
-[node name="PlayerInput" type="Node" parent="UI"]
-script = ExtResource("4_jjvhh")
-
-[node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
-offset_left = 155.0
-offset_top = 490.0
-offset_right = 718.0
-offset_bottom = 635.0
-theme = ExtResource("7_d1ilt")
-alignment = 1
-
 [node name="DamageFlash" type="ColorRect" parent="UI"]
 visible = false
 custom_minimum_size = Vector2(23, 23)
@@ -262,6 +244,42 @@ horizontal_alignment = 1
 position = Vector2(436.667, 319)
 scale = Vector2(0.610764, 0.609259)
 texture = ExtResource("16_k12tt")
+
+[node name="PlayerInput" type="Node" parent="UI"]
+script = ExtResource("4_jjvhh")
+
+[node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
+offset_left = 155.0
+offset_top = 490.0
+offset_right = 718.0
+offset_bottom = 635.0
+theme = ExtResource("7_d1ilt")
+alignment = 1
+
+[node name="Countdown" type="Label" parent="UI"]
+offset_left = 328.0
+offset_top = 229.0
+offset_right = 557.0
+offset_bottom = 480.0
+theme = ExtResource("7_d1ilt")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 250
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ColorRect2" type="ColorRect" parent="UI"]
+offset_left = -172.0
+offset_top = 648.0
+offset_right = 1322.0
+offset_bottom = 1167.0
+color = Color(0, 0, 0, 1)
+
+[node name="Fade" type="ColorRect" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1152.0
+offset_bottom = 649.0
+color = Color(0, 0, 0, 1)
 
 [node name="WinOverlay" type="CanvasLayer" parent="."]
 visible = false

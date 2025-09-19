@@ -3,7 +3,7 @@ class_name Ingredient
 
 #region Variables, Nodes, etc.
 @export var speed: float = 150.0
-@export var chopped_fallback: Texture2D    # optional fallback if no chopped animation
+@export var chopped_fallback: Texture2D
 @export var flash_offset: Vector2 = Vector2(0, 0) # this is unused fix soon
 
 var combo: Array = []
@@ -21,13 +21,12 @@ var is_animating := false
 var combo_queue: Array = []
 var _game_node = null
 
-# Containers assigned by Main
+# these r actually assigned in ing manager
 var front_container: Node2D = null
 var behind_container: Node2D = null
 var spawned := false  
 var original_speed: float = 150.0
 
-# Visual resources
 var arrow_textures := {
 	"↑": preload("res://Sprites/arrow_up.png"),
 	"↓": preload("res://Sprites/arrow_down.png"),
@@ -69,7 +68,6 @@ func _ready() -> void:
 	
 	var nodes := get_tree().get_nodes_in_group("Game")
 	if nodes.size() > 0:
-		# pick the first node in the group as the central Game node
 		self._game_node = nodes[0]
 	else:
 		self._game_node = null
@@ -149,7 +147,6 @@ func play_slash_sequence(sequence: Array) -> void:
 
 	_play_next_slash()
 
-
 func _play_next_slash() -> void:
 	if combo_queue.is_empty():
 		_finish_chop()
@@ -157,23 +154,33 @@ func _play_next_slash() -> void:
 
 	var anim_name: String = combo_queue.pop_front()
 
+	var speed_scale: float = 1.0
+	if is_instance_valid(slash):
+		speed_scale = max(0.05, slash.speed_scale)
+	else:
+		if _game_node and ("ingredient_speed_multiplier" in _game_node):
+			speed_scale = max(0.05, float(_game_node.ingredient_speed_multiplier))
+
 	if slash and slash.sprite_frames and slash.sprite_frames.has_animation(anim_name):
 		slash.animation = anim_name
 		slash.play()
 		MusicManager.play_sfx("slash")
-		await get_tree().create_timer(DEFAULT_SLASH_DURATION).timeout
+
+		var wait_time: float = DEFAULT_SLASH_DURATION / speed_scale
+		await get_tree().create_timer(wait_time).timeout
 		_play_next_slash()
 	else:
+		# fallback delay
 		MusicManager.play_sfx("slash")
-		await get_tree().create_timer(0.08).timeout
+		var fallback_wait: float = 0.08 / speed_scale
+		await get_tree().create_timer(fallback_wait).timeout
 		_play_next_slash()
 
 func _finish_chop() -> void:
 	if slash:
 		slash.stop()
 		slash.visible = false
-
-	# try chopped animation
+	
 	var chopped_anim := "%s_chopped" % ingredient_name
 	var played_chopped_anim := false
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(chopped_anim):
@@ -181,8 +188,7 @@ func _finish_chop() -> void:
 		sprite.animation = chopped_anim
 		sprite.play()
 		played_chopped_anim = true
-
-	# fallback static sprite
+	
 	if not played_chopped_anim and is_instance_valid(chopped_sprite):
 		if chopped_sprite.texture == null and chopped_fallback:
 			chopped_sprite.texture = chopped_fallback
@@ -190,13 +196,13 @@ func _finish_chop() -> void:
 		if chopped_sprite.visible and sprite:
 			sprite.stop()
 			sprite.visible = false
-
+	
 	is_chopped = true
 	is_animating = false
 	if is_instance_valid(input_display):
 		input_display.queue_free()
 	movement_enabled = true
-
+	
 	emit_signal("chop_completed", ingredient_name)
 
 func become_chopped() -> void:

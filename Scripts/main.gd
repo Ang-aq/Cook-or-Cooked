@@ -17,6 +17,11 @@ extends Node2D
 @onready var hearts_ui: HBoxContainer = $UI/HeartsContainer
 @onready var combo_label: Label = $UI/ComboLabel
 @onready var IngManager: Node = $IngredientManager
+@onready var countdown_label: Label = $UI/Countdown
+@onready var fade_rect: ColorRect = $UI/Fade
+@export var chop_min_y: float = -100
+@export var chop_max_y: float = 500.0
+
 #endregion
 #region Exports
 # ingredient spawning
@@ -25,12 +30,13 @@ extends Node2D
 @export var spawn_min_x: float = -445.0
 @export var spawn_max_x: float = 80.0
 @export var spawn_start_y: float = -100.0
+@export var kill_line_y: float = 350.0  
 
 # pest spawning
-@export var pest_spawn_min: float = 3.0
-@export var pest_spawn_max: float = 8.0
-@export var pest_spawn_repeat_min: float = 4.0
-@export var pest_spawn_repeat_max: float = 12.0
+@export var pest_spawn_min: float = 15.0
+@export var pest_spawn_max: float = 18.0
+@export var pest_spawn_repeat_min: float = 15.0
+@export var pest_spawn_repeat_max: float = 18.0
 @export var max_active_pests: int = 3
 
 # other exports 
@@ -40,7 +46,7 @@ extends Node2D
 #region Variables
 # sauce spawning
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
-var base_spawn_interval: float = 1.2
+var base_spawn_interval: float = 5.0 # 5
 var sauce_cooldown: float = 5.0 # 5
 var sauce_min_cooldown: float = 3.0 # 3
 var sauce_max_cooldown: float = 8.0 # 8
@@ -65,6 +71,7 @@ var time_left: int = 0
 var level_has_requirements: bool = false
 
 var last_fail_reason: String = ""
+var damage_tween: Tween = null
 
 var saved_hearts: int = max_hearts
 var saved_combo: int = 0
@@ -74,19 +81,19 @@ var active_buffs: Dictionary = {}
 var buff_icon_nodes: Dictionary = {}  
 var ingredient_speed_multiplier: float = 1.0
 var game_over_triggered: bool = false
+
+var countdown_time: int = 3
+var countdown_active: bool = false
+var countdown_finish: bool = false
 #endregion
 func _ready() -> void:
+	player_input.set_process_unhandled_input(false)
 	add_to_group("Game")
-	
 	rng.randomize()
 	sauce_cooldown = rng.randf_range(sauce_min_cooldown, sauce_max_cooldown)
 	
 	PotAnimation.play("normal")
-
-	var title_music = preload("res://Audio/bgm.ogg")
-	MusicManager.play_bgm(title_music, true)
-
-	# Player input signals
+	
 	if not player_input.is_connected("sequence_submitted", Callable(self, "_on_sequence_submitted")):
 		player_input.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
 	if player_input.has_signal("sequence_reset") and not player_input.is_connected("sequence_reset", Callable(self, "_on_sequence_reset")):
@@ -95,23 +102,71 @@ func _ready() -> void:
 	win_overlay.visible = false
 	dish_completed = false
 	game_paused = false
-
+	
+	
 	_load_level()
-
+	
 	if is_instance_valid(IngManager) and IngManager.has_method("set_requirements"):
 		IngManager.set_requirements(required_ingredients, collected_counts)
-
+	
 	if is_instance_valid(IngManager) and IngManager.has_signal("ingredient_chopped"):
 		if not IngManager.is_connected("ingredient_chopped", Callable(self, "_on_ingredient_chopped")):
 			IngManager.ingredient_chopped.connect(Callable(self, "_on_ingredient_chopped"))
-
+	
 	_update_hearts_ui()
 	_update_combo_ui()
-
+	
 	spawn_timer = randf_range(0.25, spawn_interval)
 	pest_next_spawn = randf_range(pest_spawn_min, pest_spawn_max)
 	randomize()
 
+func _start_main_countdown() -> void:
+	await fade_in(0.5)
+	game_paused = true
+	countdown_finish = true
+	MusicManager.stop_bgm()
+	if countdown_active:
+		return
+	
+	countdown_label.visible = true
+	countdown_time = 3
+	countdown_active = true
+	countdown_label.text = str(countdown_time)
+	_countdown_tick()
+	MusicManager.play_sfx("countdown")
+
+func _countdown_tick() -> void:
+	if countdown_time <= 0:
+		countdown_label.text = "Go!"
+		
+		await get_tree().create_timer(0.5).timeout
+		
+		countdown_label.visible = false
+		countdown_active = false
+		_begin_gameplay()
+		return
+	
+	countdown_label.text = str(countdown_time)
+	countdown_time -= 1
+	
+	await get_tree().create_timer(1.06).timeout
+	
+	if not countdown_active:
+		return
+	_countdown_tick()
+
+func _begin_gameplay() -> void:
+	game_paused = false
+	player_input.set_process_unhandled_input(true)
+	spawn_timer = randf_range(0.25, spawn_interval)
+	pest_next_spawn = randf_range(pest_spawn_min, pest_spawn_max)
+	
+	if time_left > 0:
+		$UI/TimerLabel/LevelTimer.start()
+	
+	var title_music = preload("res://Audio/bgm.ogg")
+	MusicManager.play_bgm(title_music, true)
+	
 func _update_hearts_ui() -> void:
 	for i in range(hearts_ui.get_child_count()):
 		var heart: TextureRect = hearts_ui.get_child(i)
@@ -124,25 +179,42 @@ func _update_hearts_ui() -> void:
 			heart.texture = preload("res://Sprites/SlashAnimations/blank.png")
 
 func _lose_heart(reason: String, amount: float = 1.0) -> void:
-	current_hearts -= amount  # now supports half-hearts
+	current_hearts -= amount
 	current_hearts = max(current_hearts, 0)
 	last_fail_reason = reason
 	combo = 0
 	_update_combo_ui()
 	_update_hearts_ui()
 	MusicManager.play_sfx("wrong")
-
+	
 	var popup_pos: Vector2 = ingredient_container.global_position + Vector2(270, 400)
 	_spawn_text_popup(reason, popup_pos)
-
+	
 	if damage_flash:
+		if damage_tween and is_instance_valid(damage_tween):
+			damage_tween.kill()
+			damage_tween = null
+		
 		damage_flash.visible = true
-		var tween := create_tween()
-		tween.tween_property(damage_flash, "color:a", 0.0, 0.4) \
+		
+		var m: Color = damage_flash.modulate
+		m.a = 1.0
+		damage_flash.modulate = m
+		
+		var c: Color = damage_flash.color
+		c.a = 1.0
+		damage_flash.color = c
+		
+		damage_tween = create_tween()
+		damage_tween.tween_property(damage_flash, "modulate:a", 0.0, 0.4) \
 			.set_trans(Tween.TRANS_SINE) \
 			.set_ease(Tween.EASE_OUT)
-		tween.finished.connect(func(): damage_flash.visible = false)
-
+		
+		damage_tween.finished.connect(func():
+			damage_flash.visible = false
+			damage_tween = null
+		)
+	
 	if current_hearts <= 0:
 		_game_over()
 
@@ -158,7 +230,7 @@ func _spawn_text_popup(msg: String, world_pos: Vector2) -> void:
 	popup.position = to_local(world_pos) if has_method("to_local") else world_pos
 	popup.show_text(msg)
 
-# Start level
+# start level
 func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 	current_hearts = clamp(saved_hearts, 0, max_hearts)
 	combo = saved_combo
@@ -186,46 +258,42 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 		player_input.input_buffer.clear()
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
-
+	
 	var dish: Dictionary = LevelManager.get_current_dish()
 	$UI/DishTitle.text = " " + str(dish.get("name","Unknown Dish"))
 	time_left = int(dish.get("time_limit", 60))
 	$UI/TimerLabel.text = str(time_left)
-	$UI/TimerLabel/LevelTimer.stop()
-	if time_left > 0:
-		$UI/TimerLabel/LevelTimer.start()
-
+	
 	if dish.get("is_boss", false):
 		level_has_requirements = false
 		if checklist_ui:
 			checklist_ui.hide()
-
+		
 		spawn_timer = INF
-
+		
 		if pest_manager:
 			pest_manager.set_process(false)
 			for c in pest_manager.get_children():
 				if is_instance_valid(c):
 					c.queue_free()
-
+		
 		var shiba_scene: PackedScene = preload("res://Scenes/shiba_boss.tscn")
 		shiba_boss = shiba_scene.instantiate() as ShibaBoss
 		boss_spawn.add_child(shiba_boss)
-
+		
 		if shiba_boss.has_signal("boss_defeated"):
 			shiba_boss.boss_defeated.connect(Callable(self, "_on_boss_defeated"))
-
+		
 		if player_input and player_input.has_signal("buffer_changed"):
 			player_input.buffer_changed.connect(Callable(shiba_boss, "on_input_buffer_changed"))
-
-		# Make sure manager stops spawning on boss levels
+		
 		if is_instance_valid(IngManager) and IngManager.has_method("stop"):
 			IngManager.stop()
 		return
-
+	
 	if pest_manager:
 		pest_manager.set_process(true)
-
+	
 	var level_data: Dictionary = LevelManager.get_current_requirements()
 	for name in level_data.keys():
 		var data: Dictionary = level_data[name]
@@ -234,40 +302,42 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 			combo_copy = data["combo"].duplicate(true)
 		required_ingredients[name] = {"combo": combo_copy, "count": int(data.get("amount", 0))}
 		collected_counts[name] = 0
-
+	
 	level_has_requirements = required_ingredients.size() > 0
-
+	
 	var req_counts: Dictionary = {}
 	for name in required_ingredients.keys():
 		req_counts[name] = int(required_ingredients[name]["count"])
 	if checklist_ui and checklist_ui.has_method("setup_checklist"):
 		checklist_ui.setup_checklist(req_counts)
 		checklist_ui.show()
-
-	# Keep IngredientManager synced whenever requirements change
+	
 	if is_instance_valid(IngManager) and IngManager.has_method("set_requirements"):
 		IngManager.set_requirements(required_ingredients, collected_counts)
-		# ensure manager is running for normal levels
 		if IngManager.has_method("start"):
 			IngManager.start()
+	
+	if countdown_finish == false:
+		game_paused = true
+		_start_main_countdown()
 
-# Main process
+# main process
 func _process(delta: float) -> void:
 	if game_paused:
 		return
-
+	
 	if "input_buffer" in player_input:
 		while player_input.input_buffer.size() > max_input_length:
 			player_input.input_buffer.pop_front()
 		if player_input.has_method("_update_display"):
 			player_input._update_display()
-
+	
 	sauce_cooldown -= delta
 	if sauce_cooldown <= 0.0:
-		if rng.randf() < 0.1:
+		if rng.randf() < 0.25:
 			spawn_sauce()
 		sauce_cooldown = rng.randf_range(sauce_min_cooldown, sauce_max_cooldown)
-
+	
 	if not dish_completed and _all_ingredients_collected():
 		_on_dish_completed()
 
@@ -279,7 +349,7 @@ func _on_sauce_collected(sauce_type: String) -> void:
 	MusicManager.play_sfx("powerup")
 	
 	match sauce_type:
-		"hot":
+		"soy":
 			_spawn_text_popup("Slow Down!", popup_pos)
 			ingredient_speed_multiplier = 0.35   # stronger slowdown
 			var t = get_tree().create_timer(10.0)
@@ -287,15 +357,15 @@ func _on_sauce_collected(sauce_type: String) -> void:
 				ingredient_speed_multiplier = 1.0
 			)
 		
-		"soy":
+		"sweet":
 			_spawn_text_popup("Combo Boost!", popup_pos)
 			combo *= 2
 			_update_combo_ui()
 		
-		"sweet":
+		"hot":
 			_spawn_text_popup("Extra Heart!", popup_pos)
 			if current_hearts < max_hearts:
-				current_hearts += 1
+				current_hearts += 2
 				_update_hearts_ui()
 		
 		"mystery":
@@ -375,7 +445,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		_clear_player_input()
 		return
 		
-	#  2) Boss check 
+	# 2) Boss check 
 	if is_boss and shiba_boss and is_instance_valid(shiba_boss):
 		if shiba_boss.check_sequence(clean_sequence):
 			matched = true
@@ -386,7 +456,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		_clear_player_input()
 		return
 		
-	#  3) PestManager
+	# 3) PestManager
 	if has_node("PestManager"):
 		var pm = $PestManager
 		if pm and pm.check_sequence(clean_sequence):
@@ -394,12 +464,12 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			_clear_player_input()
 			return
 			
-	#  4) Ingredients 
+	# 4) Ingredients 
 	if not level_has_requirements:
 		_clear_player_input()
 		return
 		
-	for i in range(ingredient_container.get_child_count() - 1, -1, -1):
+	for i in range(ingredient_container.get_child_count()):
 		var ing_node = ingredient_container.get_child(i)
 		if not is_instance_valid(ing_node):
 			continue
@@ -414,46 +484,40 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		var req_count: int = int(required_ingredients[name]["count"])
 		var cur_count: int = collected_counts.get(name, 0)
 		
-		# Too many of an ingredient = heart loss
 		if cur_count >= req_count:
-			if clean_sequence.size() == ing.combo.size():
-				var would_equal := true
-				for j in range(clean_sequence.size()):
-					if str(clean_sequence[j]) != str(ing.combo[j]):
-						would_equal = false
-						break
-				if would_equal:
-					# use public manager method (name matches IngredientManager.gd)
-					IngManager.flash_topmost_ingredient(name)
-					_lose_heart("Too many %ss!" % name)
-					matched = true
-					break
+			if _sequences_match(clean_sequence, ing.combo):
+				IngManager.flash_topmost_ingredient(name)
+				_lose_heart("Too many %ss!" % name)
+				matched = true
+				break
 			continue
 		
 		# Exact combo match
-		if clean_sequence.size() == ing.combo.size():
-			var equal := true
-			for j in range(clean_sequence.size()):
-				if str(clean_sequence[j]) != str(ing.combo[j]):
-					equal = false
-					break
-			if equal:
-				matched = true
-				ing.play_slash_sequence(clean_sequence)
-				if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
-					ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
-				combo += 1
-				if combo > highest_combo:
-					highest_combo = combo
-				_update_combo_ui()
-				break
+		if _sequences_match(clean_sequence, ing.combo):
+			matched = true
+			ing.play_slash_sequence(clean_sequence)
+			if not ing.is_connected("chop_completed", Callable(self, "_on_ingredient_chopped")):
+				ing.connect("chop_completed", Callable(self, "_on_ingredient_chopped"))
+			combo += 1
+			if combo > highest_combo:
+				highest_combo = combo
+			_update_combo_ui()
+			break
 				
-	#  5) Wrong combo  
+	# 5) Wrong combo  
 	if not matched:
 		_lose_heart("Wrong combo!", 0.5)  
 		
-	#  6) Always clear input buffer 
+	# 6) Always clear input buffer 
 	_clear_player_input()
+
+func _sequences_match(a: Array, b: Array) -> bool:
+	if a.size() != b.size():
+		return false
+	for i in range(a.size()):
+		if str(a[i]) != str(b[i]):
+			return false
+	return true
 
 # Avoid repeating buffer clearing
 func _clear_player_input() -> void:
@@ -587,3 +651,31 @@ func _on_level_timer_timeout() -> void:
 	if time_left <= 0:
 		last_fail_reason = "You ran out of time."
 		_game_over()
+
+func fade_out(time: float = 0.5) -> void:
+	fade_rect.visible = true
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = timer / time
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 1.0
+
+func fade_in(time: float = 0.5) -> void:
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = 1.0 - (timer / time)
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 0.0
+	fade_rect.visible = false
+
+func _physics_process(delta: float) -> void:
+	_cleanup_fallen_ingredients()
+
+func _cleanup_fallen_ingredients() -> void:
+	for ing_node in ingredient_container.get_children():
+		if not is_instance_valid(ing_node):
+			continue
+		if ing_node.global_position.y > kill_line_y:
+			ing_node.queue_free()

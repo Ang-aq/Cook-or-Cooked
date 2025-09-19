@@ -1,3 +1,4 @@
+# ingredient for tutorial
 extends Node2D
 
 @export var MeatScene: PackedScene
@@ -16,10 +17,8 @@ func spawn_ingredient(type: String, stop_in_middle: bool = false):
 
 	add_child(ingredient)
 
-	# Start above screen
-	ingredient.position = Vector2(400, -50) # adjust X for your scene
+	ingredient.position = Vector2(400, -50)
 
 	if stop_in_middle:
-		# Tween it to stop at middle
 		var tween = get_tree().create_tween()
-		tween.tween_property(ingredient, "position:y", 200, 1.0) # stops mid-screen
+		tween.tween_property(ingredient, "position:y", 200, 1.0)

@@ -20,7 +20,7 @@ var levels := [
 		"dish_name": "Beef Curry",
 		"time_limit": 50
 	},
-	{	# Level 3
+	{   # Level 3
 		"requirements": {
 			"Potato": {"combo": ["↑","↓","↑","Z"], "amount": 5},
 			"Carrot": {"combo": ["↑","↑","↑","↑","Z"], "amount": 3},
@@ -30,7 +30,7 @@ var levels := [
 		"dish_name": "Shrimp Curry",
 		"time_limit": 40
 	},
-	{	# Level 4
+	{    # Level 4
 		"requirements": {
 			"Meat": {"combo": ["→","↑","↑","Z"], "amount": 4},
 			"Tomato": {"combo": ["←","→","←","→","Z"], "amount": 2},
@@ -83,5 +83,5 @@ func next_level() -> void:
 			main_node._save_score(final_score, "Completed all levels")
 		get_tree().change_scene_to_file("res://Scenes/demo_complete.tscn")
 	else:
-		# Advance to next level
+		# go to next level
 		current_level += 1

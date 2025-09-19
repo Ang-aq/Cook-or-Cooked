@@ -231,7 +231,14 @@ texture = ExtResource("7_ys4pu")
 position = Vector2(27.667, 19.75)
 texture = ExtResource("7_ys4pu")
 
+[node name="ColorRect" type="ColorRect" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1157.0
+offset_bottom = 653.0
+color = Color(0, 0, 0, 1)
+
 [node name="TutorialDialog" parent="." instance=ExtResource("6_ys4pu")]
+visible = false
 
 [node name="Meat" type="AnimatedSprite2D" parent="."]
 position = Vector2(379, 148)

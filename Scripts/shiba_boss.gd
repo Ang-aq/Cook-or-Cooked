@@ -3,7 +3,6 @@ class_name ShibaBoss
 
 signal boss_defeated
 
-# --- Editable properties ---
 @export var combo_sets: Array = [
 	["↓","↓","↓","Z"],
 	["↑","→","↓","←","Z"],
@@ -37,7 +36,6 @@ var arrow_textures := {
 func _ready() -> void:
 	play("Idle")
 
-	# Compute pool size from max combo length
 	var max_len := 0
 	for cs in combo_sets:
 		if cs.size() > max_len:
@@ -45,7 +43,6 @@ func _ready() -> void:
 	if max_len > pool_size:
 		pool_size = max_len
 
-	# Pre-create icon pool
 	for i in range(pool_size):
 		var icon := TextureRect.new()
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -61,7 +58,6 @@ func _process(delta: float) -> void:
 	if combo_display:
 		combo_display.position = combo_offset
 
-# --- Display combo arrows ---
 func _update_combo_display() -> void:
 	if current_combo_index < 0 or current_combo_index >= combo_sets.size():
 		return
@@ -70,7 +66,6 @@ func _update_combo_display() -> void:
 	var combo_len: int = combo.size()
 	var pool_count: int = combo_hbox.get_child_count()
 
-	# Ensure enough icons
 	if pool_count < combo_len:
 		for i in range(pool_count, combo_len):
 			var icon := TextureRect.new()
@@ -81,7 +76,6 @@ func _update_combo_display() -> void:
 			icon.visible = false
 			combo_hbox.add_child(icon)
 
-	# Update visible icons
 	for i in range(combo_len):
 		var icon := combo_hbox.get_child(i) as TextureRect
 		var step: String = str(combo[i])
@@ -91,13 +85,11 @@ func _update_combo_display() -> void:
 		icon.visible = true
 		icon.modulate = Color(1, 1, 1)  # reset tint
 
-	# Hide extras
 	for i in range(combo_len, combo_hbox.get_child_count()):
 		var icon := combo_hbox.get_child(i) as TextureRect
 		icon.visible = false
 		icon.modulate = Color(1, 1, 1)
 
-# Input checking
 func check_sequence(sequence: Array) -> bool:
 	if not waiting_for_input:
 		return false
@@ -157,8 +149,8 @@ func on_input_buffer_changed(buffer: Array) -> void:
 		var icon := combo_hbox.get_child(i) as TextureRect
 		if i < expected.size() and i < buffer.size():
 			if str(buffer[i]) == str(expected[i]):
-				icon.modulate = Color(1.0, 0.35, 0.35)  # highlight correct input
+				icon.modulate = Color(1.0, 0.35, 0.35)  
 			else:
-				icon.modulate = Color(1, 1, 1)          # reset mismatch
+				icon.modulate = Color(1, 1, 1)         
 		else:
-			icon.modulate = Color(1, 1, 1)              # untouched steps neutral
+			icon.modulate = Color(1, 1, 1)         

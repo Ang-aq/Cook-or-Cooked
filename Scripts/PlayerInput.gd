@@ -1,15 +1,13 @@
 extends Node
 
-# Current sequence being typed
 var input_buffer: Array[String] = []
 
-@onready var input_display: HBoxContainer = $InputDisplay  # Container for arrow images
+@onready var input_display: HBoxContainer = $InputDisplay 
 
 signal sequence_submitted(sequence: Array[String])
 signal sequence_reset()
 signal buffer_changed(sequence: Array)
 
-# Map input symbols to textures
 var arrow_textures := {
 	"↑": preload("res://Sprites/arrow_up.png"),
 	"↓": preload("res://Sprites/arrow_down.png"),
@@ -41,7 +39,6 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("joystickStart"): # Z (submit)
 		input_buffer.append("Z")
 		emit_signal("sequence_submitted", input_buffer.duplicate())
-		# clear immediately after submission
 		input_buffer.clear()
 		added = true
 	elif event.is_action_pressed("joystickReset"): # X (reset)
@@ -51,26 +48,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if added:
 		_update_display()
-		# notify listeners (boss) about the buffer change
 		emit_signal("buffer_changed", input_buffer.duplicate())
 
 		if step_pressed != "":
 			MusicManager.play_sfx("chop")
 
-# Display current input sequence as arrow images
 func _update_display() -> void:
-	# Clear old arrows
 	for child in input_display.get_children():
 		child.queue_free()
 
-	# Add new arrows
 	for step in input_buffer:
 		if arrow_textures.has(step):
 			var tex := TextureRect.new()
 			tex.texture = arrow_textures[step]
 			tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-
-			# Make the arrow bigger
-			tex.custom_minimum_size = Vector2(80, 80)  # adjust size as needed
-
+			tex.custom_minimum_size = Vector2(80, 80)
 			input_display.add_child(tex)

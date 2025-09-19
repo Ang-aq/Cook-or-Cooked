@@ -5,7 +5,7 @@ class_name SFXManager
 var active_players: Array = []
 var default_volume_db: float = -10.0
 
-# SFX library: add new sounds here
+# SFX library add new sounds here
 var sfx_library: Dictionary = {
 	"level_up": preload("res://Audio/LevelUp.ogg"),
 	"chop": preload("res://Audio/Cut.ogg"),
@@ -33,7 +33,7 @@ func _ready() -> void:
 	add_child(music_player)
 	music_player.volume_db = 5
 	music_player.bus = "Master"
-	music_player.autoplay = false  # Play manually
+	music_player.autoplay = false
 
 # Play a sound effect
 func play_sfx(sfx_name: String, loop: bool = false) -> void:
@@ -50,7 +50,7 @@ func play_sfx(sfx_name: String, loop: bool = false) -> void:
 	player.autoplay = false
 	player.bus = "Master"
 
-	# Enable looping if requested (works for WAV or OGG)
+	# Enable looping if requested USE OGG (or wav) TO AVOID BREAKING!!!!!
 	if loop:
 		if stream is AudioStreamWAV:
 			stream.loop_enabled = true
@@ -79,6 +79,7 @@ func stop_sfx(sfx_name: String) -> void:
 			player.queue_free()
 			active_players.erase(player)
 
+# stop ALL
 func stop_all_sfx() -> void:
 	for player in active_players.duplicate():
 		if is_instance_valid(player):
@@ -92,6 +93,7 @@ func _remove_and_free_player(player: AudioStreamPlayer) -> void:
 	if is_instance_valid(player):
 		player.queue_free()
 
+# for bgms
 func play_bgm(stream: AudioStream, loop: bool = true) -> void:
 	if music_player == null:
 		return
@@ -99,16 +101,19 @@ func play_bgm(stream: AudioStream, loop: bool = true) -> void:
 	music_player.stream = stream
 	music_player.play()
 
+# stop ALL bgm
 func stop_bgm() -> void:
 	if music_player != null:
 		music_player.stop()
 
+# set ALL sfx vol
 func set_all_sfx_volume(db: float) -> void:
 	default_volume_db = db
 	for player in active_players:
 		if is_instance_valid(player):
 			player.volume_db = db
 
+# set vol for specific sfx
 func set_sfx_volume_for(sfx_name: String, db: float) -> void:
 	if not sfx_library.has(sfx_name):
 		push_warning("SFXManager: Sound not found: %s" % sfx_name)

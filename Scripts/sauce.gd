@@ -1,10 +1,10 @@
 extends Node2D
 class_name Sauce
 
-@export var sauce_type: String = "hot"        # "hot","soy","sweet","mystery"
-@export var combo: Array = []                # optional combo array (e.g. ["→","Z"])
+@export var sauce_type: String = "hot" # "hot","soy","sweet","mystery"
+@export var combo: Array = []              
 @export var fall_speed: float = 60.0
-@export var lifetime: float = 12.0           # despawn after seconds
+@export var lifetime: float = 12.0      
 @export var spawn_min_x: float = -445.0
 @export var spawn_max_x: float = 445.0
 
@@ -15,7 +15,6 @@ signal sauce_collected(sauce_type: String)
 
 var _spawn_time: float = 0.0
 var _collected: bool = false
-# default combos per type if user doesn't set them in the scene
 const DEFAULT_COMBOS := {
 	"hot": ["↑","↑","↓","↓","Z"],
 	"soy": ["→","↓","→","↓","Z"],
@@ -25,12 +24,10 @@ const DEFAULT_COMBOS := {
 
 func _ready() -> void:
 	_spawn_time = Time.get_ticks_msec() / 1000.0
-	# If combo not set, assign default combo for type
 	if combo == null or combo.size() == 0:
 		if DEFAULT_COMBOS.has(sauce_type):
 			combo = DEFAULT_COMBOS[sauce_type].duplicate(true)
 	
-	# choose animation
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation(sauce_type):
 			sprite.play(sauce_type)
@@ -60,13 +57,11 @@ func check_sequence(sequence: Array) -> bool:
 		if _normalize_step(sequence[i]) != _normalize_step(combo[i]):
 			return false
 			
-	# matched -> collect
 	_collected = true
 	emit_signal("sauce_collected", sauce_type)
 	queue_free()
 	return true
 
-# small normalization to match arrows, keys, names
 func _normalize_step(s) -> String:
 	var st := str(s).strip_edges()
 	if st == "↑" or st.to_lower() == "up" or st.to_lower() == "ui_up":
@@ -97,7 +92,6 @@ func _update_combo_display() -> void:
 	}
 	var x := 0
 	for step in combo:
-		# show the same visual whether step is "Z" or arrow
 		var key := str(step)
 		if arrow_textures.has(key):
 			var icon := TextureRect.new()
@@ -109,7 +103,6 @@ func _update_combo_display() -> void:
 			combo_display.add_child(icon)
 			x += 34
 		else:
-			# fallback label for unknown steps
 			var lbl := Label.new()
 			lbl.text = key
 			lbl.position = Vector2(x, 0)

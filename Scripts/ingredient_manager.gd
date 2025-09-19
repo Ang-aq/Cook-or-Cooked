@@ -7,8 +7,8 @@ signal ingredient_chopped(ingredient_name)
 @export var ingredient_scene: PackedScene = preload("res://Scenes/Ingredients/Ingredients.tscn")
 @export var ingredient_container_path: NodePath = NodePath("..") 
 
-# spawn tuning (defaults copied from your Main)
-@export var spawn_interval: float = 1.5
+# ingredient spawn 
+@export var spawn_interval: float = 2
 @export var max_active_ingredients: int = 100
 @export var spawn_min_x: float = -445.0
 @export var spawn_max_x: float = 80.0
@@ -62,7 +62,6 @@ func _process(delta: float) -> void:
 	if not _running:
 		return
 	var parent = get_parent()
-	# Respect a parent's game_paused flag if present (non-fatal if it doesn't exist)
 	if parent and parent.has_method("get") and "game_paused" in parent and parent.game_paused:
 		return
 
@@ -110,7 +109,7 @@ func spawn_ingredient(ingredient_name: String) -> void:
 		ing_node.queue_free()
 		return
 	
-	var base_speed = 130.0
+	var base_speed = 100.0
 	var level = LevelManager.current_level
 	var speed_multiplier = 0.7 + (level * 0.15)
 	ing.speed = base_speed * speed_multiplier
@@ -124,14 +123,9 @@ func spawn_ingredient(ingredient_name: String) -> void:
 			combo_arr = raw.duplicate(true)
 	ing.set_combo_and_name(combo_arr, ingredient_name)
 	
-	# NOTE: do NOT connect ingredient.chop_completed here.
-	# IngredientManager (if used) already connects and re-emits the event.
-	# If Main spawns ingredients directly and you prefer Main to handle chop events,
-	# connect here (but make sure you do not also connect via IngredientManager).
-	
 	var spawn_x = randf_range(spawn_min_x, spawn_max_x)
 	ing.position = Vector2(spawn_x, spawn_start_y)
-
+	
 func _on_ingredient_chopped(ingredient_name: String) -> void:
 	emit_signal("ingredient_chopped", ingredient_name)
 

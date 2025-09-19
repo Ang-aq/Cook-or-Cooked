@@ -9,8 +9,9 @@ extends Node
 @onready var keys: AnimatedSprite2D = $UI/Keys
 @onready var pot: AnimatedSprite2D = $Pot
 @onready var skip_label: Label = $Skip
+@onready var fade_rect: ColorRect = $UI/ColorRect
 
-# UI references
+# UI 
 @onready var HeartTarget = $UI/HeartT
 @onready var TimerTarget = $UI/TimerT
 @onready var ChecklistTarget = $UI/ChecklistT
@@ -20,6 +21,7 @@ var player_progress: int = 0
 var waiting_for_input: bool = false
 var ready_for_combo: bool = false
 var input_locked: bool = false
+var tutorial_skipped: bool = false
 
 @export var fall_speed: float = 160.0
 @export var stop_y: float = 400.0
@@ -39,9 +41,10 @@ var meat_already_stopped: bool = false
 var instruction_shown: bool = false
 
 func _ready() -> void:
+	tutorial_skipped = false
 	var tween := create_tween()
 	tween.set_loops() 
-	tween.tween_property(skip_label, "modulate:a", 0.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(skip_label, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(skip_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	pot.play("boil")
 	
@@ -66,6 +69,7 @@ func _ready() -> void:
 		load("res://Sprites/Portrait2.png"),
 		load("res://Sprites/Portrait3.png")
 	]
+	await fade_in()
 	tutorial_dialog.start_dialogue(intro_lines, portraits)
 
 func _on_intro_dialogue_finished() -> void:
@@ -119,7 +123,7 @@ func _flash_and_wobble_arrow() -> void:
 	flash.tween_property(arrow_indicator, "modulate", Color.RED, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	flash.tween_property(arrow_indicator, "modulate", Color.WHITE, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# Wobble infinitely....
+	# Wobble wobble infinitely 
 	var original_x = arrow_indicator.position.x
 	var wobble = arrow_indicator.create_tween()
 	wobble.set_loops()  
@@ -198,7 +202,6 @@ func _on_combo_success() -> void:
 	keys.hide()
 	meat.hide()
 	
-	# Unlock dialogue input now that combo is over
 	tutorial_dialog.input_locked = false  
 
 	indicator.visible = false
@@ -211,7 +214,6 @@ func _on_combo_success() -> void:
 	tutorial_dialog.start_dialogue(success_lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(_after_chopping)
 
-# === New UI explanation sequence ===
 func _after_chopping() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_after_chopping)
 	tutorial_dialog.get_node("UI").position = Vector2(100, 365) 
@@ -256,10 +258,11 @@ func finish_tutorial() -> void:
 	get_tree().change_scene_to_file(main_scene_path)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("skipTutorial"):
+	if event.is_action_pressed("skipTutorial") and tutorial_skipped == false:
 		_skip_tutorial()
 
 func _skip_tutorial() -> void:
+	tutorial_skipped = true
 	if tutorial_dialog.dialogue_finished.is_connected(_on_intro_dialogue_finished):
 		tutorial_dialog.dialogue_finished.disconnect(_on_intro_dialogue_finished)
 	if tutorial_dialog.dialogue_finished.is_connected(_on_instruction_dialogue_finished):
@@ -282,5 +285,25 @@ func _skip_tutorial() -> void:
 	arrow_indicator.hide()
 	player_input.input_display.visible = false
 	tutorial_dialog.input_locked = false
-
+	
+	tutorial_dialog.hide()
+	await fade_out()
 	get_tree().change_scene_to_file(main_scene_path)
+
+func fade_out(time: float = 0.5) -> void:
+	fade_rect.visible = true
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = timer / time
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 1.0
+
+func fade_in(time: float = 0.5) -> void:
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = 1.0 - (timer / time)
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 0.0
+	fade_rect.visible = false

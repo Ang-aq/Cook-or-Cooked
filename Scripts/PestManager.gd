@@ -1,23 +1,22 @@
 extends Node2D
 class_name PestManager
 
-# Configurable pest types (PackedScenes)
+# Add types of pests (scenes)
 @export var pest_types: Array[PackedScene] = [
 	preload("res://Scenes/mosquito.tscn")
-]
+] # Add mouse soon
 
 # Spawn timing
-@export var spawn_interval_min: float = 7.0
-@export var spawn_interval_max: float = 12.0
-@export var max_active_pests: int = 3
+@export var spawn_interval_min: float = 12.0
+@export var spawn_interval_max: float = 15.0
+@export var max_active_pests: int = 1
 
-# Optional spawn bounds (local to this manager node)
+# pest spawn boundaries
 @export var spawn_x_min: float = 1.0
 @export var spawn_x_max: float = 650.0
 @export var spawn_y_min: float = 50.0
 @export var spawn_y_max: float = 400.0
 
-# --- Internal state ---
 var _spawn_timer: float = 0.0
 var last_fail_reason: String = ""
 
@@ -25,7 +24,6 @@ func _ready() -> void:
 	_reset_spawn_timer()
 
 func _process(delta: float) -> void:
-	# Only spawn while under cap
 	if get_child_count() >= max_active_pests:
 		return
 
@@ -34,6 +32,7 @@ func _process(delta: float) -> void:
 		_spawn_random_pest()
 		_reset_spawn_timer()
 
+#region Pest Spawning
 func _reset_spawn_timer() -> void:
 	_spawn_timer = randf_range(spawn_interval_min, spawn_interval_max)
 
@@ -48,26 +47,23 @@ func _spawn_random_pest() -> void:
 	var inst: Node2D = scene.instantiate()
 	if not inst:
 		return
-
-	# randomize spawn position in manager's local space
+	
 	inst.position = Vector2(
 		randf_range(spawn_x_min, spawn_x_max),
 		randf_range(spawn_y_min, spawn_y_max)
 	)
 	add_child(inst)
-
-	# Connect signals
+	
 	if inst.has_signal("defeated"):
 		inst.defeated.connect(Callable(self, "_on_pest_defeated"))
 	if inst.has_signal("attacked"):
 		inst.attacked.connect(Callable(self, "_on_pest_attacked"))
 	if inst.has_signal("pest_failed"):
-		# Forward the fail reason up to the Main scene
 		inst.pest_failed.connect(func(reason: String):
 			get_tree().call_group("Game", "_on_pest_failed", reason)
 		)
-
-# --- Signal handlers from pests ---
+#endregion
+#region Pest Actions
 func _on_pest_defeated(pest_node: Node) -> void:
 	if is_instance_valid(pest_node) and pest_node.get_parent() == self:
 		pest_node.queue_free()
@@ -76,15 +72,15 @@ func _on_pest_attacked(pest_node: Node) -> void:
 	if is_instance_valid(pest_node):
 		if pest_node.get_parent() == self:
 			pest_node.queue_free()
-		# Forward to Main
 		get_tree().call_group("Game", "_on_pest_attacked", pest_node)
 
 func _on_pest_failed(pest_node: Node, reason: String) -> void:
 	last_fail_reason = reason
 	if is_instance_valid(pest_node) and pest_node.get_parent() == self:
 		pest_node.queue_free()
+#endregion
+#region Util
 
-# --- Utility ---
 func check_sequence(sequence: Array) -> bool:
 	for pest in get_children():
 		if not is_instance_valid(pest):
@@ -94,3 +90,4 @@ func check_sequence(sequence: Array) -> bool:
 			if handled:
 				return true
 	return false
+#endregion
