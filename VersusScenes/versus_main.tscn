@@ -321,6 +321,50 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 75
 text = "testing"
 
+[node name="Dish" type="Label" parent="CanvasLayer"]
+offset_left = 22.0
+offset_top = 425.0
+offset_right = 155.0
+offset_bottom = 456.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Dishes Made"
+horizontal_alignment = 1
+
+[node name="Dish" type="Label" parent="CanvasLayer/Dish"]
+layout_mode = 0
+offset_left = 976.0
+offset_right = 1109.0
+offset_bottom = 31.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Dishes Made"
+horizontal_alignment = 1
+
+[node name="DishCounterP1" type="Label" parent="CanvasLayer"]
+offset_left = 45.0
+offset_top = 441.0
+offset_right = 135.0
+offset_bottom = 527.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 85
+text = "0"
+horizontal_alignment = 1
+
+[node name="DishCounterP2" type="Label" parent="CanvasLayer"]
+offset_left = 1023.0
+offset_top = 441.0
+offset_right = 1113.0
+offset_bottom = 527.0
+theme = ExtResource("4_vnwg8")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 85
+text = "0"
+horizontal_alignment = 1
+
 [node name="IngredientContainer" type="Node2D" parent="."]
 position = Vector2(-1, 6)
 

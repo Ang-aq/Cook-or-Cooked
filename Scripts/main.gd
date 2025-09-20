@@ -98,7 +98,7 @@ func _ready() -> void:
 		player_input.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
 	if player_input.has_signal("sequence_reset") and not player_input.is_connected("sequence_reset", Callable(self, "_on_sequence_reset")):
 		player_input.sequence_reset.connect(Callable(self, "_on_sequence_reset"))
-
+	
 	win_overlay.visible = false
 	dish_completed = false
 	game_paused = false

@@ -265,3 +265,10 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 50
 text = ">> Press F to skip"
 horizontal_alignment = 1
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = 648.0
+offset_right = 1322.0
+offset_bottom = 1167.0
+color = Color(0, 0, 0, 1)

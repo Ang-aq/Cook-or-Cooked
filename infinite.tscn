@@ -1,3 +1,187 @@
-[gd_scene format=3 uid="uid://cy0w26n4xaylc"]
+[gd_scene load_steps=24 format=3 uid="uid://cy0w26n4xaylc"]
+
+[ext_resource type="Script" uid="uid://ve5x4n4nem86" path="res://infinite.gd" id="1_dfxxq"]
+[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_py8bk"]
+[ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scripts/PlayerInput.gd" id="3_83u8t"]
+[ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="3_pm2vi"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="4_b106h"]
+[ext_resource type="Texture2D" uid="uid://bvnoi6a3gq0j7" path="res://Sprites/pot/potanimationexplode1.png" id="4_junbs"]
+[ext_resource type="Texture2D" uid="uid://ybii7cxvt0ft" path="res://Sprites/pot/potanimationexplode2.png" id="5_b3h4r"]
+[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="6_jg8qs"]
+[ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scripts/combo_label.gd" id="6_so75s"]
+[ext_resource type="Texture2D" uid="uid://df5n5l5hwsfdm" path="res://Sprites/pot/potanimationexplode3.png" id="6_wpf45"]
+[ext_resource type="Texture2D" uid="uid://rojm6mfvr3xx" path="res://Sprites/pot/potanimationexplode4.png" id="7_o7ubm"]
+[ext_resource type="Texture2D" uid="uid://bptlj5a8ew6mo" path="res://Sprites/pot/potanimationexplode5.png" id="8_rxx3k"]
+[ext_resource type="Texture2D" uid="uid://may3iqwqwect" path="res://Sprites/pot/potanimationexplode6.png" id="9_s00ik"]
+[ext_resource type="Texture2D" uid="uid://bqdqn0al2n6av" path="res://Sprites/pot/potanimationexplode7.png" id="10_d4gu4"]
+[ext_resource type="Texture2D" uid="uid://cgqyfoj6cc1yj" path="res://Sprites/pot/potanimationexplode8.png" id="11_omsgm"]
+[ext_resource type="Texture2D" uid="uid://dlpiftmjhcabj" path="res://Sprites/pot/potanimationexplode9.png" id="12_m2o2j"]
+[ext_resource type="Texture2D" uid="uid://dq6emjeot4607" path="res://Sprites/pot/potanimationexplode10.png" id="13_dl2kp"]
+[ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="14_efgn7"]
+[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="15_5ndhr"]
+[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="16_li2om"]
+[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="17_wpf45"]
+[ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="21_b3h4r"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4ue37"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"boiling",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_junbs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_b3h4r")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_wpf45")
+}, {
+"duration": 2.0,
+"texture": ExtResource("7_o7ubm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_rxx3k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_s00ik")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_d4gu4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_omsgm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_m2o2j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_dl2kp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_efgn7")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_5ndhr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_li2om")
+}],
+"loop": true,
+"name": &"normal",
+"speed": 5.0
+}]
 
 [node name="Infinite" type="Node2D"]
+script = ExtResource("1_dfxxq")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = -113.0
+offset_right = 1322.0
+offset_bottom = 777.0
+color = Color(0, 0, 0, 1)
+
+[node name="FinalUi" type="Sprite2D" parent="."]
+position = Vector2(576, 324)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("2_py8bk")
+
+[node name="PotAnimation" type="AnimatedSprite2D" parent="."]
+position = Vector2(559, 318)
+scale = Vector2(0.61088, 0.61088)
+sprite_frames = SubResource("SpriteFrames_4ue37")
+animation = &"normal"
+
+[node name="Ingredient" parent="." instance=ExtResource("3_pm2vi")]
+visible = false
+position = Vector2(-288, 297)
+
+[node name="IngredientContainer" type="Node2D" parent="."]
+
+[node name="KillLine" type="Node2D" parent="."]
+position = Vector2(23, 357)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Checklist" parent="UI" instance=ExtResource("17_wpf45")]
+offset_left = 919.0
+offset_top = 273.0
+offset_right = 1115.0
+offset_bottom = 543.0
+theme = ExtResource("4_b106h")
+
+[node name="DishTitle" type="Label" parent="UI"]
+offset_left = 910.0
+offset_top = 220.0
+offset_right = 1103.0
+offset_bottom = 272.0
+theme = ExtResource("4_b106h")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
+
+[node name="Pot" type="Sprite2D" parent="UI"]
+position = Vector2(436.667, 319)
+scale = Vector2(0.610764, 0.609259)
+texture = ExtResource("21_b3h4r")
+
+[node name="PlayerInput" type="Node" parent="UI"]
+script = ExtResource("3_83u8t")
+
+[node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
+offset_left = 155.0
+offset_top = 490.0
+offset_right = 718.0
+offset_bottom = 635.0
+theme = ExtResource("4_b106h")
+alignment = 1
+
+[node name="HeartsContainer" type="HBoxContainer" parent="UI"]
+offset_left = 904.0
+offset_top = 20.0
+offset_right = 1130.0
+offset_bottom = 84.0
+
+[node name="Heart1" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_jg8qs")
+stretch_mode = 2
+
+[node name="Heart2" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_jg8qs")
+stretch_mode = 2
+
+[node name="Heart3" type="TextureRect" parent="UI/HeartsContainer"]
+layout_mode = 2
+texture = ExtResource("6_jg8qs")
+stretch_mode = 2
+
+[node name="ComboLabel" type="Label" parent="UI"]
+offset_left = 18.0
+offset_top = 24.0
+offset_right = 217.0
+offset_bottom = 79.0
+theme = ExtResource("4_b106h")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 50
+text = "10x COMBO!"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("6_so75s")
+
+[node name="ColorRect2" type="ColorRect" parent="."]
+offset_left = -172.0
+offset_top = 648.0
+offset_right = 1322.0
+offset_bottom = 1167.0
+color = Color(0, 0, 0, 1)

@@ -447,7 +447,7 @@ metadata/_custom_type_script = "uid://s0vqbbn504wt"
 position = Vector2(574, 278)
 scale = Vector2(2.82534, 2.82534)
 sprite_frames = SubResource("SpriteFrames_vfc8r")
-animation = &"Spring Onion"
+animation = &"GreenBean"
 
 [node name="Slash" type="AnimatedSprite2D" parent="AnimatedSprite2D"]
 position = Vector2(2.47757, 2.47758)

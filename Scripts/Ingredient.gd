@@ -42,8 +42,8 @@ var ingredient_scales := {
 	"Meat": Vector2(2, 2),
 	"GreenBean": Vector2(2, 2),
 	"Tomato": Vector2(2, 2),
-	"Spring Onion": Vector2(2, 2),
-	"Scallion": Vector2(2, 2)
+	"Spring Onion": Vector2(1.5, 1.5),
+	"Scallion": Vector2(1.5, 1.5)
 }
 
 var slash_anim_map := {

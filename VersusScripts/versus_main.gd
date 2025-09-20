@@ -18,6 +18,8 @@ extends Node2D
 @onready var dish_mini_p2: Control = $CanvasLayer/DishMiniP2
 @onready var powerup_popup_layer: CanvasLayer = $CanvasLayer
 @onready var speed_label: Label = $CanvasLayer/SlideLabel
+@onready var dish_counter_p1: Label = $CanvasLayer/DishCounterP1
+@onready var dish_counter_p2: Label = $CanvasLayer/DishCounterP2
 
 @export var spawn_interval: float = 0.8
 @export var spawn_min_x: float = -300.0
@@ -65,6 +67,9 @@ var lives: Dictionary = {1: lives_per_player, 2: lives_per_player}
 @onready var powerup_scene: PackedScene = preload("res://VersusScenes/versus_powerup.tscn")
 @export var powerup_spawn_interval_min: float = 8.0
 @export var powerup_spawn_interval_max: float = 12.0
+@export var x_hold_threshold: float = 3.0 # seconds to hold before returning to menu
+
+var x_hold_time: float = 0.0
 var powerup_spawn_timer: float = 0.0
 var POWERUP_TYPES: Array = ["heart_breaker", "dish_snatcher", "extra_life", "mystery"]
 var POWERUP_WEIGHTS: Array = [20, 10, 20, 50] 
@@ -125,6 +130,7 @@ var dishes_completed: Dictionary = {1: 0, 2: 0}
 var reserved_map: Dictionary = {}  
 
 func _ready() -> void:
+	_show_tutorial()
 	fade_rect.modulate.a = 1.0   
 	fade_rect.visible = true
 	await fade_in(0.5)
@@ -184,11 +190,18 @@ func _ready() -> void:
 		print("Connected menu_button pressed signal")
 	
 	gameplay_paused = true
-	
-	_show_tutorial()
 	powerup_spawn_timer = rng.randf_range(powerup_spawn_interval_min, powerup_spawn_interval_max)
 
 func _process(delta: float) -> void:
+	if Input.is_action_pressed("ui_cancel"): # assuming "X" is bound to ui_cancel
+		x_hold_time += delta
+		if x_hold_time >= x_hold_threshold:
+			# prevent multiple triggers
+			x_hold_time = -999.0
+			_return_to_title()
+	else:
+		x_hold_time = 0.0
+		
 	if not gameplay_paused:
 		if time_left > 0:
 			time_left -= delta
@@ -310,7 +323,7 @@ func _maybe_check_time_events() -> void:
 				if _current_speed_stage > _max_speed_stages:
 					_current_speed_stage = _max_speed_stages
 				if int(threshold) == 60:
-					_show_slide_label("60 minute left!")
+					_show_slide_label("60 seconds left!")
 				elif int(threshold) == 30:
 					_show_slide_label("30 seconds left!")
 				else:
@@ -726,6 +739,7 @@ func _on_player_finished_dish(player_id: int) -> void:
 		_end_sudden_death(player_id)
 		return
 	dishes_completed[player_id] += 1
+	_update_dish_counters()
 	print("Player %d finished a dish! Total completed: %d" % [player_id, dishes_completed[player_id]])
 	
 	var idx: int = current_dish_index.get(player_id, 0)
@@ -980,3 +994,12 @@ func _get_needed_counts(player_id: int) -> Dictionary:
 			if have < required:
 				needed[ing] = required - have
 	return needed
+
+func _update_dish_counters() -> void:
+	dish_counter_p1.text = str(dishes_completed[1])
+	dish_counter_p2.text = str(dishes_completed[2])
+
+func _return_to_title() -> void:
+	print("Returning to Title Screen")
+	await fade_out(0.5)
+	get_tree().change_scene_to_file("res://Scenes/titlescreen.tscn")
