@@ -90,7 +90,6 @@ func _start_bounce() -> void:
 	bounce_tween.tween_property(arrow, "position:x", arrow.position.x - 10, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	bounce_tween.tween_property(arrow, "position:x", arrow.position.x, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-
 func _select_option() -> void:
 	option_selected = true
 	var selected_label := options[selected_index]

@@ -45,8 +45,21 @@ var levels := [
 	"requirements": {},   # no ingredients
 	"dish_texture": preload("res://Sprites/Pests/shiba1.png"),
 	"dish_name": "Shiba Showdown",
-	"time_limit": 90,
+	"time_limit": 25,
 	"is_boss": true
+	},
+	{    # Level 6
+		"requirements": {
+			"Hotdog": {"combo": ["↑","↓","↑","Z"], "amount": 3},
+			"Shrimp": {"combo": ["←","←","↑","Z"], "amount": 2},
+			"Tomato":  {"combo": ["←","→","←","→","Z"], "amount": 1},
+			"Egg":  {"combo": ["↓","↓","←","→","Z"], "amount": 2},
+			"Potato":  {"combo": ["↑","↓","↑","Z"], "amount": 1},
+			"Rice":  {"combo": ["↓","↓","↓","Z"], "amount": 3}
+		},
+		"dish_texture": preload("res://Sprites/Sinigang.png"),
+		"dish_name": "Sinigang!?",
+		"time_limit": 70
 	}
 ]
 

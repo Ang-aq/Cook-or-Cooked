@@ -16,6 +16,7 @@ extends Node2D
 @onready var alive_label: Label = $UI/AliveLabel
 @onready var countdown_label: Label = $UI/CountdownLabel
 @onready var fade_rect: ColorRect = $UI/Fade
+@onready var dish_title: Label = $UI/DishTitle
 
 # tuning
 @export var spawn_min_x: float = -445.0
@@ -52,6 +53,8 @@ var dish_completed: bool = false
 var damage_tween: Tween = null
 var alive_time: float = 0.0
 var countdown_running: bool = false
+var dishes_completed: int = 0
+var last_fail_reason: String = ""
 
 # -------------------------
 # Lifecycle
@@ -161,6 +164,10 @@ func _initialize_checklist() -> void:
 	checklist_ui.setup_checklist(req_counts)
 	checklist_ui.show()
 
+	if is_instance_valid(dish_title):
+		var dish_info: Dictionary = LevelManager.get_current_dish()
+		dish_title.text = str(dish_info.get("name", "Unknown Dish"))
+
 # -------------------------
 # Spawn logic — only spawn ingredients still needed on the checklist
 # -------------------------
@@ -183,6 +190,7 @@ func _start_countdown() -> void:
 			var intro = preload("res://Audio/bgm.ogg")
 			var loop  = preload("res://Audio/bgmloop.ogg")
 			MusicManager.play_bgm_with_intro(intro, loop)
+			_spawn_infinite_ingredient()
 
 	countdown_label.visible = false
 	game_paused = false
@@ -245,19 +253,22 @@ func _on_sequence_submitted(sequence: Array) -> void:
 	var clean_sequence: Array = sequence.duplicate()
 	var matched: bool = false
 
-	# match against spawned ingredients, topmost-first
 	for i in range(ingredient_container.get_child_count()):
 		var node = ingredient_container.get_child(i)
 		if not is_instance_valid(node):
 			continue
-		# only Ingredients are relevant
 		var ing: Ingredient = node as Ingredient
 		if ing == null or ing.is_chopped:
 			continue
+		
 		if _sequences_match(clean_sequence, ing.combo):
 			matched = true
 			ing.play_slash_sequence(clean_sequence)
-			# chop_completed signal will call _on_ingredient_chopped
+			
+			var max_amount: int = int(LevelManager.get_requirement_for(ing.ingredient_name).get("amount", 999))
+			if checklist.has(ing.ingredient_name) and checklist[ing.ingredient_name] + 1 >= max_amount:
+				_remove_extra_ingredients(ing.ingredient_name, ing)
+
 			break
 
 	if not matched:
@@ -339,12 +350,32 @@ func _check_if_level_completed() -> bool:
 # -------------------------
 func _on_dish_completed() -> void:
 	dish_completed = true
+
+	# increment dishes completed (score factor)
+	dishes_completed += 1
+
+	# get current dish info to show UI
+	var dish_info: Dictionary = LevelManager.get_current_dish()
+	var dish_name: String = dish_info.get("name")
+	var dish_texture: Texture2D = dish_info.get("texture")
+
+	# show dish complete UI
+	dish_ui.show_dish(dish_texture, dish_name)
+	MusicManager.play_sfx("level_up")
+	win_overlay.visible = true
+	$WinOverlay/DishCompleteUI/Star/AnimationPlayer.play("Spin")
+
+	await get_tree().create_timer(2.0).timeout
+
+	win_overlay.visible = false
+	dish_completed = false
+
+	# choose next level for infinite flow
 	var total: int = LevelManager.levels.size()
 	if total <= 1:
 		_initialize_checklist()
-		# keep current spawn_timer and ingredient_speed_multiplier so flow is uninterrupted
 		return
-	
+
 	var candidates: Array[int] = []
 	for i in range(total):
 		if i != int(LevelManager.current_level):
@@ -352,29 +383,11 @@ func _on_dish_completed() -> void:
 			if not lvl.get("is_boss", false):
 				candidates.append(i)
 
-	var chosen: int = int(LevelManager.current_level)
 	if candidates.size() > 0:
-		chosen = candidates[rng.randi() % candidates.size()]
+		LevelManager.current_level = candidates[rng.randi() % candidates.size()]
 
-	# set the LevelManager to the chosen level and re-init checklist (do NOT reset speed nor clear ingredients)
-	LevelManager.current_level = chosen
-
-	var dish_info: Dictionary = LevelManager.get_current_dish()
-	var next_name: String = str(dish_info.get("name", "Unknown Dish"))
-	var dish_name: String = dish_info.get("name")
-	var dish_texture: Texture2D = dish_info.get("texture")
 	_initialize_checklist()
-	
-	dish_ui.show_dish(dish_texture, dish_name)
-	MusicManager.play_sfx("level_up")
-
-	win_overlay.visible = true
-	$WinOverlay/DishCompleteUI/Star/AnimationPlayer.play("Spin")
-	await get_tree().create_timer(2.0).timeout
-	
-	win_overlay.visible = false
 	game_paused = false
-	dish_completed = false
 
 # -------------------------
 # Missed ingredients -> lose heart if not chopped
@@ -405,6 +418,9 @@ func _clear_all_ingredients() -> void:
 # UI / helpers
 # -------------------------
 func _lose_heart(reason: String, amount: float = 1.0) -> void:
+	# store last fail reason for game over screen
+	last_fail_reason = reason
+
 	current_hearts -= amount
 	current_hearts = max(0, current_hearts)
 	combo = 0
@@ -412,6 +428,42 @@ func _lose_heart(reason: String, amount: float = 1.0) -> void:
 	_update_hearts_ui()
 	MusicManager.play_sfx("wrong")
 	var popup_pos: Vector2 = ingredient_container.global_position + Vector2(270, 400)
+	_spawn_text_popup(reason, popup_pos)
+
+	if damage_flash:
+		if damage_tween and is_instance_valid(damage_tween):
+			damage_tween.kill()
+			damage_tween = null
+
+		damage_flash.visible = true
+
+		var m: Color = damage_flash.modulate
+		m.a = 1.0
+		damage_flash.modulate = m
+
+		var c: Color = damage_flash.color
+		c.a = 1.0
+		damage_flash.color = c
+
+		damage_tween = create_tween()
+		damage_tween.tween_property(damage_flash, "modulate:a", 0.0, 0.4) \
+			.set_trans(Tween.TRANS_SINE) \
+			.set_ease(Tween.EASE_OUT)
+
+		damage_tween.finished.connect(func():
+			damage_flash.visible = false
+			damage_tween = null
+		)
+
+	if current_hearts <= 0:
+		_on_game_over()
+	current_hearts -= amount
+	current_hearts = max(0, current_hearts)
+	combo = 0
+	_update_combo_ui()
+	_update_hearts_ui()
+	MusicManager.play_sfx("wrong")
+	popup_pos = ingredient_container.global_position + Vector2(270, 400)
 	_spawn_text_popup(reason, popup_pos)
 	
 	if damage_flash:
@@ -483,16 +535,45 @@ func _on_game_over() -> void:
 	if game_over_triggered:
 		return
 	game_over_triggered = true
+
+	# visual/game over polish
+	potAnimated.z_index = 10
+	pot.hide()
 	
 	MusicManager.stop_bgm()
 	MusicManager.stop_all_sfx()
 	MusicManager.play_sfx("boil")
-	potAnimated.z_index = 10
-	
 	potAnimated.play("explode")
 	await potAnimated.animation_finished
 	
+	# compute infinite-mode score
+	# dishes_completed * seconds_lived * highest_combo
+	var seconds_lived: int = int(alive_time)
+	var score: int = int(dishes_completed) * seconds_lived * int(highest_combo)
+
+	# clamp to non-negative
+	if score < 0:
+		score = 0
+
+	# save score (and fail reason) exactly like main game
+	_save_score(score, last_fail_reason)
+
+	# finally change to game over scene (that script will read scores.cfg)
 	get_tree().change_scene_to_file("res://Scenes/game_over.tscn")
+
+func _save_score(score: int, reason: String) -> void:
+	var cfg: ConfigFile = ConfigFile.new()
+	cfg.load("user://scores.cfg")
+	cfg.set_value("scores", "last_score", score)
+	cfg.set_value("scores", "last_fail_reason", reason)
+
+	var prev_high: int = int(cfg.get_value("scores", "high_score", 0))
+	if score > prev_high:
+		cfg.set_value("scores", "high_score", score)
+
+	var err: int = cfg.save("user://scores.cfg")
+	if err != OK:
+		push_error("Failed to save scores.cfg: %s" % str(err))
 
 func _format_time_mmss(t: float) -> String:
 	var total_seconds := int(t)             # truncate to whole seconds

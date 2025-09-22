@@ -126,7 +126,7 @@ func _start_main_countdown() -> void:
 		return
 	MusicManager.stop_bgm()
 	MusicManager.play_sfx("countdown")
-	
+	countdown_finish = true
 	countdown_active = true
 	countdown_label.visible = true
 	

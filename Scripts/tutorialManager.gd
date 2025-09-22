@@ -240,7 +240,7 @@ func _show_checklist_tutorial() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_show_checklist_tutorial)
 	arrow_indicator.point_to(ChecklistTarget)
 	_flash_and_wobble_arrow()
-	var lines: Array[String] = ["This is your ingredient checklist. Complete everything to win!"]
+	var lines: Array[String] = ["This is your ingredient checklist. Remember, follow the recipe!"]
 	tutorial_dialog.start_dialogue(lines)
 	tutorial_dialog.dialogue_finished.connect(finalLines)
 
