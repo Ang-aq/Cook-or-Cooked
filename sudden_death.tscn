@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://bhdnvqvc8ran4"]
-
-[ext_resource type="Script" uid="uid://dpvirtgtyy6tx" path="res://sudden_death.gd" id="1_i51ba"]
-
-[node name="SuddenDeath" type="Node2D"]
-script = ExtResource("1_i51ba")

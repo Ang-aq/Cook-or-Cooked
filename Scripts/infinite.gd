@@ -14,6 +14,8 @@ extends Node2D
 @onready var win_overlay: CanvasLayer = $WinOverlay
 @onready var damage_flash: ColorRect = $UI/DamageFlash
 @onready var alive_label: Label = $UI/AliveLabel
+@onready var countdown_label: Label = $UI/CountdownLabel
+@onready var fade_rect: ColorRect = $UI/Fade
 
 # tuning
 @export var spawn_min_x: float = -445.0
@@ -49,11 +51,17 @@ var game_over_triggered: bool = false
 var dish_completed: bool = false
 var damage_tween: Tween = null
 var alive_time: float = 0.0
+var countdown_running: bool = false
 
 # -------------------------
 # Lifecycle
 # -------------------------
 func _ready() -> void:
+	fade_in()
+	game_paused = true
+	player_input.input_enabled = not (game_paused or countdown_running)
+	
+	_start_countdown()
 	# basic setup
 	rng.randomize()
 	add_to_group("Game")
@@ -87,9 +95,6 @@ func _ready() -> void:
 	_update_combo_ui()
 	potAnimated.play("normal")
 	
-	var intro = preload("res://Audio/bgm.ogg")
-	var loop  = preload("res://Audio/bgmloop.ogg")
-	MusicManager.play_bgm_with_intro(intro, loop)
 
 func _process(delta: float) -> void:
 	if game_paused:
@@ -159,6 +164,31 @@ func _initialize_checklist() -> void:
 # -------------------------
 # Spawn logic — only spawn ingredients still needed on the checklist
 # -------------------------
+func _start_countdown() -> void:
+	if not is_instance_valid(countdown_label):
+		game_paused = false
+		player_input.input_enabled = (game_paused or countdown_running)
+		return
+	MusicManager.stop_bgm()
+	MusicManager.play_sfx("countdown")
+	
+	countdown_running = true
+	countdown_label.visible = true
+	
+	var steps = ["3", "2", "1", "GO!"]
+	for i in steps:
+		countdown_label.text = i
+		await get_tree().create_timer(1.0).timeout
+		if i == "GO!":
+			var intro = preload("res://Audio/bgm.ogg")
+			var loop  = preload("res://Audio/bgmloop.ogg")
+			MusicManager.play_bgm_with_intro(intro, loop)
+
+	countdown_label.visible = false
+	game_paused = false
+	player_input.input_enabled = (game_paused or countdown_running)
+	countdown_running = false
+
 func _spawn_infinite_ingredient() -> void:
 	if ingredient_container.get_child_count() >= max_active_ingredients:
 		return
@@ -209,6 +239,9 @@ func _spawn_infinite_ingredient() -> void:
 # Player input handling (chop matching)
 # -------------------------
 func _on_sequence_submitted(sequence: Array) -> void:
+	if game_paused or countdown_running:
+		return
+	
 	var clean_sequence: Array = sequence.duplicate()
 	var matched: bool = false
 
@@ -229,7 +262,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 
 	if not matched:
 		_lose_heart("Wrong combo!", 0.5)
-
+	
 	player_input.input_buffer.clear()
 	player_input._update_display()
 
@@ -466,3 +499,21 @@ func _format_time_mmss(t: float) -> String:
 	var minutes := total_seconds / 60
 	var seconds := total_seconds % 60
 	return "%02d:%02d" % [minutes, seconds]
+
+func fade_out(time: float = 0.5) -> void:
+	fade_rect.visible = true
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = timer / time
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 1.0
+
+func fade_in(time: float = 0.5) -> void:
+	var timer := 0.0
+	while timer < time:
+		timer += get_process_delta_time()
+		fade_rect.modulate.a = 1.0 - (timer / time)
+		await get_tree().create_timer(0.0).timeout
+	fade_rect.modulate.a = 0.0
+	fade_rect.visible = false

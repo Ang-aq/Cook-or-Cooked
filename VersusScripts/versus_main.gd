@@ -917,7 +917,7 @@ func _update_player_hearts_ui(player_id: int) -> void:
 func _lose_half_heart(player_id: int, reason: String = "") -> void:
 	if not lives.has(player_id):
 		lives[player_id] = lives_per_player
-	lives[player_id] = max(0, lives[player_id] - 1)
+	lives[player_id] = max(0, lives[player_id] - 2)
 	
 	MusicManager.play_sfx("wrong")
 	
@@ -931,9 +931,12 @@ func _lose_half_heart(player_id: int, reason: String = "") -> void:
 			var tween := create_tween()
 			tween.tween_property(theart, "scale", Vector2(1.15, 1.15), 0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 			tween.tween_property(theart, "scale", Vector2(1, 1), 0.12).set_delay(0.08)
-
+	
 	if lives[player_id] <= 0:
-		_on_player_eliminated(player_id)
+		dishes_completed[player_id] -= 1
+		_update_dish_counters()
+		lives[player_id] = lives_per_player
+		_update_player_hearts_ui(player_id)
 	
 func _on_player_eliminated(player_id: int) -> void:
 	var winner := 2 if player_id == 1 else 1
@@ -998,6 +1001,11 @@ func _get_needed_counts(player_id: int) -> Dictionary:
 	return needed
 
 func _update_dish_counters() -> void:
+	if dishes_completed[1] <= 0:
+		dishes_completed[1] = 0
+	if dishes_completed[2] <= 0:
+		dishes_completed[2] = 0
+		
 	dish_counter_p1.text = str(dishes_completed[1])
 	dish_counter_p2.text = str(dishes_completed[2])
 

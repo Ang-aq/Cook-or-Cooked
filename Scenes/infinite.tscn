@@ -1,30 +1,30 @@
 [gd_scene load_steps=32 format=3 uid="uid://cy0w26n4xaylc"]
 
-[ext_resource type="Script" uid="uid://ve5x4n4nem86" path="res://infinite.gd" id="1_dfxxq"]
-[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_py8bk"]
-[ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scripts/PlayerInput.gd" id="3_83u8t"]
-[ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="3_pm2vi"]
-[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="4_b106h"]
-[ext_resource type="Texture2D" uid="uid://bvnoi6a3gq0j7" path="res://Sprites/pot/potanimationexplode1.png" id="4_junbs"]
-[ext_resource type="Texture2D" uid="uid://ybii7cxvt0ft" path="res://Sprites/pot/potanimationexplode2.png" id="5_b3h4r"]
-[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="6_jg8qs"]
-[ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scripts/combo_label.gd" id="6_so75s"]
-[ext_resource type="Texture2D" uid="uid://df5n5l5hwsfdm" path="res://Sprites/pot/potanimationexplode3.png" id="6_wpf45"]
-[ext_resource type="Texture2D" uid="uid://rojm6mfvr3xx" path="res://Sprites/pot/potanimationexplode4.png" id="7_o7ubm"]
-[ext_resource type="Texture2D" uid="uid://bptlj5a8ew6mo" path="res://Sprites/pot/potanimationexplode5.png" id="8_rxx3k"]
-[ext_resource type="Texture2D" uid="uid://may3iqwqwect" path="res://Sprites/pot/potanimationexplode6.png" id="9_s00ik"]
-[ext_resource type="Texture2D" uid="uid://bqdqn0al2n6av" path="res://Sprites/pot/potanimationexplode7.png" id="10_d4gu4"]
-[ext_resource type="Texture2D" uid="uid://cgqyfoj6cc1yj" path="res://Sprites/pot/potanimationexplode8.png" id="11_omsgm"]
-[ext_resource type="Texture2D" uid="uid://dlpiftmjhcabj" path="res://Sprites/pot/potanimationexplode9.png" id="12_m2o2j"]
-[ext_resource type="Texture2D" uid="uid://dq6emjeot4607" path="res://Sprites/pot/potanimationexplode10.png" id="13_dl2kp"]
-[ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="14_efgn7"]
-[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="15_5ndhr"]
-[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="16_li2om"]
-[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="17_wpf45"]
-[ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="21_b3h4r"]
-[ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scripts/DishCompleteUi.gd" id="23_s00ik"]
-[ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="24_d4gu4"]
-[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="25_omsgm"]
+[ext_resource type="Script" uid="uid://ve5x4n4nem86" path="res://Scripts/infinite.gd" id="1_p8urw"]
+[ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_da7d0"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="3_ab56j"]
+[ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="4_fxo61"]
+[ext_resource type="Texture2D" uid="uid://bvnoi6a3gq0j7" path="res://Sprites/pot/potanimationexplode1.png" id="5_h0tul"]
+[ext_resource type="Texture2D" uid="uid://ybii7cxvt0ft" path="res://Sprites/pot/potanimationexplode2.png" id="6_f0xcl"]
+[ext_resource type="Texture2D" uid="uid://df5n5l5hwsfdm" path="res://Sprites/pot/potanimationexplode3.png" id="7_foyln"]
+[ext_resource type="Texture2D" uid="uid://rojm6mfvr3xx" path="res://Sprites/pot/potanimationexplode4.png" id="8_xdob0"]
+[ext_resource type="Texture2D" uid="uid://bptlj5a8ew6mo" path="res://Sprites/pot/potanimationexplode5.png" id="9_eed18"]
+[ext_resource type="Texture2D" uid="uid://may3iqwqwect" path="res://Sprites/pot/potanimationexplode6.png" id="10_l26lm"]
+[ext_resource type="Texture2D" uid="uid://bqdqn0al2n6av" path="res://Sprites/pot/potanimationexplode7.png" id="11_uam3e"]
+[ext_resource type="Texture2D" uid="uid://cgqyfoj6cc1yj" path="res://Sprites/pot/potanimationexplode8.png" id="12_ra8hj"]
+[ext_resource type="Texture2D" uid="uid://dlpiftmjhcabj" path="res://Sprites/pot/potanimationexplode9.png" id="13_v1fix"]
+[ext_resource type="Texture2D" uid="uid://dq6emjeot4607" path="res://Sprites/pot/potanimationexplode10.png" id="14_bh88c"]
+[ext_resource type="Texture2D" uid="uid://g7b4528562n8" path="res://Sprites/pot/potanimationexplode11.png" id="15_pw1e5"]
+[ext_resource type="Texture2D" uid="uid://decmragp6x1c7" path="res://Sprites/potanimation1.png" id="16_odn1v"]
+[ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="17_8agia"]
+[ext_resource type="PackedScene" uid="uid://dcfr8h2sdtptv" path="res://Scenes/Ingredients/Ingredients.tscn" id="18_ht7pc"]
+[ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="19_lu33r"]
+[ext_resource type="Script" uid="uid://cyk1dkdw1qbld" path="res://Scripts/PlayerInput.gd" id="20_ltr8e"]
+[ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="21_n72q4"]
+[ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scripts/combo_label.gd" id="22_at7yq"]
+[ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scripts/DishCompleteUi.gd" id="23_4wo6o"]
+[ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="24_in25n"]
+[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="25_xylqo"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_4ue37"]
 animations = [{
@@ -35,37 +35,37 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4_junbs")
+"texture": ExtResource("5_h0tul")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_b3h4r")
+"texture": ExtResource("6_f0xcl")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_wpf45")
+"texture": ExtResource("7_foyln")
 }, {
 "duration": 2.0,
-"texture": ExtResource("7_o7ubm")
+"texture": ExtResource("8_xdob0")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_rxx3k")
+"texture": ExtResource("9_eed18")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_s00ik")
+"texture": ExtResource("10_l26lm")
 }, {
 "duration": 1.0,
-"texture": ExtResource("10_d4gu4")
+"texture": ExtResource("11_uam3e")
 }, {
 "duration": 1.0,
-"texture": ExtResource("11_omsgm")
+"texture": ExtResource("12_ra8hj")
 }, {
 "duration": 1.0,
-"texture": ExtResource("12_m2o2j")
+"texture": ExtResource("13_v1fix")
 }, {
 "duration": 1.0,
-"texture": ExtResource("13_dl2kp")
+"texture": ExtResource("14_bh88c")
 }, {
 "duration": 1.0,
-"texture": ExtResource("14_efgn7")
+"texture": ExtResource("15_pw1e5")
 }],
 "loop": false,
 "name": &"explode",
@@ -73,10 +73,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("15_5ndhr")
+"texture": ExtResource("16_odn1v")
 }, {
 "duration": 1.0,
-"texture": ExtResource("16_li2om")
+"texture": ExtResource("17_8agia")
 }],
 "loop": true,
 "name": &"normal",
@@ -129,7 +129,7 @@ _data = {
 }
 
 [node name="Infinite" type="Node2D"]
-script = ExtResource("1_dfxxq")
+script = ExtResource("1_p8urw")
 
 [node name="Backdrop" type="ColorRect" parent="."]
 offset_left = -172.0
@@ -141,7 +141,7 @@ color = Color(0, 0, 0, 1)
 [node name="FinalUi" type="Sprite2D" parent="."]
 position = Vector2(576, 324)
 scale = Vector2(0.6, 0.6)
-texture = ExtResource("2_py8bk")
+texture = ExtResource("2_da7d0")
 
 [node name="KillLine" type="Node2D" parent="."]
 position = Vector2(23, 357)
@@ -153,18 +153,18 @@ offset_left = 918.0
 offset_top = 219.0
 offset_right = 1111.0
 offset_bottom = 271.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 30
 text = "Beef Yakitori"
 autowrap_mode = 3
 
-[node name="Checklist" parent="UI" instance=ExtResource("17_wpf45")]
+[node name="Checklist" parent="UI" instance=ExtResource("4_fxo61")]
 offset_left = 919.0
 offset_top = 273.0
 offset_right = 1115.0
 offset_bottom = 543.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 
 [node name="PotAnimation" type="AnimatedSprite2D" parent="UI"]
 position = Vector2(559, 318)
@@ -174,59 +174,59 @@ animation = &"normal"
 
 [node name="IngredientContainer" type="Node2D" parent="UI"]
 
-[node name="Ingredient" parent="UI" instance=ExtResource("3_pm2vi")]
+[node name="Ingredient" parent="UI" instance=ExtResource("18_ht7pc")]
 visible = false
 position = Vector2(-288, 297)
 
 [node name="Pot" type="Sprite2D" parent="UI"]
 position = Vector2(436.667, 319)
 scale = Vector2(0.610764, 0.609259)
-texture = ExtResource("21_b3h4r")
+texture = ExtResource("19_lu33r")
 
 [node name="PlayerInput" type="Node" parent="UI"]
-script = ExtResource("3_83u8t")
+script = ExtResource("20_ltr8e")
 
 [node name="InputDisplay" type="HBoxContainer" parent="UI/PlayerInput"]
 offset_left = 155.0
 offset_top = 490.0
 offset_right = 718.0
 offset_bottom = 635.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 alignment = 1
 
 [node name="HeartsContainer" type="HBoxContainer" parent="UI"]
-offset_left = 904.0
-offset_top = 20.0
-offset_right = 1130.0
-offset_bottom = 84.0
+offset_left = 931.0
+offset_top = 17.0
+offset_right = 1157.0
+offset_bottom = 81.0
 
 [node name="Heart1" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
-texture = ExtResource("6_jg8qs")
+texture = ExtResource("21_n72q4")
 stretch_mode = 2
 
 [node name="Heart2" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
-texture = ExtResource("6_jg8qs")
+texture = ExtResource("21_n72q4")
 stretch_mode = 2
 
 [node name="Heart3" type="TextureRect" parent="UI/HeartsContainer"]
 layout_mode = 2
-texture = ExtResource("6_jg8qs")
+texture = ExtResource("21_n72q4")
 stretch_mode = 2
 
 [node name="ComboLabel" type="Label" parent="UI"]
-offset_left = 18.0
+offset_left = 9.0
 offset_top = 24.0
-offset_right = 217.0
+offset_right = 208.0
 offset_bottom = 79.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 50
 text = "10x COMBO!"
 horizontal_alignment = 1
 vertical_alignment = 1
-script = ExtResource("6_so75s")
+script = ExtResource("22_at7yq")
 
 [node name="DamageFlash" type="ColorRect" parent="UI"]
 visible = false
@@ -241,14 +241,33 @@ grow_vertical = 2
 color = Color(0.618933, 1.73271e-06, 3.85046e-07, 1)
 
 [node name="AliveLabel" type="Label" parent="UI"]
-offset_left = 449.0
-offset_top = 3.0
-offset_right = 599.0
-offset_bottom = 103.0
-theme = ExtResource("4_b106h")
+offset_left = 462.0
+offset_top = 8.0
+offset_right = 612.0
+offset_bottom = 108.0
+theme = ExtResource("3_ab56j")
 theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 100
+theme_override_font_sizes/font_size = 85
 text = "60"
+horizontal_alignment = 1
+
+[node name="CountdownLabel" type="Label" parent="UI"]
+offset_left = 328.0
+offset_top = 229.0
+offset_right = 557.0
+offset_bottom = 480.0
+theme = ExtResource("3_ab56j")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 250
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Fade" type="ColorRect" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1152.0
+offset_bottom = 649.0
+color = Color(0, 0, 0, 1)
 
 [node name="ColorRect2" type="ColorRect" parent="."]
 offset_left = -172.0
@@ -265,7 +284,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-script = ExtResource("23_s00ik")
+script = ExtResource("23_4wo6o")
 
 [node name="Star" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
@@ -274,7 +293,7 @@ offset_top = 76.0
 offset_right = 759.0
 offset_bottom = 638.0
 pivot_offset = Vector2(282, 283)
-texture = ExtResource("24_d4gu4")
+texture = ExtResource("24_in25n")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Star"]
 libraries = {
@@ -287,7 +306,7 @@ offset_left = 345.0
 offset_top = 232.0
 offset_right = 599.0
 offset_bottom = 486.0
-texture = ExtResource("25_omsgm")
+texture = ExtResource("25_xylqo")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Dish"]
 libraries = {
@@ -300,7 +319,7 @@ offset_left = 304.0
 offset_top = 197.0
 offset_right = 653.0
 offset_bottom = 275.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 50
 text = "Dish Name"
@@ -312,7 +331,7 @@ offset_left = 287.0
 offset_top = 441.0
 offset_right = 672.0
 offset_bottom = 533.0
-theme = ExtResource("4_b106h")
+theme = ExtResource("3_ab56j")
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 35
 text = "Level Up!"

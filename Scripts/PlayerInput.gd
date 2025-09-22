@@ -1,6 +1,7 @@
 extends Node
 
 var input_buffer: Array[String] = []
+var input_enabled: bool = true
 
 @onready var input_display: HBoxContainer = $InputDisplay 
 
@@ -17,6 +18,9 @@ var arrow_textures := {
 }
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
+		
 	var added := false
 	var step_pressed := "" 
 

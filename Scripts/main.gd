@@ -87,6 +87,7 @@ var countdown_active: bool = false
 var countdown_finish: bool = false
 #endregion
 func _ready() -> void:
+	fade_in()
 	player_input.set_process_unhandled_input(false)
 	add_to_group("Game")
 	rng.randomize()
@@ -120,39 +121,23 @@ func _ready() -> void:
 	randomize()
 
 func _start_main_countdown() -> void:
-	await fade_in(0.5)
-	game_paused = true
-	countdown_finish = true
+	if not is_instance_valid(countdown_label):
+		game_paused = false
+		return
 	MusicManager.stop_bgm()
-	if countdown_active:
-		return
-	
-	countdown_label.visible = true
-	countdown_time = 3
-	countdown_active = true
-	countdown_label.text = str(countdown_time)
-	_countdown_tick()
 	MusicManager.play_sfx("countdown")
-
-func _countdown_tick() -> void:
-	if countdown_time <= 0:
-		countdown_label.text = "Go!"
-		
-		await get_tree().create_timer(0.5).timeout
-		
-		countdown_label.visible = false
-		countdown_active = false
-		_begin_gameplay()
-		return
 	
-	countdown_label.text = str(countdown_time)
-	countdown_time -= 1
+	countdown_active = true
+	countdown_label.visible = true
 	
-	await get_tree().create_timer(1.06).timeout
-	
-	if not countdown_active:
-		return
-	_countdown_tick()
+	var steps = ["3", "2", "1", "GO!"]
+	for i in steps:
+		countdown_label.text = i
+		if i == "GO!":
+			await get_tree().create_timer(1.0).timeout
+			_begin_gameplay()
+			countdown_label.visible = false
+		await get_tree().create_timer(1.0).timeout
 
 func _begin_gameplay() -> void:
 	game_paused = false

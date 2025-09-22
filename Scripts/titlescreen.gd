@@ -2,7 +2,7 @@ extends CanvasLayer
 
 @export var solo_scene_path: String = "res://Scenes/tutorial.tscn"
 @export var versus_scene_path: String = "res://VersusScenes/versus_main.tscn"
-@export var infinite_scene_path: String = "res://infinite.tscn"
+@export var infinite_scene_path: String = "res://Scenes/infinite.tscn"
 
 @onready var fade_rect: ColorRect = $ColorRect
 

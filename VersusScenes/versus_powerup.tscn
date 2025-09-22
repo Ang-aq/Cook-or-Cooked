@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://cgikcxb0ynncg"]
+[gd_scene load_steps=34 format=3 uid="uid://cgikcxb0ynncg"]
 
 [ext_resource type="Script" uid="uid://bjhcl2avxu6jb" path="res://VersusScripts/versus_powerup.gd" id="1_wuck4"]
 [ext_resource type="Texture2D" uid="uid://c2klevrkouk7q" path="res://Sprites/PowerUps/Sauce1.png" id="2_xo72p"]
@@ -31,6 +31,7 @@
 [ext_resource type="Texture2D" uid="uid://bobimk37dk8ct" path="res://Sprites/PowerUps/msg (2)2.png" id="29_62kdj"]
 [ext_resource type="Texture2D" uid="uid://bguwy4hax60jt" path="res://Sprites/PowerUps/msg (2)3.png" id="30_8ruqi"]
 [ext_resource type="Texture2D" uid="uid://1s0gpawqv6eu" path="res://Sprites/PowerUps/msg (2)4.png" id="31_xeogi"]
+[ext_resource type="Theme" uid="uid://c635akg4yparb" path="res://Fonts/GameTheme.tres" id="32_8mq08"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_wuck4"]
 animations = [{
@@ -159,3 +160,15 @@ offset_left = -85.0
 offset_top = -63.0
 offset_right = -45.0
 offset_bottom = -23.0
+
+[node name="Countdown" type="Label" parent="."]
+offset_left = 328.0
+offset_top = 229.0
+offset_right = 557.0
+offset_bottom = 480.0
+theme = ExtResource("32_8mq08")
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 250
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
