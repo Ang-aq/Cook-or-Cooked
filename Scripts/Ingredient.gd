@@ -125,7 +125,7 @@ func _process(delta: float) -> void:
 func play_slash_sequence(sequence: Array) -> void:
 	if is_chopped or is_animating:
 		return
-	
+
 	combo_queue.clear()
 	for s in sequence:
 		var sym := str(s)
@@ -204,6 +204,7 @@ func _finish_chop() -> void:
 	movement_enabled = true
 	
 	emit_signal("chop_completed", ingredient_name)
+	emit_signal("chop_completed", ingredient_name, self)
 
 func become_chopped() -> void:
 	if is_instance_valid(chopped_sprite):

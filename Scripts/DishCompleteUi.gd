@@ -2,7 +2,7 @@ extends Control
 
 @onready var star = $Star
 @onready var dish = $Dish
-@onready var dish_title_label = $Label	
+@onready var dish_title_label = $Label
 
 func show_dish(dish_texture: Texture2D, dish_name: String) -> void:
 	visible = true

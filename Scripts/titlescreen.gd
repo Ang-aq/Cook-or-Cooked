@@ -137,20 +137,22 @@ func _select_option() -> void:
 
 func fade_out(time: float = 0.5) -> void:
 	fade_rect.visible = true
+	var shader_mat := fade_rect.material
 	var timer := 0.0
 	while timer < time:
 		timer += get_process_delta_time()
-		fade_rect.modulate.a = timer / time
+		shader_mat.set_shader_parameter("alpha", timer / time)
 		await get_tree().create_timer(0.0).timeout
-	fade_rect.modulate.a = 1.0
+	shader_mat.set_shader_parameter("alpha", 1.0)
 
 func fade_in(time: float = 0.5) -> void:
+	var shader_mat := fade_rect.material
 	var timer := 0.0
 	while timer < time:
 		timer += get_process_delta_time()
-		fade_rect.modulate.a = 1.0 - (timer / time)
+		shader_mat.set_shader_parameter("alpha", 1.0 - (timer / time))
 		await get_tree().create_timer(0.0).timeout
-	fade_rect.modulate.a = 0.0
+	shader_mat.set_shader_parameter("alpha", 0.0)
 	fade_rect.visible = false
 
 func _on_volume_button_pressed() -> void:

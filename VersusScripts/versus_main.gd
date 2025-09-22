@@ -472,10 +472,12 @@ func _start_countdown() -> void:
 		await get_tree().create_timer(1.0).timeout
 	
 	countdown_label.text = "Go!"
-	var title_music = preload("res://Audio/bgm.ogg")
+	var intro = preload("res://Audio/bgm.ogg")
+	var loop  = preload("res://Audio/bgmloop.ogg")
+	
 	await RenderingServer.frame_post_draw
 	await get_tree().create_timer(0.5).timeout
-	MusicManager.play_bgm(title_music, true)
+	MusicManager.play_bgm_with_intro(intro, loop)
 	
 	countdown_label.visible = false
 

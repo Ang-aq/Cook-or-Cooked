@@ -20,9 +20,8 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		elif typeof(raw_value) == TYPE_INT:
 			count = raw_value
 		else:
-			push_warning("Unexpected ingredient format for %s: %s" % [name, str(raw_value)])
+			push_error("Unexpected ingredient format for %s: %s" % [name, str(raw_value)])
 			continue
-		
 		ingredient_required[name] = count
 		
 		var label = Label.new()
@@ -73,8 +72,7 @@ func update_progress(name: String, current: int) -> void:
 			line, "custom_minimum_size:x", target_width, 0.4
 		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		
-		if MusicManager.has_method("play_sfx"):
-			MusicManager.play_sfx("crossout")
-		
+		MusicManager.play_sfx("crossout")
+			
 		if is_instance_valid(label):
 			label.set_meta("striked", true)

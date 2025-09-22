@@ -181,8 +181,7 @@ script = ExtResource("1_tndvy")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(545, 301)
 sprite_frames = SubResource("SpriteFrames_7qncx")
-animation = &"soy"
-frame_progress = 0.0435419
+animation = &"sweet"
 
 [node name="Timer" type="Timer" parent="."]
 

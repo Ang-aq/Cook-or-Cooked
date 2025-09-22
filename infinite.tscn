@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://cy0w26n4xaylc"]
+[gd_scene load_steps=32 format=3 uid="uid://cy0w26n4xaylc"]
 
 [ext_resource type="Script" uid="uid://ve5x4n4nem86" path="res://infinite.gd" id="1_dfxxq"]
 [ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_py8bk"]
@@ -22,6 +22,9 @@
 [ext_resource type="Texture2D" uid="uid://cmsqri7fxddev" path="res://Sprites/potanimation2.png" id="16_li2om"]
 [ext_resource type="PackedScene" uid="uid://cc0bgkmt0yxco" path="res://Scenes/Checklist.tscn" id="17_wpf45"]
 [ext_resource type="Texture2D" uid="uid://s3iqrv600pi" path="res://Sprites/frontpotanimation1.png" id="21_b3h4r"]
+[ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scripts/DishCompleteUi.gd" id="23_s00ik"]
+[ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="24_d4gu4"]
+[ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="25_omsgm"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_4ue37"]
 animations = [{
@@ -80,6 +83,51 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="Animation" id="Animation_6iyac"]
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="Animation" id="Animation_d1ilt"]
+resource_name = "spin"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.28319]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fdnlq"]
+_data = {
+&"RESET": SubResource("Animation_6iyac"),
+&"spin": SubResource("Animation_d1ilt")
+}
+
+[sub_resource type="Animation" id="Animation_hptm8"]
+resource_name = "ThreeStars"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d1ilt"]
+_data = {
+&"ThreeStars": SubResource("Animation_hptm8")
+}
+
 [node name="Infinite" type="Node2D"]
 script = ExtResource("1_dfxxq")
 
@@ -95,22 +143,21 @@ position = Vector2(576, 324)
 scale = Vector2(0.6, 0.6)
 texture = ExtResource("2_py8bk")
 
-[node name="PotAnimation" type="AnimatedSprite2D" parent="."]
-position = Vector2(559, 318)
-scale = Vector2(0.61088, 0.61088)
-sprite_frames = SubResource("SpriteFrames_4ue37")
-animation = &"normal"
-
-[node name="Ingredient" parent="." instance=ExtResource("3_pm2vi")]
-visible = false
-position = Vector2(-288, 297)
-
-[node name="IngredientContainer" type="Node2D" parent="."]
-
 [node name="KillLine" type="Node2D" parent="."]
 position = Vector2(23, 357)
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="DishTitle" type="Label" parent="UI"]
+offset_left = 918.0
+offset_top = 219.0
+offset_right = 1111.0
+offset_bottom = 271.0
+theme = ExtResource("4_b106h")
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Beef Yakitori"
+autowrap_mode = 3
 
 [node name="Checklist" parent="UI" instance=ExtResource("17_wpf45")]
 offset_left = 919.0
@@ -119,15 +166,17 @@ offset_right = 1115.0
 offset_bottom = 543.0
 theme = ExtResource("4_b106h")
 
-[node name="DishTitle" type="Label" parent="UI"]
-offset_left = 910.0
-offset_top = 220.0
-offset_right = 1103.0
-offset_bottom = 272.0
-theme = ExtResource("4_b106h")
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 30
-autowrap_mode = 3
+[node name="PotAnimation" type="AnimatedSprite2D" parent="UI"]
+position = Vector2(559, 318)
+scale = Vector2(0.61088, 0.61088)
+sprite_frames = SubResource("SpriteFrames_4ue37")
+animation = &"normal"
+
+[node name="IngredientContainer" type="Node2D" parent="UI"]
+
+[node name="Ingredient" parent="UI" instance=ExtResource("3_pm2vi")]
+visible = false
+position = Vector2(-288, 297)
 
 [node name="Pot" type="Sprite2D" parent="UI"]
 position = Vector2(436.667, 319)
@@ -179,9 +228,92 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("6_so75s")
 
+[node name="DamageFlash" type="ColorRect" parent="UI"]
+visible = false
+custom_minimum_size = Vector2(23, 23)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.618933, 1.73271e-06, 3.85046e-07, 1)
+
+[node name="AliveLabel" type="Label" parent="UI"]
+offset_left = 449.0
+offset_top = 3.0
+offset_right = 599.0
+offset_bottom = 103.0
+theme = ExtResource("4_b106h")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 100
+text = "60"
+
 [node name="ColorRect2" type="ColorRect" parent="."]
 offset_left = -172.0
 offset_top = 648.0
 offset_right = 1322.0
 offset_bottom = 1167.0
 color = Color(0, 0, 0, 1)
+
+[node name="WinOverlay" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="DishCompleteUI" type="Control" parent="WinOverlay"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("23_s00ik")
+
+[node name="Star" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 198.0
+offset_top = 76.0
+offset_right = 759.0
+offset_bottom = 638.0
+pivot_offset = Vector2(282, 283)
+texture = ExtResource("24_d4gu4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Star"]
+libraries = {
+&"": SubResource("AnimationLibrary_fdnlq")
+}
+
+[node name="Dish" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 345.0
+offset_top = 232.0
+offset_right = 599.0
+offset_bottom = 486.0
+texture = ExtResource("25_omsgm")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Dish"]
+libraries = {
+&"": SubResource("AnimationLibrary_d1ilt")
+}
+
+[node name="Label" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 304.0
+offset_top = 197.0
+offset_right = 653.0
+offset_bottom = 275.0
+theme = ExtResource("4_b106h")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "Dish Name"
+horizontal_alignment = 1
+
+[node name="Level UP!" type="Label" parent="WinOverlay/DishCompleteUI"]
+layout_mode = 0
+offset_left = 287.0
+offset_top = 441.0
+offset_right = 672.0
+offset_bottom = 533.0
+theme = ExtResource("4_b106h")
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 35
+text = "Level Up!"
+horizontal_alignment = 1

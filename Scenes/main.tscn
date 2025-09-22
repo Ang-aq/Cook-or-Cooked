@@ -228,9 +228,9 @@ theme_override_font_sizes/font_size = 30
 autowrap_mode = 3
 
 [node name="TimerLabel" type="Label" parent="UI"]
-offset_left = 425.0
+offset_left = 474.0
 offset_top = 3.0
-offset_right = 575.0
+offset_right = 624.0
 offset_bottom = 103.0
 theme = ExtResource("7_d1ilt")
 theme_override_constants/outline_size = 5

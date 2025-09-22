@@ -103,10 +103,9 @@ func _ready() -> void:
 	dish_completed = false
 	game_paused = false
 	
-	
 	_load_level()
 	
-	if is_instance_valid(IngManager) and IngManager.has_method("set_requirements"):
+	if is_instance_valid(IngManager):
 		IngManager.set_requirements(required_ingredients, collected_counts)
 	
 	if is_instance_valid(IngManager) and IngManager.has_signal("ingredient_chopped"):
@@ -164,8 +163,9 @@ func _begin_gameplay() -> void:
 	if time_left > 0:
 		$UI/TimerLabel/LevelTimer.start()
 	
-	var title_music = preload("res://Audio/bgm.ogg")
-	MusicManager.play_bgm(title_music, true)
+	var intro = preload("res://Audio/bgm.ogg")
+	var loop  = preload("res://Audio/bgmloop.ogg")
+	MusicManager.play_bgm_with_intro(intro, loop)
 	
 func _update_hearts_ui() -> void:
 	for i in range(hearts_ui.get_child_count()):
@@ -227,7 +227,7 @@ func _update_combo_ui() -> void:
 func _spawn_text_popup(msg: String, world_pos: Vector2) -> void:
 	var popup := text_popup_scene.instantiate()
 	add_child(popup)
-	popup.position = to_local(world_pos) if has_method("to_local") else world_pos
+	popup.position = to_local(world_pos) 
 	popup.show_text(msg)
 
 # start level
@@ -236,28 +236,27 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 	combo = saved_combo
 	if combo > highest_combo:
 		highest_combo = combo
-
+	
 	for child in ingredient_container.get_children():
 		child.queue_free()
-
+	
 	if shiba_boss and is_instance_valid(shiba_boss):
 		shiba_boss.queue_free()
 		shiba_boss = null
-
+	
 	required_ingredients.clear()
 	collected_counts.clear()
 	dish_completed = false
 	game_paused = false
 	_update_combo_ui()
 	_update_hearts_ui()
-
+	
 	spawn_timer = randf_range(0.25, spawn_interval)
 	pest_next_spawn = randf_range(pest_spawn_min, pest_spawn_max)
-
+	
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
-		if player_input.has_method("_update_display"):
-			player_input._update_display()
+		player_input._update_display()
 	
 	var dish: Dictionary = LevelManager.get_current_dish()
 	$UI/DishTitle.text = " " + str(dish.get("name","Unknown Dish"))
@@ -287,7 +286,7 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 		if player_input and player_input.has_signal("buffer_changed"):
 			player_input.buffer_changed.connect(Callable(shiba_boss, "on_input_buffer_changed"))
 		
-		if is_instance_valid(IngManager) and IngManager.has_method("stop"):
+		if is_instance_valid(IngManager):
 			IngManager.stop()
 		return
 	
@@ -308,14 +307,13 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 	var req_counts: Dictionary = {}
 	for name in required_ingredients.keys():
 		req_counts[name] = int(required_ingredients[name]["count"])
-	if checklist_ui and checklist_ui.has_method("setup_checklist"):
+	if checklist_ui:
 		checklist_ui.setup_checklist(req_counts)
 		checklist_ui.show()
 	
-	if is_instance_valid(IngManager) and IngManager.has_method("set_requirements"):
+	if is_instance_valid(IngManager):
 		IngManager.set_requirements(required_ingredients, collected_counts)
-		if IngManager.has_method("start"):
-			IngManager.start()
+		IngManager.start()
 	
 	if countdown_finish == false:
 		game_paused = true
@@ -329,8 +327,7 @@ func _process(delta: float) -> void:
 	if "input_buffer" in player_input:
 		while player_input.input_buffer.size() > max_input_length:
 			player_input.input_buffer.pop_front()
-		if player_input.has_method("_update_display"):
-			player_input._update_display()
+		player_input._update_display()
 	
 	sauce_cooldown -= delta
 	if sauce_cooldown <= 0.0:
@@ -420,7 +417,7 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 	
 	collected_counts[ingredient_name] = cur_count + 1
 	
-	if checklist_ui and checklist_ui.has_method("update_progress"):
+	if checklist_ui:
 		checklist_ui.update_progress(ingredient_name, collected_counts[ingredient_name])
 	
 	if _all_ingredients_collected():
@@ -523,13 +520,7 @@ func _sequences_match(a: Array, b: Array) -> bool:
 func _clear_player_input() -> void:
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
-	if player_input.has_method("_update_display"):
-		player_input._update_display()
-
-func _on_sequence_reset() -> void:
-	print("Input reset!")
-	combo = 0
-	_update_combo_ui()
+	player_input._update_display()
 
 # game win!
 func _all_ingredients_collected() -> bool:
@@ -551,8 +542,7 @@ func _on_dish_completed() -> void:
 	var dish_info: Dictionary = LevelManager.get_current_dish()
 	var dish_texture: Texture2D = dish_info.get("texture")
 	var dish_name: String = dish_info.get("name")
-	if dish_ui and dish_ui.has_method("show_dish"):
-		dish_ui.show_dish(dish_texture, dish_name)
+	dish_ui.show_dish(dish_texture, dish_name)
 		
 	win_overlay.visible = true
 	$WinOverlay/DishCompleteUI/Star/AnimationPlayer.play("Spin")
@@ -567,8 +557,7 @@ func _on_dish_completed() -> void:
 	
 	if "input_buffer" in player_input:
 		player_input.input_buffer.clear()
-		if player_input.has_method("_update_display"):
-			player_input._update_display()
+		player_input._update_display()
 	
 	LevelManager.next_level()
 	_load_level(saved_hearts, saved_combo)
