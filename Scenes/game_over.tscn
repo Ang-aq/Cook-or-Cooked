@@ -17,7 +17,7 @@ scale = Vector2(0.732407, 0.732407)
 texture = ExtResource("2_8fo1c")
 
 [node name="Title" type="Label" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = 354.0
 offset_top = 33.0
 offset_right = 748.0
@@ -30,7 +30,7 @@ text = "GAME
 OVER"
 
 [node name="StatsContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
+layout_mode = 0
 offset_left = 410.0
 offset_top = 361.0
 offset_right = 676.0

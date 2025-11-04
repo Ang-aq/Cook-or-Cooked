@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Cook or Cooked"
 run/main_scene="uid://d02wc3k6aphj"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]

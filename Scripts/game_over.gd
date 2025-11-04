@@ -9,7 +9,6 @@ var input_locked := true
 
 func _ready() -> void:
 	_load_scores()
-	# start invisible
 	title_label.modulate.a = 0.0
 	reason_label.modulate.a = 0.0
 	score_label.modulate.a = 0.0
