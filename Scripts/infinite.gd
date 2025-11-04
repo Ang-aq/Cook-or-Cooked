@@ -2,6 +2,8 @@ extends Node2D
 
 @onready var ingredient_scene: PackedScene = preload("res://Scenes/Ingredients/Ingredients.tscn")
 @onready var text_popup_scene: PackedScene = preload("res://Scenes/text_popup.tscn")
+@onready var en_font: Font = preload("res://Fonts/CutePixel.ttf")
+@onready var jp_font: Font = preload("res://Fonts/BestTen-CRT.otf")
 @onready var player_input: Node = $UI/PlayerInput
 @onready var ingredient_container: Node2D = $UI/IngredientContainer
 @onready var checklist_ui: Control = $UI/Checklist
@@ -17,6 +19,10 @@ extends Node2D
 @onready var countdown_label: Label = $UI/CountdownLabel
 @onready var fade_rect: ColorRect = $UI/Fade
 @onready var dish_title: Label = $UI/DishTitle
+@onready var tutorial_dialog: TutorialDialog = $UI/TutorialDialog
+@onready var keys: AnimatedSprite2D = $UI/Keys
+@onready var button: AnimatedSprite2D = $UI/Button
+@onready var skip_label: Label = $UI/Skip
 
 # tuning
 @export var spawn_min_x: float = -445.0
@@ -38,6 +44,7 @@ extends Node2D
 @export var min_spawn_interval: float = 0.03
 
 @export var show_milliseconds: bool = false
+@export var accel_duration: float = 150.0 
 
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var spawn_timer: float = 0.0
@@ -55,38 +62,37 @@ var alive_time: float = 0.0
 var countdown_running: bool = false
 var dishes_completed: int = 0
 var last_fail_reason: String = ""
+var tutorial_skipped: bool = false
 
-# -------------------------
-# Lifecycle
-# -------------------------
 func _ready() -> void:
 	fade_in()
 	game_paused = true
 	player_input.input_enabled = not (game_paused or countdown_running)
+	countdown_label.hide()
+	_translate_ui_texts()
 	
-	_start_countdown()
-	# basic setup
+	var tween := create_tween()
+	tween.set_loops()
+	tween.tween_property(skip_label, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(skip_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	
+	_start_tutorial()
 	rng.randomize()
 	add_to_group("Game")
 	ingredient_speed_multiplier = start_multiplier
 	_build_infinite_pool()
 	
-	# alive timer setup (guard the label)
 	alive_time = 0.0
 	if is_instance_valid(alive_label):
 		alive_label.text = "00:00"
 	
-	# compute initial spawn_timer so spacing is consistent from the start
 	var initial_v: float = spawn_speed_baseline * ingredient_speed_multiplier
 	var initial_interval: float = spawn_spacing_pixels / max(0.0001, initial_v)
 	initial_interval *= (1.0 + randf_range(-spawn_interval_jitter, spawn_interval_jitter))
 	spawn_timer = max(min_spawn_interval, initial_interval)
 	
-	# initialize checklist from LevelManager (same requirements format as main game)
 	_initialize_checklist()
-	# <-- REMOVE spawn_timer = 0.0 so we don't wipe out the initial interval
 	
-	# connect player input signals
 	if player_input and player_input.has_signal("sequence_submitted"):
 		if not player_input.is_connected("sequence_submitted", Callable(self, "_on_sequence_submitted")):
 			player_input.sequence_submitted.connect(Callable(self, "_on_sequence_submitted"))
@@ -97,39 +103,106 @@ func _ready() -> void:
 	_update_hearts_ui()
 	_update_combo_ui()
 	potAnimated.play("normal")
+	button.play("click")
 	
-
 func _process(delta: float) -> void:
 	if game_paused:
 		return
-
-	# Update alive timer (only when game is running and not game over)
+	
 	if not game_over_triggered:
 		alive_time += delta
 		if is_instance_valid(alive_label):
 			alive_label.text = "%s" % _format_time_mmss(alive_time)
-
-	# gradually speed up falling ingredients (only once)
+	
 	ingredient_speed_multiplier = min(max_multiplier, ingredient_speed_multiplier + speed_increase_per_second * delta)
-
-	# spawn timer logic (only once)
+	
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
 		_spawn_infinite_ingredient()
-		# _spawn_infinite_ingredient() will set the next spawn_timer
 
 func _physics_process(delta: float) -> void:
 	_cleanup_missed_ingredients()
 
-# -------------------------
-# Build the pool from LevelManager (reuse combos)
-# -------------------------
+func _translate_ui_texts() -> void:
+	var lang = LocalizationManager.current_language
+	if not LocalizationManager.translations.has(lang):
+		return
+	var dict = LocalizationManager.translations[lang]
+	
+	if is_instance_valid(alive_label) and dict.has("Dishes Made"):
+		alive_label.text = dict["Dishes Made"]
+	
+	if is_instance_valid(combo_label) and combo > 0 and dict.has("%dx Combo!"):
+		combo_label.text = dict["%dx Combo!"].replace("%d", str(combo))
+	
+	if is_instance_valid(skip_label) and dict.has("skip_tutorial"):
+		skip_label.text = dict["skip_tutorial"]
+	
+	var use_jp_font = lang in ["jp", "ja"]
+	_apply_font_to_ui(self, use_jp_font)
+
+func _apply_font_to_ui(node: Node, use_jp_font: bool) -> void:
+	var font_to_use: Font = jp_font if use_jp_font else en_font
+
+	if node is Label:
+		node.add_theme_font_override("font", font_to_use)
+	elif node is RichTextLabel:
+		node.add_theme_font_override("normal_font", font_to_use)
+	elif node is Button:
+		node.add_theme_font_override("font", font_to_use)
+
+	for child in node.get_children():
+		_apply_font_to_ui(child, use_jp_font)
+
+func _start_tutorial() -> void:
+	var lang = LocalizationManager.current_language
+	var dict = LocalizationManager.translations[lang]
+
+	var lines: Array[String] = [
+		dict.get("tutorial_1", "Hey you! Come here, quickly!"),
+		dict.get("tutorial_2", "It's RUSH HOUR and the line of customers seems endless!"),
+		dict.get("tutorial_3", "We need the dishes done as soon as possible. Here I'll teach you the basics."),
+		dict.get("tutorial_4", "Chop ingredients by entering their combos using the BLUE JOYSTICK."),
+		dict.get("tutorial_5", "Then press the RED BUTTON to enter the combo and the BLUE BUTTON to reset!")
+	]
+
+	var portraits: Array[Texture] = [
+		load("res://Sprites/Portrait3.png"),
+		load("res://Sprites/Portrait4.png"),
+		load("res://Sprites/Portrait1.png"),
+		load("res://Sprites/Portrait1.png"),
+		load("res://Sprites/Portrait1.png")
+	]
+
+	keys.show()
+	keys.play("controls")
+
+	if not tutorial_dialog.dialogue_finished.is_connected(_on_tutorial_finished):
+		tutorial_dialog.dialogue_finished.connect(_on_tutorial_finished)
+
+	tutorial_dialog.start_dialogue(lines, portraits)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("skipTutorial") and tutorial_skipped == false:
+		tutorial_skipped = true
+		tutorial_dialog.hide()
+		keys.hide()
+		skip_label.hide()
+		_on_tutorial_finished()
+
+func _on_tutorial_finished() -> void: 
+	await fade_out()
+	tutorial_skipped = true
+	skip_label.hide()
+	keys.hide()
+	button.hide()
+	tutorial_dialog.dialogue_finished.disconnect(_on_tutorial_finished)
+	_start_countdown()
+
 func _build_infinite_pool() -> void:
 	infinite_pool.clear()
 	var seen: Dictionary = {}
-	# assume LevelManager exists and contains levels
 	for level in LevelManager.levels:
-		# skip boss levels entirely so their ingredients are not included
 		if level.get("is_boss", false):
 			continue
 		if level.has("requirements"):
@@ -144,15 +217,11 @@ func _build_infinite_pool() -> void:
 						combo_copy.append(str(c))
 				infinite_pool.append({"name": name, "combo": combo_copy})
 
-	# fallback pool if nothing found
 	if infinite_pool.size() == 0:
 		infinite_pool.append({"name":"Potato","combo":["↑","↓","Z"]})
 		infinite_pool.append({"name":"Meat","combo":["→","↑","Z"]})
 		infinite_pool.append({"name":"Carrot","combo":["↑","↑","↑","Z"]})
 
-# -------------------------
-# Checklist initialization that mirrors main game
-# -------------------------
 func _initialize_checklist() -> void:
 	checklist.clear()
 	var current_reqs: Dictionary = LevelManager.get_current_requirements()
@@ -166,16 +235,19 @@ func _initialize_checklist() -> void:
 
 	if is_instance_valid(dish_title):
 		var dish_info: Dictionary = LevelManager.get_current_dish()
-		dish_title.text = str(dish_info.get("name", "Unknown Dish"))
+		var name = str(dish_info.get("name", "Unknown Dish"))
+		if LocalizationManager.translations.has(LocalizationManager.current_language):
+			var lang_dict = LocalizationManager.translations[LocalizationManager.current_language]
+			if lang_dict.has(name):
+				name = lang_dict[name]
+		dish_title.text = name
 
-# -------------------------
-# Spawn logic — only spawn ingredients still needed on the checklist
-# -------------------------
 func _start_countdown() -> void:
 	if not is_instance_valid(countdown_label):
 		game_paused = false
-		player_input.input_enabled = (game_paused or countdown_running)
+		player_input.input_enabled = not (game_paused or countdown_running) # FIX
 		return
+	await fade_in()
 	MusicManager.stop_bgm()
 	MusicManager.play_sfx("countdown")
 	
@@ -191,11 +263,10 @@ func _start_countdown() -> void:
 			var loop  = preload("res://Audio/bgmloop.ogg")
 			MusicManager.play_bgm_with_intro(intro, loop)
 			_spawn_infinite_ingredient()
-
 	countdown_label.visible = false
-	game_paused = false
-	player_input.input_enabled = (game_paused or countdown_running)
 	countdown_running = false
+	game_paused = false
+	player_input.input_enabled = not (game_paused or countdown_running)
 
 func _spawn_infinite_ingredient() -> void:
 	if ingredient_container.get_child_count() >= max_active_ingredients:
@@ -212,8 +283,7 @@ func _spawn_infinite_ingredient() -> void:
 			available_pool.append(item)
 	
 	if available_pool.size() == 0:
-		# nothing left to spawn for this level
-		# set a small retry interval so we check again soon (use baseline)
+
 		var v_retry: float = spawn_speed_baseline * ingredient_speed_multiplier
 		var retry_interval: float = spawn_spacing_pixels / max(0.0001, v_retry)
 		spawn_timer = max(min_spawn_interval, retry_interval)
@@ -234,18 +304,13 @@ func _spawn_infinite_ingredient() -> void:
 
 	ingredient_container.add_child(s)
 
-	# --- compute next spawn interval so vertically they're ~spawn_spacing_pixels apart ---
-	# using baseline (per-ingredient bases removed for simplicity & correctness)
 	var base_speed: float = spawn_speed_baseline
-	# actual vertical speed (pixels/sec)
 	var v: float = max(0.0001, base_speed * ingredient_speed_multiplier)
 	var next_interval: float = spawn_spacing_pixels / v
 	next_interval *= (1.0 + randf_range(-spawn_interval_jitter, spawn_interval_jitter))
 	spawn_timer = max(min_spawn_interval, next_interval)
 
-# -------------------------
-# Player input handling (chop matching)
-# -------------------------
+#region Player Input
 func _on_sequence_submitted(sequence: Array) -> void:
 	if game_paused or countdown_running:
 		return
@@ -272,36 +337,31 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			break
 
 	if not matched:
-		_lose_heart("Wrong combo!", 0.5)
+		_lose_heart(LocalizationManager.t("Wrong combo!"), 0.5)
 	
 	player_input.input_buffer.clear()
 	player_input._update_display()
+#endregion
 
-# -------------------------
-# When ingredient reports it was chopped
-# -------------------------
+#region Chopped Ingredients
 func _on_ingredient_chopped(ingredient_name: String, chopped_ingredient: Ingredient) -> void:
 	var max_amount: int = int(LevelManager.get_requirement_for(ingredient_name).get("amount", 999))
 
-	# Normal collect: increment checklist and update UI
 	if checklist.has(ingredient_name):
 		checklist[ingredient_name] += 1
 		checklist[ingredient_name] = min(checklist[ingredient_name], max_amount)
 		if checklist_ui:
 			checklist_ui.update_progress(ingredient_name, checklist[ingredient_name])
 
-	# combo tracking + feedback
 	combo += 1
 	if combo > highest_combo:
 		highest_combo = combo
 	_update_combo_ui()
 
-	# spawn text popup for main ingredient
 	var popup_pos: Vector2 = ingredient_container.global_position + Vector2(270, 400)
 	_spawn_text_popup("Collected %s!" % ingredient_name, popup_pos)
 	MusicManager.play_sfx("chop")
 
-	# --- remove extra ingredients ONLY if the checklist already has enough ---
 	if checklist[ingredient_name] >= max_amount:
 		for child in ingredient_container.get_children():
 			if not is_instance_valid(child):
@@ -311,13 +371,11 @@ func _on_ingredient_chopped(ingredient_name: String, chopped_ingredient: Ingredi
 				continue
 			if ing != chopped_ingredient and ing.ingredient_name == ingredient_name and not ing.is_chopped:
 				ing.queue_free()
-
-	# check for dish completion
+	
 	if _check_if_level_completed():
 		await get_tree().create_timer(0.6).timeout
 		_on_dish_completed()
 
-# helper to remove extra un-chopped instances of a given ingredient name
 func _remove_extra_ingredients_of_type(name: String) -> void:
 	for child in ingredient_container.get_children():
 		if not is_instance_valid(child):
@@ -333,10 +391,9 @@ func _remove_extra_ingredients(name: String, except_node: Node) -> void:
 		var ing = ingredient_container.get_child(i)
 		if ing is Ingredient and ing.ingredient_name == name and ing != except_node and not ing.is_chopped:
 			ing.queue_free()
+#endregion
 
-# -------------------------
-# Check completion (all checklist items reached their required amount)
-# -------------------------
+#region Level Completion
 func _check_if_level_completed() -> bool:
 	var reqs: Dictionary = LevelManager.get_current_requirements()
 	for name in checklist.keys():
@@ -345,9 +402,6 @@ func _check_if_level_completed() -> bool:
 			return false
 	return true
 
-# -------------------------
-# Dish finished: pick random other level and continue
-# -------------------------
 func _on_dish_completed() -> void:
 	dish_completed = true
 
@@ -388,10 +442,8 @@ func _on_dish_completed() -> void:
 
 	_initialize_checklist()
 	game_paused = false
+#endregion
 
-# -------------------------
-# Missed ingredients -> lose heart if not chopped
-# -------------------------
 func _cleanup_missed_ingredients() -> void:
 	for ing_node in ingredient_container.get_children():
 		if not is_instance_valid(ing_node):
@@ -400,23 +452,17 @@ func _cleanup_missed_ingredients() -> void:
 		if ing == null:
 			continue
 		if ing.global_position.y > kill_line_y:
-			# If the ingredient wasn't chopped, player loses a heart
 			if not ing.is_chopped:
 				_lose_heart("Missed %s!" % ing.ingredient_name, 1.0)
-			# Always remove the ingredient
 			ing.queue_free()
 
-# -------------------------
-# Clear all active ingredients
-# -------------------------
 func _clear_all_ingredients() -> void:
 	for child in ingredient_container.get_children():
 		if is_instance_valid(child):
 			child.queue_free()
 
-# -------------------------
-# UI / helpers
-# -------------------------
+
+#region Helpers
 func _lose_heart(reason: String, amount: float = 1.0) -> void:
 	# store last fail reason for game over screen
 	last_fail_reason = reason
@@ -511,7 +557,7 @@ func _update_combo_ui() -> void:
 	if not combo_label:
 		return
 	if combo > 0:
-		combo_label.text = "%dx Combo!" % combo
+		combo_label.text = LocalizationManager.t("%dx Combo!") % combo
 	else:
 		combo_label.text = ""
 
@@ -530,13 +576,13 @@ func _sequences_match(a: Array, b: Array) -> bool:
 		if str(a[i]) != str(b[i]):
 			return false
 	return true
+#endregion
 
 func _on_game_over() -> void:
 	if game_over_triggered:
 		return
 	game_over_triggered = true
 
-	# visual/game over polish
 	potAnimated.z_index = 10
 	pot.hide()
 	
@@ -546,19 +592,15 @@ func _on_game_over() -> void:
 	potAnimated.play("explode")
 	await potAnimated.animation_finished
 	
-	# compute infinite-mode score
 	# dishes_completed * seconds_lived * highest_combo
 	var seconds_lived: int = int(alive_time)
 	var score: int = int(dishes_completed) * seconds_lived * int(highest_combo)
 
-	# clamp to non-negative
 	if score < 0:
 		score = 0
 
-	# save score (and fail reason) exactly like main game
 	_save_score(score, last_fail_reason)
 
-	# finally change to game over scene (that script will read scores.cfg)
 	get_tree().change_scene_to_file("res://Scenes/game_over.tscn")
 
 func _save_score(score: int, reason: String) -> void:
@@ -576,7 +618,7 @@ func _save_score(score: int, reason: String) -> void:
 		push_error("Failed to save scores.cfg: %s" % str(err))
 
 func _format_time_mmss(t: float) -> String:
-	var total_seconds := int(t)             # truncate to whole seconds
+	var total_seconds := int(t)
 	var minutes := total_seconds / 60
 	var seconds := total_seconds % 60
 	return "%02d:%02d" % [minutes, seconds]

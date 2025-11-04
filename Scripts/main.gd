@@ -4,6 +4,8 @@ extends Node2D
 @onready var ingredient_scene: PackedScene = preload("res://Scenes/Ingredients/Ingredients.tscn")
 @onready var text_popup_scene: PackedScene = preload("res://Scenes/text_popup.tscn")
 @onready var sauce_scene: PackedScene = preload("res://Scenes/sauce.tscn")
+@onready var en_font: Font = preload("res://Fonts/CutePixel.ttf")
+@onready var jp_font: Font = preload("res://Fonts/BestTen-CRT.otf")
 @onready var player_input: Node = $UI/PlayerInput
 @onready var ingredient_container: Node2D = $IngredientContainer
 @onready var checklist_ui: Control = $UI/Checklist
@@ -19,9 +21,9 @@ extends Node2D
 @onready var IngManager: Node = $IngredientManager
 @onready var countdown_label: Label = $UI/Countdown
 @onready var fade_rect: ColorRect = $UI/Fade
+@onready var dish_title: Label = $UI/DishTitle
 @export var chop_min_y: float = -100
 @export var chop_max_y: float = 500.0
-
 #endregion
 #region Exports
 # ingredient spawning
@@ -35,8 +37,8 @@ extends Node2D
 # pest spawning
 @export var pest_spawn_min: float = 15.0
 @export var pest_spawn_max: float = 18.0
-@export var pest_spawn_repeat_min: float = 15.0
-@export var pest_spawn_repeat_max: float = 18.0
+@export var pest_spawn_repeat_min: float = 15.0 # 15
+@export var pest_spawn_repeat_max: float = 18.0 # 18
 @export var max_active_pests: int = 3
 
 # other exports 
@@ -205,7 +207,7 @@ func _lose_heart(reason: String, amount: float = 1.0) -> void:
 
 func _update_combo_ui() -> void:
 	if combo > 0:
-		combo_label.text = "%dx Combo!" % combo
+		combo_label.text = LocalizationManager.t("%dx Combo!") % combo
 	else:
 		combo_label.text = ""
 
@@ -244,7 +246,8 @@ func _load_level(saved_hearts: int = max_hearts, saved_combo: int = 0) -> void:
 		player_input._update_display()
 	
 	var dish: Dictionary = LevelManager.get_current_dish()
-	$UI/DishTitle.text = " " + str(dish.get("name","Unknown Dish"))
+	var dish_name = dish.get("name", "Unknown Dish")
+	dish_title.text = " " + LocalizationManager.t(dish_name)
 	time_left = int(dish.get("time_limit", 60))
 	$UI/TimerLabel.text = str(time_left)
 	
@@ -332,7 +335,7 @@ func _on_sauce_collected(sauce_type: String) -> void:
 	
 	match sauce_type:
 		"soy":
-			_spawn_text_popup("Slow Down!", popup_pos)
+			_spawn_text_popup(LocalizationManager.t("Slow Down!"), popup_pos)
 			ingredient_speed_multiplier = 0.35   # stronger slowdown
 			var t = get_tree().create_timer(10.0)
 			t.timeout.connect(func():
@@ -340,12 +343,12 @@ func _on_sauce_collected(sauce_type: String) -> void:
 			)
 		
 		"sweet":
-			_spawn_text_popup("Combo Boost!", popup_pos)
+			_spawn_text_popup(LocalizationManager.t("Combo Boost!"), popup_pos)
 			combo *= 2
 			_update_combo_ui()
 		
 		"hot":
-			_spawn_text_popup("Extra Heart!", popup_pos)
+			_spawn_text_popup(LocalizationManager.t("Extra Heart!"), popup_pos)
 			if current_hearts < max_hearts:
 				current_hearts += 2
 				_update_hearts_ui()
@@ -381,7 +384,7 @@ func _on_pest_failed(reason: String) -> void:
 	_lose_heart(reason, 0.5)
 
 func _on_pest_attacked(pest_node: Node) -> void:
-	_lose_heart("A pest attacked you!", 0.5) 
+	_lose_heart(LocalizationManager.t("A pest attacked you!"), 0.5) 
 
 func _on_ingredient_chopped(ingredient_name: String) -> void:
 	if not required_ingredients.has(ingredient_name):
@@ -397,7 +400,8 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 				ing_node.flash_x()
 				break
 				
-		_lose_heart("Too many %ss!" % ingredient_name)
+		_lose_heart(LocalizationManager.t("Too many %ss!") % name)
+		
 		return
 	
 	collected_counts[ingredient_name] = cur_count + 1
@@ -433,7 +437,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 			matched = true
 		else:
 			shiba_boss.react_wrong_input()
-			_lose_heart("Wrong input!")
+			_lose_heart(LocalizationManager.t("Wrong input!"))
 			matched = true
 		_clear_player_input()
 		return
@@ -469,7 +473,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		if cur_count >= req_count:
 			if _sequences_match(clean_sequence, ing.combo):
 				IngManager.flash_topmost_ingredient(name)
-				_lose_heart("Too many %ss!" % name)
+				_lose_heart(LocalizationManager.t("Too many %ss!") % name)
 				matched = true
 				break
 			continue
@@ -488,7 +492,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 				
 	# 5) Wrong combo  
 	if not matched:
-		_lose_heart("Wrong combo!", 0.5)  
+		_lose_heart(LocalizationManager.t("Wrong combo!"), 0.5)  
 		
 	# 6) Always clear input buffer 
 	_clear_player_input()
@@ -653,3 +657,26 @@ func _cleanup_fallen_ingredients() -> void:
 			continue
 		if ing_node.global_position.y > kill_line_y:
 			ing_node.queue_free()
+
+func _on_language_changed(new_lang: String) -> void:
+	LocalizationManager.current_language = new_lang
+	_update_ui_language()
+
+func _update_ui_language() -> void:
+	var dish = LevelManager.get_current_dish()
+	dish_title.text = " " + LocalizationManager.t(dish.get("name", "Unknown Dish"))
+	dish_title.add_theme_font_override("font", LocalizationManager.get_font())
+	
+	if checklist_ui:
+		checklist_ui.refresh_translations()
+	_apply_font_to_ui($UI, LocalizationManager.current_language == "jp")
+
+func _apply_font_to_ui(node: Node, use_jp_font: bool) -> void:
+	var font_to_use: Font = LocalizationManager.get_font()
+	for child in node.get_children():
+		if child is Label:
+			child.add_theme_font_override("font", font_to_use)
+		elif child is RichTextLabel:
+			child.add_theme_font_override("normal_font", font_to_use)
+		elif child.get_child_count() > 0:
+			_apply_font_to_ui(child, use_jp_font)

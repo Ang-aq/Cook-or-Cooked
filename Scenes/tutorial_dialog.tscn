@@ -115,7 +115,7 @@ offset_right = 477.0
 offset_bottom = 227.0
 theme = ExtResource("2_1gxax")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Press any button to continue"
+text = "Press the BLUE BUTTON to continue"
 
 [node name="Portrait" type="TextureRect" parent="UI"]
 layout_mode = 0

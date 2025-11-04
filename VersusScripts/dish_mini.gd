@@ -17,8 +17,14 @@ func _ready() -> void:
 	dish.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 func show_dish(dish_texture: Texture2D, dish_name: String) -> void:
+	var translated_name := LocalizationManager.t(dish_name)
+
 	dish.texture = dish_texture
-	dish_label.text = dish_name
+	dish_label.text = translated_name
+
+	var font_to_use = LocalizationManager.get_font()
+	if font_to_use:
+		dish_label.add_theme_font_override("font", font_to_use)
 
 	visible = true
 	_is_showing = true
@@ -45,7 +51,7 @@ func show_dish(dish_texture: Texture2D, dish_name: String) -> void:
 	_visible_timer.wait_time = display_time
 	add_child(_visible_timer)
 	_visible_timer.start()
-	_visible_timer.timeout.connect(_on_hide_timeout) 
+	_visible_timer.timeout.connect(_on_hide_timeout)
 
 func _on_hide_timeout() -> void:
 	_hide_immediately()

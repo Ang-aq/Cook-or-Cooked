@@ -282,7 +282,6 @@ offset_bottom = 649.0
 color = Color(0, 0, 0, 1)
 
 [node name="WinOverlay" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="DishCompleteUI" type="Control" parent="WinOverlay"]
 layout_mode = 3
@@ -307,10 +306,10 @@ libraries = {
 
 [node name="Dish" type="TextureRect" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
-offset_left = 345.0
-offset_top = 232.0
-offset_right = 599.0
-offset_bottom = 486.0
+offset_left = 348.0
+offset_top = 214.0
+offset_right = 602.0
+offset_bottom = 468.0
 texture = ExtResource("9_hptm8")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WinOverlay/DishCompleteUI/Dish"]
@@ -318,7 +317,7 @@ libraries = {
 &"": SubResource("AnimationLibrary_d1ilt")
 }
 
-[node name="Label" type="Label" parent="WinOverlay/DishCompleteUI"]
+[node name="DishTitle" type="Label" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
 offset_left = 304.0
 offset_top = 197.0
@@ -330,7 +329,7 @@ theme_override_font_sizes/font_size = 50
 text = "Dish Name"
 horizontal_alignment = 1
 
-[node name="Level UP!" type="Label" parent="WinOverlay/DishCompleteUI"]
+[node name="LevelUp" type="Label" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
 offset_left = 287.0
 offset_top = 441.0

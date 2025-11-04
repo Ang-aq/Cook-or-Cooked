@@ -1,5 +1,9 @@
 extends Control
 
+@export var use_jp_font: bool = true
+@onready var en_font: Font = preload("res://Fonts/CutePixel.ttf")
+@onready var jp_font: Font = preload("res://Fonts/BestTen-CRT.otf")
+
 var ingredient_labels: Dictionary = {}
 var ingredient_required: Dictionary = {}
 
@@ -10,6 +14,7 @@ func setup_checklist(ingredients: Dictionary) -> void:
 		child.queue_free()
 	ingredient_labels.clear()
 	ingredient_required.clear()
+	var font_to_use: Font = LocalizationManager.get_font()
 
 	for name in ingredients.keys():
 		var raw_value = ingredients[name]
@@ -23,18 +28,22 @@ func setup_checklist(ingredients: Dictionary) -> void:
 			push_error("Unexpected ingredient format for %s: %s" % [name, str(raw_value)])
 			continue
 		ingredient_required[name] = count
+
+		var translated_name := LocalizationManager.t(name)
 		
 		var label = Label.new()
-		label.text = "%s: 0 / %d" % [name, count]
+		label.text = "%s: 0 / %d" % [translated_name, count]
 		label.modulate = Color.BLACK
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		label.custom_minimum_size = Vector2(0, 32)
-		
+		label.add_theme_font_override("font", font_to_use)
 		label.add_theme_font_size_override("font_size", 22)
+
+		label.set_meta("ingredient_name", name)
 		
 		$VBoxContainer.add_child(label)
 		ingredient_labels[name] = label
-
+		
 func update_progress(name: String, current: int) -> void:
 	if not ingredient_labels.has(name):
 		return
@@ -44,12 +53,12 @@ func update_progress(name: String, current: int) -> void:
 		return
 
 	var required_count: int = ingredient_required[name]
-	label.text = "%s: %d / %d" % [name, current, required_count]
+	label.text = "%s: %d / %d" % [LocalizationManager.t(name), current, required_count]
 
 	if current >= required_count and (is_instance_valid(label) and label.get_meta("striked") != true):
 		var line = ColorRect.new()
 		line.color = Color(1, 0, 0)
-		line.custom_minimum_size = Vector2(0, 2)  # start at 0 width
+		line.custom_minimum_size = Vector2(0, 2)
 		line.size_flags_horizontal = Control.SIZE_FILL
 		line.anchor_left = 0
 		line.anchor_right = 0
@@ -66,7 +75,7 @@ func update_progress(name: String, current: int) -> void:
 		if not is_instance_valid(label):
 			return
 
-		var target_width = label.get_size().x  # safe in Godot 4
+		var target_width = label.get_size().x
 		var tween := create_tween()
 		tween.tween_property(
 			line, "custom_minimum_size:x", target_width, 0.4
@@ -76,3 +85,18 @@ func update_progress(name: String, current: int) -> void:
 			
 		if is_instance_valid(label):
 			label.set_meta("striked", true)
+
+func refresh_translations() -> void:
+	for name in ingredient_labels.keys():
+		var label: Label = ingredient_labels[name]
+		if not is_instance_valid(label):
+			continue
+		var translated_name := LocalizationManager.t(name)
+		var required_count: int = int(ingredient_required[name])
+		
+		var text_parts = label.text.split(":")
+		if text_parts.size() > 1:
+			var progress_str = text_parts[1].strip_edges()
+			label.text = "%s: %s" % [translated_name, progress_str]
+		else:
+			label.text = "%s: 0 / %d" % [translated_name, required_count]

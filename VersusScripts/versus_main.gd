@@ -3,7 +3,6 @@ extends Node2D
 @onready var ingredient_scene: PackedScene = preload("res://VersusScenes/versus_ingredient.tscn")
 @onready var DishMiniScene: PackedScene = preload("res://VersusScenes/dish_mini.tscn")
 
-# UI nodes (set in scene)
 @onready var fade_rect: ColorRect = $CanvasLayer/TutorialScreen/ColorRect
 @onready var checklist_p1: Control = $CanvasLayer/ChecklistP1
 @onready var checklist_p2: Control = $CanvasLayer/ChecklistP2
@@ -20,15 +19,17 @@ extends Node2D
 @onready var speed_label: Label = $CanvasLayer/SlideLabel
 @onready var dish_counter_p1: Label = $CanvasLayer/DishCounterP1
 @onready var dish_counter_p2: Label = $CanvasLayer/DishCounterP2
+@onready var DishMadep1: Label = $CanvasLayer/DishMade1
+@onready var DishMadep2: Label = $CanvasLayer/DishMade1/DishMade2
 
 @export var spawn_interval: float = 0.8
 @export var spawn_min_x: float = -300.0
 @export var spawn_max_x: float = 300.0
 @export var spawn_start_y: float = -100.0
-var spawn_timer: float = 0.0
+
 @export var start_fall_speed: float = 100
 @export var end_fall_speed: float = 150
-@export var round_time: float = 90.0   
+@export var round_time: float = 90.0   # 90
 
 # Speed system
 @export var speed_increase_interval: float = 30.0 
@@ -38,6 +39,7 @@ var _speed_thresholds: Array = []
 var _time_thresholds: Array = []
 var _triggered_time_events: Array = []   
 var _countdown_started: bool = false
+var spawn_timer: float = 0.0
 
 # Game Finished!
 @onready var win_screen: Control = $CanvasLayer/WinScreen
@@ -134,7 +136,9 @@ func _ready() -> void:
 	fade_rect.modulate.a = 1.0   
 	fade_rect.visible = true
 	await fade_in(0.5)
-	
+	DishMadep1.text = LocalizationManager.t("Dishes Made")
+	DishMadep2.text = LocalizationManager.t("Dishes Made")
+
 	lives[1] = lives_per_player
 	lives[2] = lives_per_player
 	_update_player_hearts_ui(1)
@@ -365,21 +369,21 @@ func _show_popup(text: String, hold_time: float = 0.8, fade_time: float = 1.2) -
 			powerup_label.visible = false
 			powerup_label.text = "")
 
-func _show_slide_label(text: String, hold_time: float = 0.9, enter_time: float = 0.35, exit_time: float = 0.35) -> void:
-	var label_node: Label = speed_label 
-	label_node.text = text
+func _show_slide_label(text_key: String, hold_time: float = 0.9, enter_time: float = 0.35, exit_time: float = 0.35) -> void:
+	var label_node: Label = speed_label
+	
+	label_node.text = LocalizationManager.t(text_key)
 	label_node.visible = true
 	await RenderingServer.frame_post_draw
 	
 	var vp := get_viewport_rect().size
 	var min_size: Vector2 = label_node.get_minimum_size()
-	var label_w: float = max(1.0, min_size.x)   
+	var label_w: float = max(1.0, min_size.x)
 	var label_h: float = max(1.0, min_size.y)
 	
 	var start_x: float = -label_w - 20.0
 	var target_x: float = (vp.x - label_w) * 0.5
 	var end_x: float = vp.x + 20.0
-	
 	var target_y: float = (vp.y - label_h) * 0.5
 	
 	var gp: Vector2 = label_node.global_position
@@ -387,7 +391,6 @@ func _show_slide_label(text: String, hold_time: float = 0.9, enter_time: float =
 	gp.y = target_y
 	label_node.global_position = gp
 
-	#  text slides in, stops, slides out
 	var tween: Tween = create_tween()
 	tween.tween_property(label_node, "global_position:x", target_x, enter_time).set_trans(Tween.TRANS_SINE)
 	tween.tween_interval(hold_time)
@@ -433,7 +436,11 @@ func fade_in(time: float = 1.0) -> void:
 	_during_fade = false
 
 func _show_tutorial() -> void:
-	tutorial_anim.play("tutorial")
+	
+	if LocalizationManager.current_language  == "jp":
+		tutorial_anim.play("jptutorial")
+	else:
+		tutorial_anim.play("tutorial")
 	if tutorial_screen:
 		tutorial_screen.visible = true
 		tutorial_screen.mouse_filter = Control.MOUSE_FILTER_STOP

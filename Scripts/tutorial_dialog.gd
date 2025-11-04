@@ -16,7 +16,9 @@ var is_scrolling: bool = false
 var dialogue_active: bool = false
 var input_locked: bool = false
 
+
 func start_dialogue(new_lines: Array[String], new_portraits: Array[Texture] = []) -> void:
+	continue_label.text = LocalizationManager.t("Continue")
 	lines = new_lines
 	portraits = new_portraits
 	current_line = 0

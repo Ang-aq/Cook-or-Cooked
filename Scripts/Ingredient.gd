@@ -43,7 +43,12 @@ var ingredient_scales := {
 	"GreenBean": Vector2(2, 2),
 	"Tomato": Vector2(2, 2),
 	"Spring Onion": Vector2(1.5, 1.5),
-	"Scallion": Vector2(1.5, 1.5)
+	"Scallion": Vector2(1.5, 1.5),
+	"Egg": Vector2(1.5, 1.5),
+	"Flour": Vector2(2, 2),
+	"Octopus": Vector2(1.5, 1.5),
+	"Hotdog": Vector2(2, 2),
+	"Rice": Vector2(2, 2)
 }
 
 var slash_anim_map := {
@@ -181,13 +186,25 @@ func _finish_chop() -> void:
 		slash.stop()
 		slash.visible = false
 	
-	var chopped_anim := "%s_chopped" % ingredient_name
 	var played_chopped_anim := false
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(chopped_anim):
-		sprite.visible = true
-		sprite.animation = chopped_anim
-		sprite.play()
-		played_chopped_anim = true
+
+	if ingredient_name == "Hotdog":
+		# Pick a random one of the 3 hotdog chop animations
+		var rand_index = randi() % 3 + 1  # gives 1, 2, or 3
+		var hotdog_anim = "Hotdog_chopped_%d" % rand_index
+		if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(hotdog_anim):
+			sprite.visible = true
+			sprite.animation = hotdog_anim
+			sprite.play()
+			played_chopped_anim = true
+	else:
+		# normal case
+		var chopped_anim := "%s_chopped" % ingredient_name
+		if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation(chopped_anim):
+			sprite.visible = true
+			sprite.animation = chopped_anim
+			sprite.play()
+			played_chopped_anim = true
 	
 	if not played_chopped_anim and is_instance_valid(chopped_sprite):
 		if chopped_sprite.texture == null and chopped_fallback:

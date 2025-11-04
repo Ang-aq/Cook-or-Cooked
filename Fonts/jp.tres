@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bjicwhkbcx6h3"]
+
+[ext_resource type="FontFile" uid="uid://75gdhfrg0fw8" path="res://Fonts/BestTen-CRT.otf" id="1_gju75"]
+
+[resource]
+default_font = ExtResource("1_gju75")

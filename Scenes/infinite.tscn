@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cy0w26n4xaylc"]
+[gd_scene load_steps=41 format=3 uid="uid://cy0w26n4xaylc"]
 
 [ext_resource type="Script" uid="uid://ve5x4n4nem86" path="res://Scripts/infinite.gd" id="1_p8urw"]
 [ext_resource type="Texture2D" uid="uid://dhapc8ogtilhk" path="res://Sprites/finalUI.png" id="2_da7d0"]
@@ -23,8 +23,15 @@
 [ext_resource type="Texture2D" uid="uid://c1hnjld6857xx" path="res://Sprites/HeartFull.png" id="21_n72q4"]
 [ext_resource type="Script" uid="uid://ccng5forvkglr" path="res://Scripts/combo_label.gd" id="22_at7yq"]
 [ext_resource type="Script" uid="uid://p2fo8osv0mbr" path="res://Scripts/DishCompleteUi.gd" id="23_4wo6o"]
+[ext_resource type="PackedScene" uid="uid://c53q46lxpkuv6" path="res://Scenes/tutorial_dialog.tscn" id="23_da7d0"]
+[ext_resource type="Texture2D" uid="uid://ba5kn2pp0g7r5" path="res://Sprites/TutorialUI/controls1.png" id="23_f0xcl"]
+[ext_resource type="Texture2D" uid="uid://difxyys0180bi" path="res://Sprites/TutorialUI/controls2.png" id="24_foyln"]
 [ext_resource type="Texture2D" uid="uid://bkl0q8qamlmrb" path="res://Sprites/star_burst.png" id="24_in25n"]
+[ext_resource type="Texture2D" uid="uid://sxgbv6gj35h7" path="res://Sprites/TutorialUI/controls3.png" id="25_xdob0"]
 [ext_resource type="Texture2D" uid="uid://c31cr74p8chur" path="res://Sprites/Ingredients/beefCurry.png" id="25_xylqo"]
+[ext_resource type="Texture2D" uid="uid://cjxg8tmsne82" path="res://Sprites/TutorialUI/controls4.png" id="26_eed18"]
+[ext_resource type="Texture2D" uid="uid://dxo1f1fwj7nbs" path="res://Sprites/button1.png" id="28_xdob0"]
+[ext_resource type="Texture2D" uid="uid://xeg6ew8sk50b" path="res://Sprites/button2.png" id="29_eed18"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_4ue37"]
 animations = [{
@@ -80,6 +87,40 @@ animations = [{
 }],
 "loop": true,
 "name": &"normal",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_at7yq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("23_f0xcl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_foyln")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_xdob0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_eed18")
+}],
+"loop": true,
+"name": &"controls",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l26lm"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("28_xdob0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_eed18")
+}],
+"loop": true,
+"name": &"click",
 "speed": 5.0
 }]
 
@@ -263,13 +304,39 @@ text = "3"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Keys" type="AnimatedSprite2D" parent="UI"]
+visible = false
+position = Vector2(426.197, 314.098)
+scale = Vector2(4.68443, 4.68443)
+sprite_frames = SubResource("SpriteFrames_at7yq")
+animation = &"controls"
+
+[node name="Button" type="AnimatedSprite2D" parent="UI"]
+position = Vector2(61, 54)
+scale = Vector2(1.51563, 1.51563)
+sprite_frames = SubResource("SpriteFrames_l26lm")
+animation = &"click"
+
 [node name="Fade" type="ColorRect" parent="UI"]
 modulate = Color(1, 1, 1, 0)
 offset_right = 1152.0
 offset_bottom = 649.0
 color = Color(0, 0, 0, 1)
 
-[node name="ColorRect2" type="ColorRect" parent="."]
+[node name="TutorialDialog" parent="UI" instance=ExtResource("23_da7d0")]
+
+[node name="Skip" type="Label" parent="UI"]
+offset_left = 16.0
+offset_top = 25.0
+offset_right = 367.0
+offset_bottom = 95.0
+theme = ExtResource("3_ab56j")
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 50
+text = ">> Press F to skip"
+horizontal_alignment = 1
+
+[node name="ColorRect2" type="ColorRect" parent="UI"]
 offset_left = -172.0
 offset_top = 648.0
 offset_right = 1322.0
@@ -313,7 +380,7 @@ libraries = {
 &"": SubResource("AnimationLibrary_d1ilt")
 }
 
-[node name="Label" type="Label" parent="WinOverlay/DishCompleteUI"]
+[node name="DishTitle" type="Label" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
 offset_left = 304.0
 offset_top = 197.0
@@ -325,7 +392,7 @@ theme_override_font_sizes/font_size = 50
 text = "Dish Name"
 horizontal_alignment = 1
 
-[node name="Level UP!" type="Label" parent="WinOverlay/DishCompleteUI"]
+[node name="LevelUp" type="Label" parent="WinOverlay/DishCompleteUI"]
 layout_mode = 0
 offset_left = 287.0
 offset_top = 441.0

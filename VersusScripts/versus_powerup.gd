@@ -5,7 +5,7 @@ class_name VersusPowerUp
 @export var combo: Array = []
 @export var fall_speed: float = 70.0
 @export var lifetime: float = 12.0
-	
+
 signal powerup_collected(player_id: int, powerup_type: String)
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
@@ -28,9 +28,9 @@ func _ready() -> void:
 		if DEFAULT_COMBOS.has(powerup_type):
 			combo = DEFAULT_COMBOS[powerup_type].duplicate(true)
 	_refresh_visuals()
-	
 	_update_combo_display()
-	sprite.play(powerup_type)
+	if sprite:
+		sprite.play(powerup_type)
 
 func reserve(player_id: int) -> bool:
 	if _reserved_by != 0 and _reserved_by != player_id:
@@ -49,12 +49,12 @@ func play_slash_sequence(sequence: Array) -> void:
 	for i in range(sequence.size()):
 		if str(sequence[i]) != str(combo[i]):
 			return
-	
+
 	_collected = true
 	var collector := int(_reserved_by)
 	if collector == 0:
 		collector = -1
-	
+
 	var gm = _get_game_node()
 	if gm != null and collector >= 1:
 		_apply_effects_to_game(gm, collector)
@@ -81,15 +81,15 @@ func _apply_effects_to_game(gm: Node, collector: int) -> void:
 	match powerup_type:
 		"heart_breaker":
 			_apply_heart_breaker(gm, opponent)
-			gm._spawn_powerup_popup(opponent, "-1 Heart!")
+			gm._spawn_powerup_popup(opponent, LocalizationManager.t("-1 Heart!"))
 			MusicManager.play_sfx("wrong")
 		"dish_snatcher":
 			_apply_dish_snatcher(gm, opponent, collector)
-			gm._spawn_powerup_popup(collector, "Dish Stolen!")
+			gm._spawn_powerup_popup(collector, LocalizationManager.t("Dish Stolen!"))
 			MusicManager.play_sfx("level_up")
 		"extra_life":
 			_apply_extra_life(gm, collector)
-			gm._spawn_powerup_popup(collector, "+1 Heart!")
+			gm._spawn_powerup_popup(collector, LocalizationManager.t("+1 Heart!"))
 			MusicManager.play_sfx("powerup")
 		"mystery":
 			var r = RandomNumberGenerator.new()
@@ -97,13 +97,13 @@ func _apply_effects_to_game(gm: Node, collector: int) -> void:
 			var pick = r.randi_range(0, 2)
 			if pick == 0:
 				_apply_heart_breaker(gm, opponent)
-				gm._spawn_powerup_popup(opponent, "-1 Heart!")
+				gm._spawn_powerup_popup(opponent, LocalizationManager.t("-1 Heart!"))
 			elif pick == 1:
 				_apply_dish_snatcher(gm, opponent, collector)
-				gm._spawn_powerup_popup(opponent, "Dish Stolen!")
+				gm._spawn_powerup_popup(collector, LocalizationManager.t("Dish Stolen!"))
 			else:
 				_apply_extra_life(gm, collector)
-				gm._spawn_powerup_popup(collector, "+1 Heart!")
+				gm._spawn_powerup_popup(collector, LocalizationManager.t("+1 Heart!"))
 			MusicManager.play_sfx("powerup")
 		_:
 			print("VersusPowerUp: unknown type:", powerup_type)
@@ -127,7 +127,7 @@ func _apply_dish_snatcher(gm: Node, target_player: int, collector: int) -> void:
 			gm.dishes_completed[target_player] = max(0, int(gm.dishes_completed[target_player]) - 1)
 		else:
 			if gm.has_method("_spawn_powerup_popup"):
-				gm._spawn_powerup_popup(target_player, "No dishes to steal!")
+				gm._spawn_powerup_popup(target_player, LocalizationManager.t("No dishes to steal!"))
 
 func _apply_extra_life(gm: Node, target_player: int) -> void:
 	if not gm.lives.has(target_player):
@@ -171,7 +171,7 @@ func _refresh_visuals() -> void:
 	if DEFAULT_COMBOS.has(powerup_type):
 		combo = DEFAULT_COMBOS[powerup_type].duplicate(true)
 	_update_combo_display()
-
+	
 	if sprite and sprite.sprite_frames:
 		if sprite.sprite_frames.has_animation(powerup_type):
 			sprite.play(powerup_type)

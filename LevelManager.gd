@@ -1,7 +1,7 @@
 extends Node
 
 var levels := [
-	{   # Level 1
+	{   # Level 
 		"requirements": {
 			"Spring Onion":  {"combo": ["←","→","Z"], "amount": 1},
 			"Meat":   {"combo": ["→","↑","Z"], "amount": 3},
@@ -12,6 +12,16 @@ var levels := [
 	},
 	{   # Level 2
 		"requirements": {
+			"Octopus": {"combo": ["←","↑","Z"], "amount": 2},
+			"Egg": {"combo": ["←","→","Z"], "amount": 3},
+			"Flour":  {"combo": ["←","←","↓","Z"], "amount": 2}
+		},
+		"dish_texture": preload("res://Sprites/takoyaki.png"),
+		"dish_name": "Takoyaki",
+		"time_limit": 50
+	},
+	{   # Level 3
+		"requirements": {
 			"Potato": {"combo": ["↑","↓","Z"], "amount": 3},
 			"Carrot": {"combo": ["↑","↑","↑","Z"], "amount": 3},
 			"Onion":  {"combo": ["←","→","↓","Z"], "amount": 2}
@@ -19,16 +29,6 @@ var levels := [
 		"dish_texture": preload("res://Sprites/Ingredients/beefCurry.png"),
 		"dish_name": "Beef Curry",
 		"time_limit": 50
-	},
-	{   # Level 3
-		"requirements": {
-			"Potato": {"combo": ["↑","↓","↑","Z"], "amount": 5},
-			"Carrot": {"combo": ["↑","↑","↑","↑","Z"], "amount": 3},
-			"Onion":  {"combo": ["←","→","→","Z"], "amount": 2}
-		},
-		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
-		"dish_name": "Shrimp Curry",
-		"time_limit": 40
 	},
 	{    # Level 4
 		"requirements": {
@@ -45,22 +45,31 @@ var levels := [
 	"requirements": {},   # no ingredients
 	"dish_texture": preload("res://Sprites/Pests/shiba1.png"),
 	"dish_name": "Shiba Showdown",
-	"time_limit": 25,
+	"time_limit": 35,
 	"is_boss": true
 	},
-	{    # Level 6
+	{   # Level 6
 		"requirements": {
-			"Hotdog": {"combo": ["↑","↓","↑","Z"], "amount": 3},
-			"Shrimp": {"combo": ["←","←","↑","Z"], "amount": 2},
-			"Tomato":  {"combo": ["←","→","←","→","Z"], "amount": 1},
-			"Egg":  {"combo": ["↓","↓","←","→","Z"], "amount": 2},
-			"Potato":  {"combo": ["↑","↓","↑","Z"], "amount": 1},
-			"Rice":  {"combo": ["↓","↓","↓","Z"], "amount": 3}
+			"Potato": {"combo": ["↑","↓","↑","Z"], "amount": 5},
+			"Carrot": {"combo": ["↑","↑","↑","↑","Z"], "amount": 3},
+			"Onion":  {"combo": ["←","→","→","Z"], "amount": 2}
 		},
-		"dish_texture": preload("res://Sprites/Sinigang.png"),
-		"dish_name": "Sinigang!?",
-		"time_limit": 70
-	}
+		"dish_texture": preload("res://Sprites/Ingredients/shrimpCurry.png"),
+		"dish_name": "Shrimp Curry",
+		"time_limit": 40
+	},
+	{    # Level 7
+		"requirements": {
+			"Hotdog": {"combo": ["↓","↓","↓","Z"], "amount": 3},
+			"Tomato":  {"combo": ["←","→","←","→","Z"], "amount": 2},
+			"Egg":  {"combo": ["↓","↓","←","→","Z"], "amount": 3},
+			"Potato":  {"combo": ["↑","↓","↑","Z"], "amount": 4},
+			"Rice":  {"combo": ["↓","↓","↑","Z"], "amount": 3}
+		},
+		"dish_texture": preload("res://Sprites/Ingredients/bento.png"),
+		"dish_name": "Bento!",
+		"time_limit": 90
+	},
 ]
 
 var current_level: int = 0
@@ -98,3 +107,19 @@ func next_level() -> void:
 	else:
 		# go to next level
 		current_level += 1
+
+func get_current_dish_translated() -> Dictionary:
+	var dish = levels[current_level]
+	return {
+		"texture": dish["dish_texture"],
+		"name": LocalizationManager.t_dynamic(dish["dish_name"]),
+		"time_limit": dish["time_limit"],
+		"is_boss": dish.get("is_boss", false)
+	}
+
+func get_current_requirements_translated() -> Dictionary:
+	var reqs = get_current_requirements()
+	var translated: Dictionary = {}
+	for ingredient_name in reqs.keys():
+		translated[LocalizationManager.t_dynamic(ingredient_name)] = reqs[ingredient_name]
+	return translated

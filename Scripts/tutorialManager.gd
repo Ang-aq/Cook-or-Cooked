@@ -9,13 +9,16 @@ extends Node
 @onready var keys: AnimatedSprite2D = $UI/Keys
 @onready var pot: AnimatedSprite2D = $Pot
 @onready var skip_label: Label = $Skip
+@onready var yakitori_label: Label = $UI/Yakitori
 @onready var fade_rect: ColorRect = $UI/ColorRect
+@onready var button: AnimatedSprite2D = $UI/SkipButton
 
-# UI 
+# UI Targets
 @onready var HeartTarget = $UI/HeartT
 @onready var TimerTarget = $UI/TimerT
 @onready var ChecklistTarget = $UI/ChecklistT
 
+# Game state
 var arrow_combo: Array[String] = ["ui_right", "ui_up"]
 var player_progress: int = 0
 var waiting_for_input: bool = false
@@ -40,29 +43,40 @@ var meat_falling: bool = false
 var meat_already_stopped: bool = false
 var instruction_shown: bool = false
 
+# ------------------------
+# Ready
+# ------------------------
 func _ready() -> void:
 	tutorial_skipped = false
+
+	_apply_language_font()
+	
 	var tween := create_tween()
-	tween.set_loops() 
+	tween.set_loops()
 	tween.tween_property(skip_label, "modulate:a", 0.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(skip_label, "modulate:a", 1.0, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
 	pot.play("boil")
+	button.play("button")
 	
+	# Connect signals
 	if not tutorial_dialog.dialogue_finished.is_connected(_on_intro_dialogue_finished):
 		tutorial_dialog.dialogue_finished.connect(_on_intro_dialogue_finished)
 	if not player_input.sequence_submitted.is_connected(_on_sequence_submitted):
 		player_input.sequence_submitted.connect(_on_sequence_submitted)
 
+	# Hide initial elements
 	meat.visible = false
 	indicator.visible = false
 	combo_container.visible = false
 	player_input.input_display.visible = false
 	arrow_indicator.hide()
 
+	# Intro dialogue
 	var intro_lines: Array[String] = [
-		"Oh hello, you must be the chef's new apprentice!",
-		"I work here too. I'll teach you the basics of this place.",
-		"First is to collect ingredients. Look, there's one now!"
+		LocalizationManager.t("intro_1"),
+		LocalizationManager.t("intro_2"),
+		LocalizationManager.t("intro_3")
 	]
 	var portraits: Array[Texture] = [
 		load("res://Sprites/Portrait1.png"),
@@ -71,6 +85,27 @@ func _ready() -> void:
 	]
 	await fade_in()
 	tutorial_dialog.start_dialogue(intro_lines, portraits)
+
+# ------------------------
+# Language / Font
+# ------------------------
+func _apply_language_font() -> void:
+	var font = LocalizationManager.get_font()
+	if font:
+		for label in [$Skip, player_input.input_display, combo_container]:
+			if label is Label:
+				label.add_theme_font_override("font", font)
+				
+		_apply_font_recursive(tutorial_dialog, font)
+		
+	skip_label.text = LocalizationManager.t("skip_tutorial")
+	yakitori_label.text = LocalizationManager.t("Beef Yakitori")
+
+func _apply_font_recursive(node: Node, font: Font) -> void:
+	if node is Label:
+		node.add_theme_font_override("font", font)
+	for child in node.get_children():
+		_apply_font_recursive(child, font)
 
 func _on_intro_dialogue_finished() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_on_intro_dialogue_finished)
@@ -88,6 +123,9 @@ func _start_meat_tutorial() -> void:
 	combo_container.visible = false
 	player_input.input_display.visible = false
 
+# ------------------------
+# Process falling meat
+# ------------------------
 func _process(delta: float) -> void:
 	if meat_falling:
 		meat.position.y += fall_speed * delta
@@ -98,15 +136,19 @@ func _process(delta: float) -> void:
 			if not instruction_shown:
 				_show_instruction_dialogue()
 
+# ------------------------
+# Instruction Dialogue
+# ------------------------
 func _show_instruction_dialogue() -> void:
 	instruction_shown = true
 	tutorial_dialog.get_node("UI").position = Vector2(100, -60)
 	tutorial_dialog.get_node("Transition").position = Vector2(420, 68)
-	
+
 	keys.show()
 	indicator.show()
 	keys.play("click")
-	var prompt: Array[String] = ["Use ARROW KEYS to chop ingredients then press Z to confirm. If you mess up press X to reset."]
+
+	var prompt: Array[String] = [LocalizationManager.t("instruction")]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 
 	if not tutorial_dialog.dialogue_finished.is_connected(_on_instruction_dialogue_finished):
@@ -114,31 +156,32 @@ func _show_instruction_dialogue() -> void:
 
 	tutorial_dialog.start_dialogue(prompt, portraits)
 
+# ------------------------
+# Combo arrow wobble
+# ------------------------
 func _flash_and_wobble_arrow() -> void:
-	if arrow_indicator == null:
-		return
-	
+	if arrow_indicator == null: return
+
 	var flash = arrow_indicator.create_tween()
-	flash.set_loops()  # infinite
+	flash.set_loops()
 	flash.tween_property(arrow_indicator, "modulate", Color.RED, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	flash.tween_property(arrow_indicator, "modulate", Color.WHITE, 0.5).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# Wobble wobble infinitely 
 	var original_x = arrow_indicator.position.x
 	var wobble = arrow_indicator.create_tween()
-	wobble.set_loops()  
+	wobble.set_loops()
 	wobble.tween_property(arrow_indicator, "position:x", original_x + 10, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	wobble.tween_property(arrow_indicator, "position:x", original_x - 10, 0.6).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	wobble.tween_property(arrow_indicator, "position:x", original_x, 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
+# ------------------------
+# Post instruction dialogue
+# ------------------------
 func _on_instruction_dialogue_finished() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_on_instruction_dialogue_finished)
-	
 	tutorial_dialog.input_locked = true  
-	
 	_show_combo_arrows()
 	player_input.input_display.visible = true
-
 	ready_for_combo = true
 	waiting_for_input = true
 	player_progress = 0
@@ -149,9 +192,11 @@ func _show_combo_arrows() -> void:
 	combo_container.visible = true
 	indicator.show()
 
+# ------------------------
+# Input handling
+# ------------------------
 func _on_sequence_submitted(sequence: Array[String]) -> void:
-	if input_locked or not (ready_for_combo and waiting_for_input):
-		return
+	if input_locked or not (ready_for_combo and waiting_for_input): return
 
 	if sequence.size() > arrow_combo.size():
 		sequence = sequence.slice(0, arrow_combo.size())
@@ -174,18 +219,18 @@ func _on_sequence_submitted(sequence: Array[String]) -> void:
 	else:
 		player_progress = 0
 		_update_combo_visual()
-		if tutorial_dialog.input_locked == true:
+		if tutorial_dialog.input_locked:
 			_show_wrong_input_dialogue()
 
 func _show_wrong_input_dialogue() -> void:
-	var wrong_prompt: Array[String] = ["Wrong input, try again!"]
-	var portraits: Array[Texture] = [load("res://Sprites/sadt.png")]
-	
+	var wrong_prompt: Array[String] = [LocalizationManager.t("wrong_input")]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait4.png")]
+
 	tutorial_dialog.input_locked = false
 	tutorial_dialog.start_dialogue(wrong_prompt, portraits)
 	await tutorial_dialog.dialogue_finished
 	tutorial_dialog.input_locked = true
-	
+
 	player_input.input_buffer.clear()
 	player_input._update_display()
 
@@ -196,32 +241,37 @@ func _update_combo_visual(reset: bool=false) -> void:
 		elif i < player_progress: arrow.modulate = Color(0,1,0)
 		else: arrow.modulate = Color.WHITE
 
+# ------------------------
+# Combo success
+# ------------------------
 func _on_combo_success() -> void:
 	waiting_for_input = false
 	ready_for_combo = false
 	keys.hide()
 	meat.hide()
-	
 	tutorial_dialog.input_locked = false  
-
 	indicator.visible = false
 	combo_container.visible = false
 	player_input.input_display.visible = false
 
-	var success_lines: Array[String] = ["Perfect!! You're a natural!"]
+	var success_lines: Array[String] = [LocalizationManager.t("success")]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait3.png")]
 
 	tutorial_dialog.start_dialogue(success_lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(_after_chopping)
 
+# ------------------------
+# Post-chop tutorial steps
+# ------------------------
 func _after_chopping() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_after_chopping)
-	tutorial_dialog.get_node("UI").position = Vector2(100, 365) 
-	tutorial_dialog.get_node("Transition").position = Vector2(420, 493) 
-	
+	tutorial_dialog.get_node("UI").position = Vector2(100, 365)
+	tutorial_dialog.get_node("Transition").position = Vector2(420, 493)
+
 	arrow_indicator.point_to(HeartTarget)
 	_flash_and_wobble_arrow()
-	var lines: Array[String] = ["These are your lives. Make mistakes, lose hearts!"]
+
+	var lines: Array[String] = [LocalizationManager.t("lives")]
 	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 	tutorial_dialog.start_dialogue(lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(_show_timer_tutorial)
@@ -230,9 +280,9 @@ func _show_timer_tutorial() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_show_timer_tutorial)
 	arrow_indicator.point_to(TimerTarget)
 	_flash_and_wobble_arrow()
-	var lines: Array[String] = ["This is the timer. Finish your dish before the time runs out!"]
-	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 
+	var lines: Array[String] = [LocalizationManager.t("timer")]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
 	tutorial_dialog.start_dialogue(lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(_show_checklist_tutorial)
 
@@ -240,15 +290,16 @@ func _show_checklist_tutorial() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(_show_checklist_tutorial)
 	arrow_indicator.point_to(ChecklistTarget)
 	_flash_and_wobble_arrow()
-	var lines: Array[String] = ["This is your ingredient checklist. Remember, follow the recipe!"]
-	tutorial_dialog.start_dialogue(lines)
+
+	var lines: Array[String] = [LocalizationManager.t("checklist")]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
+	tutorial_dialog.start_dialogue(lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(finalLines)
 
 func finalLines() -> void:
 	tutorial_dialog.dialogue_finished.disconnect(finalLines)
-	var lines: Array[String] = ["Also be careful of pests that like to steal your food or mess you up! If you see any make sure to swat them away."]
-	var portraits: Array[Texture] = [load("res://Sprites/sadt.png")]
-
+	var lines: Array[String] = [LocalizationManager.t("pests")]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait4.png")]
 	tutorial_dialog.start_dialogue(lines, portraits)
 	tutorial_dialog.dialogue_finished.connect(finish_tutorial)
 
@@ -257,26 +308,26 @@ func finish_tutorial() -> void:
 	arrow_indicator.hide()
 	get_tree().change_scene_to_file(main_scene_path)
 
+# ------------------------
+# Skip tutorial
+# ------------------------
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("skipTutorial") and tutorial_skipped == false:
 		_skip_tutorial()
 
 func _skip_tutorial() -> void:
 	tutorial_skipped = true
-	if tutorial_dialog.dialogue_finished.is_connected(_on_intro_dialogue_finished):
-		tutorial_dialog.dialogue_finished.disconnect(_on_intro_dialogue_finished)
-	if tutorial_dialog.dialogue_finished.is_connected(_on_instruction_dialogue_finished):
-		tutorial_dialog.dialogue_finished.disconnect(_on_instruction_dialogue_finished)
-	if tutorial_dialog.dialogue_finished.is_connected(_after_chopping):
-		tutorial_dialog.dialogue_finished.disconnect(_after_chopping)
-	if tutorial_dialog.dialogue_finished.is_connected(_show_timer_tutorial):
-		tutorial_dialog.dialogue_finished.disconnect(_show_timer_tutorial)
-	if tutorial_dialog.dialogue_finished.is_connected(_show_checklist_tutorial):
-		tutorial_dialog.dialogue_finished.disconnect(_show_checklist_tutorial)
-	if tutorial_dialog.dialogue_finished.is_connected(finalLines):
-		tutorial_dialog.dialogue_finished.disconnect(finalLines)
-	if tutorial_dialog.dialogue_finished.is_connected(finish_tutorial):
-		tutorial_dialog.dialogue_finished.disconnect(finish_tutorial)
+	for conn in [
+		_on_intro_dialogue_finished,
+		_on_instruction_dialogue_finished,
+		_after_chopping,
+		_show_timer_tutorial,
+		_show_checklist_tutorial,
+		finalLines,
+		finish_tutorial
+	]:
+		if tutorial_dialog.dialogue_finished.is_connected(conn):
+			tutorial_dialog.dialogue_finished.disconnect(conn)
 
 	meat.hide()
 	indicator.hide()
@@ -285,11 +336,14 @@ func _skip_tutorial() -> void:
 	arrow_indicator.hide()
 	player_input.input_display.visible = false
 	tutorial_dialog.input_locked = false
-	
+
 	tutorial_dialog.hide()
 	await fade_out()
 	get_tree().change_scene_to_file(main_scene_path)
 
+# ------------------------
+# Fade functions
+# ------------------------
 func fade_out(time: float = 0.5) -> void:
 	fade_rect.visible = true
 	var timer := 0.0
@@ -307,3 +361,8 @@ func fade_in(time: float = 0.5) -> void:
 		await get_tree().create_timer(0.0).timeout
 	fade_rect.modulate.a = 0.0
 	fade_rect.visible = false
+
+func set_font(font: Font) -> void:
+	# Recursively apply the font to all Labels inside the dialog
+	for child in get_children():
+		_apply_font_recursive(child, font)
