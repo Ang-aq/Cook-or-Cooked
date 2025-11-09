@@ -17,53 +17,56 @@ var arrow_textures := {
 }
 
 const MAX_BUFFER_SIZE := 10
-const DEADZONE := 0.4  # ignore small movements
+const DEADZONE := 0.4 
 
-var last_direction := ""        # last pressed direction
-var same_dir_locked := false    # prevents repeating same dir until recentered
+var last_direction := ""
+var same_dir_locked := false
 
 func _process(delta: float) -> void:
 	if not input_enabled:
 		return
 
+	var new_direction := ""
+
 	var axis_x := Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
 	var axis_y := Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
 
-	var new_direction := ""
 	if abs(axis_x) > DEADZONE or abs(axis_y) > DEADZONE:
-		# choose the dominant axis
 		if abs(axis_x) > abs(axis_y):
 			new_direction = "→" if axis_x > 0 else "←"
 		else:
 			new_direction = "↓" if axis_y > 0 else "↑"
-
-		# Only register if:
-		# 1. It’s a *different* direction, OR
-		# 2. The stick was previously neutral and we’re reusing the same direction
-		if new_direction != last_direction or not same_dir_locked:
-			_add_to_buffer(new_direction)
-			MusicManager.play_sfx("chop")
-			same_dir_locked = true
-			last_direction = new_direction
-	else:
-		# Stick in neutral → allow repeating same direction again
+	
+	elif Input.is_action_pressed("ui_right"):
+		new_direction = "→"
+	elif Input.is_action_pressed("ui_left"):
+		new_direction = "←"
+	elif Input.is_action_pressed("ui_down"):
+		new_direction = "↓"
+	elif Input.is_action_pressed("ui_up"):
+		new_direction = "↑"
+	
+	if new_direction != "" and (new_direction != last_direction or not same_dir_locked):
+		_add_to_buffer(new_direction)
+		MusicManager.play_sfx("chop")
+		same_dir_locked = true
+		last_direction = new_direction
+	elif new_direction == "":
+		# No input → reset same_dir_locked
 		same_dir_locked = false
 
-	# Handle submit/reset
-	if Input.is_action_just_pressed("joystickStart"):
+	# --- Submit / Reset ---
+	if Input.is_action_just_pressed("joystickStart") or Input.is_action_just_pressed("ui_accept"):
 		_add_to_buffer("Z")
 		emit_signal("sequence_submitted", input_buffer.duplicate())
 		input_buffer.clear()
-	elif Input.is_action_just_pressed("joystickReset"):
+	elif Input.is_action_just_pressed("joystickReset") or Input.is_action_just_pressed("ui_cancel"):
 		input_buffer.clear()
 		emit_signal("sequence_reset")
 
 	_update_display()
 	emit_signal("buffer_changed", input_buffer.duplicate())
 
-# -------------------------
-# Add with buffer limit
-# -------------------------
 func _add_to_buffer(step: String) -> void:
 	if input_buffer.size() >= MAX_BUFFER_SIZE:
 		return

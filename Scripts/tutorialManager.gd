@@ -148,8 +148,8 @@ func _show_instruction_dialogue() -> void:
 	indicator.show()
 	keys.play("click")
 
-	var prompt: Array[String] = [LocalizationManager.t("instruction")]
-	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png")]
+	var prompt: Array[String] = [LocalizationManager.t("instruction"),LocalizationManager.t("reset")]
+	var portraits: Array[Texture] = [load("res://Sprites/Portrait1.png"),load("res://Sprites/Portrait1.png")]
 
 	if not tutorial_dialog.dialogue_finished.is_connected(_on_instruction_dialogue_finished):
 		tutorial_dialog.dialogue_finished.connect(_on_instruction_dialogue_finished)

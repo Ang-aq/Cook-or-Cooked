@@ -20,8 +20,8 @@ func _load_scores() -> void:
 	cfg.load("user://scores.cfg")
 	var last := int(cfg.get_value("scores", "last_score", 0))
 	var reason := str(cfg.get_value("scores", "last_fail_reason", ""))
-	score_label.text = "Score: %d" % last
-	reason_label.text = reason
+	score_label.text = LocalizationManager.t("Score: %d") % last
+	reason_label.text = LocalizationManager.t(reason)
 
 func _play_intro() -> void:
 	MusicManager.play_sfx("sad")

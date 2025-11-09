@@ -400,7 +400,7 @@ func _on_ingredient_chopped(ingredient_name: String) -> void:
 				ing_node.flash_x()
 				break
 				
-		_lose_heart(LocalizationManager.t("Too many %ss!") % name)
+		_lose_heart(LocalizationManager.t("Too many %ss!") % LocalizationManager.t(name))
 		
 		return
 	
@@ -473,7 +473,7 @@ func _on_sequence_submitted(sequence: Array) -> void:
 		if cur_count >= req_count:
 			if _sequences_match(clean_sequence, ing.combo):
 				IngManager.flash_topmost_ingredient(name)
-				_lose_heart(LocalizationManager.t("Too many %ss!") % name)
+				_lose_heart(LocalizationManager.t("Too many %ss!") % LocalizationManager.t(name))
 				matched = true
 				break
 			continue

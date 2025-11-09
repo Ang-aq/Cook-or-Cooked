@@ -58,7 +58,6 @@ offset_bottom = 719.0
 theme = ExtResource("3_ek8ke")
 theme_override_constants/outline_size = 10
 theme_override_font_sizes/font_size = 70
-text = "Press any button to continue"
 
 [node name="GameOverAngel" type="Sprite2D" parent="."]
 position = Vector2(939, 379)

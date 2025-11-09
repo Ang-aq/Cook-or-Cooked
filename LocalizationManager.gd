@@ -1,7 +1,7 @@
 extends Node
 
 var current_language: String = "jp" # en or jp
-
+# testing
 var translations: Dictionary = {
 	"en": {
 		# Gamemodes
@@ -12,7 +12,8 @@ var translations: Dictionary = {
 		"intro_1": "Oh hello, you must be the chef's new apprentice!",
 		"intro_2": "I work here too. I'll teach you the basics of this place.",
 		"intro_3": "First is to collect ingredients. Look, there's one now!",
-		"instruction": "Use ARROW KEYS to chop ingredients then press Z to confirm. If you mess up press X to reset.",
+		"instruction": "Use the JOYSTICK to chop ingredients then press the BLUE BUTTON to confirm.",
+		"reset":"If you mess up press the RED BUTTON to reset.",
 		"wrong_input": "Wrong input, try again!",
 		"success": "Perfect!! You're a natural!",
 		"lives": "These are your lives. Make mistakes, lose hearts!",
@@ -60,7 +61,7 @@ var translations: Dictionary = {
 		"Dishes Made": "Dishes Made",
 		"%dx Combo!": "%dx Combo!",
 		"Continue": "Press the BLUE BUTTON to continue",
-
+		
 		# Countdown
 		"GO!": "GO!",
 		"time_60_left": "60 seconds left!",
@@ -68,7 +69,7 @@ var translations: Dictionary = {
 		"time_10_left": "10 seconds left!",
 		"time_5_left": "5 seconds left!",
 
-		# Messages and Effects
+		# Popup Messages
 		"Dish Stolen!": "Dish Stolen!",
 		"No dishes to steal!": "No dishes to steal!",
 		"+1 Heart!": "+1 Heart!",
@@ -78,7 +79,10 @@ var translations: Dictionary = {
 		"Too many %ss!": "Too many %ss!",
 		"Slow Down!": "Slow Down!",
 		"Combo Boost!": "Combo Boost!",
-		"Extra Heart!": "Extra Heart!"
+		"Extra Heart!": "Extra Heart!",
+		"Collected %s": "Collected %s",
+		"Score: %d": "Score: %d",
+		
 	},
 
 	"jp": {
@@ -91,13 +95,14 @@ var translations: Dictionary = {
 		"intro_1": "こんにちは！あなたが新しい見習いシェフですね！",
 		"intro_2": "私もここで働いています。このお店の基本を教えてあげますね。",
 		"intro_3": "まずは食材を集めましょう。ほら、あそこにあります！",
-		"instruction": "矢印キーで食材を切り、Zキーで確定します。間違えたらXキーでリセットしてください。",
+		"instruction": "ジョイスティックで食材を切り、青ボタンで決定。",
+		"reset": "間違えたら赤ボタンでリセット。",
 		"wrong_input": "入力が間違っています。もう一度試してください！",
 		"success": "完璧です！あなたは天才ですね！",
 		"lives": "これはあなたのライフです。ミスをするとハートを失います！",
 		"timer": "これはタイマーです。時間内に料理を完成させてください！",
 		"checklist": "これは食材のチェックリストです。レシピ通りに作りましょう！",
-		"pests": "食材を盗んだり邪魔したりする害虫に気をつけてください！見つけたらすぐに叩いて追い払いましょう。",
+		"pests": "害虫に注意！見つけたら叩こう！",
 		
 		# Tutorial Infinite Mode
 		"tutorial_1": "おい君！ こっちに来て！",
@@ -157,7 +162,9 @@ var translations: Dictionary = {
 		"Too many %ss!": "%sが多すぎる！",
 		"Slow Down!": "スロー！",
 		"Combo Boost!": "コンボブースト！",
-		"Extra Heart!": "エクストラハート！"
+		"Extra Heart!": "エクストラハート！",
+		"Collected %s": "集めた%s",
+		"Score: %d": "スコア: %d"
 	}
 }
 

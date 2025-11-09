@@ -83,8 +83,7 @@ func _ready() -> void:
 	_build_infinite_pool()
 	
 	alive_time = 0.0
-	if is_instance_valid(alive_label):
-		alive_label.text = "00:00"
+	alive_label.text = "00:00"
 	
 	var initial_v: float = spawn_speed_baseline * ingredient_speed_multiplier
 	var initial_interval: float = spawn_spacing_pixels / max(0.0001, initial_v)
@@ -111,8 +110,7 @@ func _process(delta: float) -> void:
 	
 	if not game_over_triggered:
 		alive_time += delta
-		if is_instance_valid(alive_label):
-			alive_label.text = "%s" % _format_time_mmss(alive_time)
+		alive_label.text = "%s" % _format_time_mmss(alive_time)
 	
 	ingredient_speed_multiplier = min(max_multiplier, ingredient_speed_multiplier + speed_increase_per_second * delta)
 	
@@ -125,18 +123,11 @@ func _physics_process(delta: float) -> void:
 
 func _translate_ui_texts() -> void:
 	var lang = LocalizationManager.current_language
-	if not LocalizationManager.translations.has(lang):
-		return
 	var dict = LocalizationManager.translations[lang]
 	
-	if is_instance_valid(alive_label) and dict.has("Dishes Made"):
-		alive_label.text = dict["Dishes Made"]
-	
-	if is_instance_valid(combo_label) and combo > 0 and dict.has("%dx Combo!"):
-		combo_label.text = dict["%dx Combo!"].replace("%d", str(combo))
-	
-	if is_instance_valid(skip_label) and dict.has("skip_tutorial"):
-		skip_label.text = dict["skip_tutorial"]
+	alive_label.text = dict["Dishes Made"]
+	combo_label.text = dict["%dx Combo!"].replace("%d", str(combo))
+	skip_label.text = dict["skip_tutorial"]
 	
 	var use_jp_font = lang in ["jp", "ja"]
 	_apply_font_to_ui(self, use_jp_font)
@@ -233,19 +224,18 @@ func _initialize_checklist() -> void:
 	checklist_ui.setup_checklist(req_counts)
 	checklist_ui.show()
 
-	if is_instance_valid(dish_title):
-		var dish_info: Dictionary = LevelManager.get_current_dish()
-		var name = str(dish_info.get("name", "Unknown Dish"))
-		if LocalizationManager.translations.has(LocalizationManager.current_language):
-			var lang_dict = LocalizationManager.translations[LocalizationManager.current_language]
-			if lang_dict.has(name):
-				name = lang_dict[name]
-		dish_title.text = name
+	var dish_info: Dictionary = LevelManager.get_current_dish()
+	var name = str(dish_info.get("name", "Unknown Dish"))
+	if LocalizationManager.translations.has(LocalizationManager.current_language):
+		var lang_dict = LocalizationManager.translations[LocalizationManager.current_language]
+		if lang_dict.has(name):
+			name = lang_dict[name]
+	dish_title.text = name
 
 func _start_countdown() -> void:
 	if not is_instance_valid(countdown_label):
 		game_paused = false
-		player_input.input_enabled = not (game_paused or countdown_running) # FIX
+		player_input.input_enabled = not (game_paused or countdown_running) 
 		return
 	await fade_in()
 	MusicManager.stop_bgm()
@@ -359,7 +349,6 @@ func _on_ingredient_chopped(ingredient_name: String, chopped_ingredient: Ingredi
 	_update_combo_ui()
 
 	var popup_pos: Vector2 = ingredient_container.global_position + Vector2(270, 400)
-	_spawn_text_popup("Collected %s!" % ingredient_name, popup_pos)
 	MusicManager.play_sfx("chop")
 
 	if checklist[ingredient_name] >= max_amount:
@@ -453,7 +442,7 @@ func _cleanup_missed_ingredients() -> void:
 			continue
 		if ing.global_position.y > kill_line_y:
 			if not ing.is_chopped:
-				_lose_heart("Missed %s!" % ing.ingredient_name, 1.0)
+				_lose_heart(LocalizationManager.t("Missed %s!")% ing.ingredient_name, 1.0)
 			ing.queue_free()
 
 func _clear_all_ingredients() -> void:
@@ -477,7 +466,7 @@ func _lose_heart(reason: String, amount: float = 1.0) -> void:
 	_spawn_text_popup(reason, popup_pos)
 
 	if damage_flash:
-		if damage_tween and is_instance_valid(damage_tween):
+		if damage_tween:
 			damage_tween.kill()
 			damage_tween = null
 
@@ -513,7 +502,7 @@ func _lose_heart(reason: String, amount: float = 1.0) -> void:
 	_spawn_text_popup(reason, popup_pos)
 	
 	if damage_flash:
-		if damage_tween and is_instance_valid(damage_tween):
+		if damage_tween:
 			damage_tween.kill()
 			damage_tween = null
 		
