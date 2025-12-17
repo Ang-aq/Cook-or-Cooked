@@ -10,7 +10,7 @@ In **Cook or Cooked** you're working at a small street food shop serving dishes 
 The game contains three gamemodes, solo, versus, and infinite, each with a different twist on the main gameplay mechanic of chopping ingredients with the correct key combos. 
 
 
-## 👩‍🍳 Engine & Language Used
+## 👩‍🍳 Other Info
 **Engine:** Godot 4.4.1
 
 **Language:** GDScript
