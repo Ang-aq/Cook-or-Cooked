@@ -1,4 +1,6 @@
 ![Cook or Cooked Logo](Sprites/title/title2.png)
+<img src="Sprites/title/title2.png" width="600">
+
 # 🍲 Cook or Cooked
 A video game made for and featured in HackClub's Shiba Arcade! 
 
