@@ -1,3 +1,5 @@
+[Alt text](https://raw.githubusercontent.com/Ang-aq/Cook-or-Cooked/refs/heads/main/Sprites/title/title2.png)
+
 # 🍲 Cook or Cooked
 A video game made for and featured in HackClub's Shiba Arcade! 
 
