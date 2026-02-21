@@ -148,13 +148,13 @@ text = ">"
 position = Vector2(578, 216)
 scale = Vector2(1.72558, 1.72558)
 sprite_frames = SubResource("SpriteFrames_7qi16")
-animation = &"jp_title"
+animation = &"title"
 
 [node name="Label2" type="Label" parent="."]
 offset_left = 228.0
-offset_top = 677.0
+offset_top = 589.0
 offset_right = 953.0
-offset_bottom = 728.0
+offset_bottom = 640.0
 theme = ExtResource("3_h87bp")
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_x = 2

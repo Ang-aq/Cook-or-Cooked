@@ -105,7 +105,6 @@ func next_level() -> void:
 			main_node._save_score(final_score, "Completed all levels")
 		get_tree().change_scene_to_file("res://Scenes/demo_complete.tscn")
 	else:
-		# go to next level
 		current_level += 1
 
 func get_current_dish_translated() -> Dictionary:

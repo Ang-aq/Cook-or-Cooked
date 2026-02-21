@@ -1,7 +1,12 @@
 extends Node
 
+<<<<<<< HEAD
 var current_language: String = "jp" # en or jp
 # testing
+=======
+var current_language: String = "en" # en or jp
+
+>>>>>>> 0f522c9 (images for readme)
 var translations: Dictionary = {
 	"en": {
 		# Gamemodes
