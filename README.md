@@ -1,6 +1,10 @@
 <img src="Sprites/title/title2.png" width="400">
 
 # 🍲 Cook or Cooked
+**Cook or Cooked** is playable directly in your browser on itch.io!
+
+**https://ang-aq.itch.io/cook-or-cooked**
+
 
 ## 🥩 About Cook or Cooked
 
@@ -9,11 +13,7 @@ In **Cook or Cooked** you're working at a small street food shop serving dishes 
 The game contains three gamemodes, solo, versus, and infinite, each with a different twist on the main gameplay mechanic of chopping ingredients with the correct key combos. 
 
 
-## 🍽️ Gameplay 
-**Cook or Cooked** is playable directly in your browser on itch.io!
-
-**https://ang-aq.itch.io/cook-or-cooked**
-
+## 🍽️ Gameplay Preview
 
 <img src="Sprites/ForReadMe/Screenshot 2025-09-23 212844.png" width="400"> <img src="Sprites/ForReadMe/Screenshot 2025-09-23 212826.png" width="400"> 
 <img src="Sprites/ForReadMe/Screenshot 2025-09-23 212856.png" width="400"> <img src="Sprites/ForReadMe/Screenshot 2026-02-20 202621.png" width="400">
