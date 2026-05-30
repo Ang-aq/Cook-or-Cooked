@@ -3,7 +3,7 @@
 # 🍲 Cook or Cooked
 **Cook or Cooked** is playable directly in your browser on itch.io!
 
-**https://ang-aq.itch.io/cook-or-cooked**
+**[https://a-aquiro.itch.io/cook-or-cooked](https://a-aquiro.itch.io/cook-or-cooked)**
 
 
 ## 🥩 About Cook or Cooked
