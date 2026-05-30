@@ -26,6 +26,3 @@ The game contains three gamemodes, solo, versus, and infinite, each with a diffe
 **Language:** GDScript
 
 **Artwork:** Aesprite (Pixel Art)
-
-
-###### Made with ❤️ by Ang 
